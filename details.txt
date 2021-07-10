@@ -1,0 +1,38 @@
+Course:
+- create course
+- delete course
+- find course by id
+- find all courses (here works a paginated response)
+- update course by id
+- add stars
+
+Course lecture:
+- create lecture for course
+- delete lecture from course
+- edit lecture from course
+
+Courses:
+- find all courses
+- manipulation like: search by name, by category, etc. using query parameters
+- search course by name (here will be used a ML algorithm that I made in python)
+
+Comment:
+- add comment to course
+- delete own comment from course
+- upvote comment
+- downvote comment
+
+Main page:
+- display all courses
+- filter courses
+
+Main account:
+    User
+        - details about your account like: first name, last name, email, enrolled courses, etc.
+    Instructor
+        - -//-, created courses, enrolled students in total, etc.
+
+Documentation
+- Swagger for API
+
+Pentru referinta la functionalitati, se pot vedea paginile de html cu ce functionalitate are fiecare.

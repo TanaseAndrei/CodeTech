@@ -1,0 +1,22 @@
+#server configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+#datasource configuration
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/codetech
+    username: licenta
+    password: licenta
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB

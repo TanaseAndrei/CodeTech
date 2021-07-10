@@ -1,0 +1,20 @@
+package com.ucv.codetech.controller.exception.handler;
+
+import com.ucv.codetech.controller.exception.AppException;
+import com.ucv.codetech.controller.exception.converter.AppExceptionConverter;
+import com.ucv.codetech.controller.exception.dto.AppExceptionDto;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+@AllArgsConstructor
+public class ApplicationExceptionHandler {
+
+    private final AppExceptionConverter appExceptionConverter;
+
+    @ExceptionHandler(value = {AppException.class})
+    public AppExceptionDto handleAppException(AppException appException) {
+        return appExceptionConverter.exceptionToDto(appException);
+    }
+}
