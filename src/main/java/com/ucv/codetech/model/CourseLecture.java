@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "course_lecture")
@@ -23,8 +24,8 @@ public class CourseLecture {
     @Column(name = "description")
     private String description;
 
-    //TODO rezolvat partea de path-uri pentru fisiere uploadate
-//    private List<String> lectureFilePaths;
+    @ElementCollection(targetClass = String.class)
+    private List<String> lectureFilePaths;
 
     @Column(name = "lectureVideoPath")
     private String lectureVideoPath;

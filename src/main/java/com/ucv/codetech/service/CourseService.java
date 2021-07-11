@@ -26,17 +26,39 @@ public class CourseService {
     private final FileService fileService;
 
     @Transactional
-    public Long createCourse(CourseDto courseDto, MultipartFile multipartFile) {
+    public Long createCourse(CourseDto courseDto) {
+        Category category = categoryRepositoryGateway.findById(courseDto.getCategoryId())
+                .orElseThrow(() -> new AppException("The selected category doesn't exist!", HttpStatus.NOT_FOUND));
+        Course course = courseConverter.courseDtoToCourse(courseDto);
+        course.setCategory(category);
+        return courseRepositoryGateway.save(course).getId();
+    }
+
+    @Transactional
+    public void addCourseCover(MultipartFile multipartFile, Long id) {
         try {
-            Category category = categoryRepositoryGateway.findById(courseDto.getCategoryId()).orElseThrow(RuntimeException::new);
-            String coverPath = fileService.moveCoverFile(multipartFile, courseDto.getName());
-            Course course = courseConverter.courseDtoToCourse(courseDto);
+            Course course = courseRepositoryGateway.findById(id)
+                    .orElseThrow(() -> new AppException("The selected course doesn't exist!", HttpStatus.NOT_FOUND));
+            String coverPath = fileService.moveCoverFile(multipartFile, course.getName());
             course.setCoverImagePath(coverPath);
-            course.setCategory(category);
-            return courseRepositoryGateway.save(course).getId();
+            courseRepositoryGateway.save(course);
         } catch (IOException ioException) {
-            throw new AppException("An error has occurred while trying to create the cover for the course", HttpStatus.BAD_REQUEST);
+            throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public void enableCourse(Long id) {
+        Course course = courseRepositoryGateway.findById(id)
+                .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
+        course.setAvailable(true);
+        courseRepositoryGateway.save(course);
+    }
+
+    public void disableCourse(Long id) {
+        Course course = courseRepositoryGateway.findById(id)
+                .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
+        course.setAvailable(false);
+        courseRepositoryGateway.save(course);
     }
 
     public Course getById(Long id) {
@@ -48,6 +70,13 @@ public class CourseService {
     }
 
     public void deleteCourse(Long id) {
-        courseRepositoryGateway.deleteById(id);
+        try {
+            Course course = courseRepositoryGateway.findById(id)
+                    .orElseThrow(() -> new AppException("The selected category doesn't exist!", HttpStatus.NOT_FOUND));
+            fileService.deleteCover(course.getCoverImagePath());
+            courseRepositoryGateway.deleteById(id);
+        } catch (IOException ioException) {
+            throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

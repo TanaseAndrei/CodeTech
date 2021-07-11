@@ -35,7 +35,11 @@ public class Course {
     @Column(name = "enrolled_students")
     private int enrolledStudents;
 
+    @Column(name = "creation_date")
     private String creationDate;
+
+    @Column(name = "available")
+    private boolean available;
 
     @Column(name = "cover_image_path")
     private String coverImagePath;
@@ -55,5 +59,6 @@ public class Course {
     private void initEntity() {
         this.enrolledStudents = 0;
         this.creationDate = LocalDateTime.now().format(dateTimeFormatter);
+        this.available = false;
     }
 }

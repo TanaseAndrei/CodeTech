@@ -17,7 +17,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> createCategory(@RequestBody CategoryDto categoryDto) {
         Long id = categoryService.createOrUpdate(categoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
@@ -36,7 +36,7 @@ public class CategoryController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
