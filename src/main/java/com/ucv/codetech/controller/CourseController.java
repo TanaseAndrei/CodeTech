@@ -3,6 +3,8 @@ package com.ucv.codetech.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ucv.codetech.controller.model.CourseDto;
+import com.ucv.codetech.controller.model.CourseLectureDto;
+import com.ucv.codetech.controller.model.LectureFilesDto;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.service.CourseService;
 import lombok.AllArgsConstructor;
@@ -30,22 +32,23 @@ public class CourseController {
 
     //upload cover image pentru curs
     @PostMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
         courseService.addCourseCover(multipartFile, id);
     }
 
     //face cursul available
     @PatchMapping(path = "/{id}/enable")
-    public ResponseEntity<Object> enableCourse(@PathVariable Long id) {
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void enableCourse(@PathVariable Long id) {
         courseService.enableCourse(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //face cursul unavailable
     @PatchMapping(path = "/{id}/disable")
-    public ResponseEntity<Object> disableCourse(@PathVariable Long id) {
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void disableCourse(@PathVariable Long id) {
         courseService.disableCourse(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //extrage un curs cu tot ce contine
@@ -62,8 +65,21 @@ public class CourseController {
 
     //sterge un curs
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Object> deleteCourse(@PathVariable("id") Long id) {
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteCourse(@PathVariable("id") Long id) {
         courseService.deleteCourse(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void uploadCourseLectures(@PathVariable("id") Long courseId, @ModelAttribute CourseLectureDto courseLectureDto) {
+        courseService.createCourseLecture(courseId, courseLectureDto);
+    }
+
+    @PatchMapping(path = "/{courseId}/lectures/{lectureId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void uploadLectureFiles(@PathVariable("courseId") Long courseId, @PathVariable("lectureId") Long lectureId,
+                                   @ModelAttribute LectureFilesDto lectureFilesDto) {
+        System.out.println(lectureFilesDto);
     }
 }

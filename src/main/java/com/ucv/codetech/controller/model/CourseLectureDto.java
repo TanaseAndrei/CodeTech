@@ -15,6 +15,4 @@ public class CourseLectureDto {
     private String description;
 
     private MultipartFile lectureVideo;
-
-    private LectureFilesDto lectureFilesDto;
 }

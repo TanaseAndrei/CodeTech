@@ -18,8 +18,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
   servlet:
     multipart:
-      max-file-size: 1000MB
-      max-request-size: 1000MB
+      max-file-size: 2000MB
+      max-request-size: 2100MB
 
 #application configuration
 course:
