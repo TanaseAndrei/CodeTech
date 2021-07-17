@@ -34,6 +34,14 @@ public class FileService {
         return newVideoName;
     }
 
+    public String moveCourseLectureFile(MultipartFile file, String lectureName) throws IOException {
+        byte[] fileBytes = file.getBytes();
+        String newFileName = lectureName + "-lecture-" + System.currentTimeMillis() + file.getOriginalFilename();
+        String savedFilePath = courseCoverPath + SLASH + newFileName;
+        Files.write(Paths.get(savedFilePath), fileBytes);
+        return newFileName;
+    }
+
     public void deleteCover(String path) throws IOException {
         Files.delete(Paths.get(courseCoverPath + SLASH + path));
     }

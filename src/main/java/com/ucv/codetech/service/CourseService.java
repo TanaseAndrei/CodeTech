@@ -7,8 +7,10 @@ import com.ucv.codetech.model.Category;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.CourseLecture;
 import com.ucv.codetech.repository.CategoryRepositoryGateway;
+import com.ucv.codetech.repository.CourseLectureRepositoryGateway;
 import com.ucv.codetech.repository.CourseRepositoryGateway;
 import com.ucv.codetech.service.converter.CourseConverter;
+import com.ucv.codetech.service.converter.CourseLectureConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,7 +27,9 @@ public class CourseService {
 
     private final CategoryRepositoryGateway categoryRepositoryGateway;
     private final CourseRepositoryGateway courseRepositoryGateway;
+    private final CourseLectureRepositoryGateway courseLectureRepositoryGateway;
     private final CourseConverter courseConverter;
+    private final CourseLectureConverter courseLectureConverter;
     private final FileService fileService;
 
     @Transactional
@@ -90,15 +94,32 @@ public class CourseService {
             Course course = courseRepositoryGateway.findById(courseId)
                     .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
             String videoName = fileService.moveVideoLecture(courseLectureDto.getLectureVideo(), courseLectureDto.getName());
-            CourseLecture courseLecture = new CourseLecture();
-            courseLecture.setName(courseLectureDto.getName());
-            courseLecture.setDescription(courseLectureDto.getDescription());
-            courseLecture.setLectureFilePaths(Collections.emptyList());
+            CourseLecture courseLecture = courseLectureConverter.courseLectureDtoToCourseLecture(courseLectureDto);
             courseLecture.setLectureVideoPath(videoName);
+            courseLecture.setCourse(course);
             course.getCourseLectures().add(courseLecture);
             courseRepositoryGateway.save(course);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Transactional
+    public void addCourseLectureFiles(Long courseId, Long courseLectureId, MultipartFile[] multipartFiles) {
+        CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseLectureId, courseId)
+                .orElseThrow(() -> new AppException("The selected course id does not exist!", HttpStatus.NOT_FOUND));
+        try {
+            courseLecture.setLectureFilePaths(getLectureFileNames(multipartFiles, courseLecture.getName()));
+        } catch (IOException ioException) {
+            throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private List<String> getLectureFileNames(MultipartFile[] multipartFiles, String lectureName) throws IOException {
+        List<String> fileNames = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            fileNames.add(fileService.moveCourseLectureFile(multipartFile, lectureName));
+        }
+        return fileNames;
     }
 }

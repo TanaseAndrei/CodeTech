@@ -24,6 +24,10 @@ public class CourseLecture {
     @Column(name = "description")
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
+
     @ElementCollection(targetClass = String.class)
     private List<String> lectureFilePaths;
 
