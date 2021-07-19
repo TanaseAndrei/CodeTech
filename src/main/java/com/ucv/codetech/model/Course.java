@@ -38,6 +38,9 @@ public class Course {
     @Column(name = "creation_date")
     private String creationDate;
 
+    @Column(name = "folder")
+    private String folder;
+
     @Column(name = "available")
     private boolean available;
 

@@ -22,6 +22,5 @@ spring:
       max-request-size: 2100MB
 
 #application configuration
-course:
-  cover:
-    path: E:\\Programming\\CodeTechOutput\\course
+application:
+  base-folder: E:\\Programming\\CodeTechOutput

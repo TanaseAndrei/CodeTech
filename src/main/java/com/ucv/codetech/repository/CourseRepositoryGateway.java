@@ -28,4 +28,8 @@ public class CourseRepositoryGateway {
     public void deleteById(Long id) {
         courseRepository.deleteById(id);
     }
+
+    public Optional<String> getCourseFolderName(Long id) {
+        return courseRepository.getCourseFolderName(id);
+    }
 }

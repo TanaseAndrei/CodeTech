@@ -2,9 +2,11 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.CourseDto;
 import com.ucv.codetech.controller.model.CourseLectureDto;
+import com.ucv.codetech.controller.model.DisplayCourseDto;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.service.CourseService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +46,7 @@ public class CourseController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Course> getAllCourses() {
+    public List<DisplayCourseDto> getAllCourses() {
         return courseService.getAll();
     }
 
