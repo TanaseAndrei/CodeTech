@@ -4,6 +4,7 @@ import com.ucv.codetech.model.CourseLecture;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -14,5 +15,13 @@ public class CourseLectureRepositoryGateway {
 
     public Optional<CourseLecture> findByCourseLectureIdAndCourseId(Long courseLectureId, Long courseId) {
         return courseLectureRepository.findByIdAndCourseId(courseLectureId, courseId);
+    }
+
+    public List<String> getCourseLectureVideos(Long courseId) {
+        return courseLectureRepository.getCourseLectureVideos(courseId);
+    }
+
+    public List<CourseLecture> getCourseLecturesByCourseId(Long courseId) {
+        return courseLectureRepository.getCourseLecturesByCourseId(courseId);
     }
 }

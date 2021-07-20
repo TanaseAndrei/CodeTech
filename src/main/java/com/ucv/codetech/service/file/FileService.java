@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class FileService {
@@ -19,7 +20,7 @@ public class FileService {
     private String applicationBaseFolder;
 
     public String createCourseFolder(String courseName) throws IOException {
-        if(!Files.exists(Paths.get(applicationBaseFolder + courseName))) {
+        if (!Files.exists(Paths.get(applicationBaseFolder + courseName))) {
             Files.createDirectory(Paths.get(applicationBaseFolder + SLASH + courseName));
         }
         return courseName;
@@ -53,7 +54,23 @@ public class FileService {
         return newFileName;
     }
 
-    public void deleteCover(String path) throws IOException {
-        Files.delete(Paths.get(applicationBaseFolder + SLASH + path));
+    public void deleteCover(String path, String folder) throws IOException {
+        Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + path));
+    }
+
+    public void deleteCourseLectureVideos(List<String> courseLectureVideos, String folder) throws IOException {
+        for (String courseLectureVideo : courseLectureVideos) {
+            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureVideo));
+        }
+    }
+
+    public void deleteCourseLectureFiles(List<String> courseLectureFiles, String folder) throws IOException {
+        for (String courseLectureVideo : courseLectureFiles) {
+            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureVideo));
+        }
+    }
+
+    public void deleteBaseFolder(String folder) throws IOException {
+        Files.delete(Paths.get(applicationBaseFolder + SLASH + folder));
     }
 }

@@ -39,7 +39,7 @@ public class CourseService {
     public Long createCourse(CourseDto courseDto) {
         try {
             Category category = categoryRepositoryGateway.findById(courseDto.getCategoryId())
-                    .orElseThrow(() -> new AppException("The selected category doesn't exist!", HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new AppException("The selected category does not exist!", HttpStatus.NOT_FOUND));
             String courseFolder = fileService.createCourseFolder(courseDto.getName());
             Course course = courseConverter.courseDtoToCourse(courseDto);
             course.setCategory(category);
@@ -54,7 +54,7 @@ public class CourseService {
     public void addCourseCover(MultipartFile multipartFile, Long id) {
         try {
             Course course = courseRepositoryGateway.findById(id)
-                    .orElseThrow(() -> new AppException("The selected course doesn't exist!", HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
             String coverPath = fileService.moveCoverFile(multipartFile, course.getName(), course.getFolder());
             course.setCoverImagePath(coverPath);
             courseRepositoryGateway.save(course);
@@ -79,8 +79,9 @@ public class CourseService {
 
     //TODO here the returned Course represents a full course
     public Course getById(Long id) {
-        return courseRepositoryGateway.findById(id)
+        Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
+        return course;
     }
 
     public List<DisplayCourseDto> getAll() {
@@ -88,11 +89,19 @@ public class CourseService {
         return allCourses.stream().map(courseConverter::courseToDisplayCourseDto).collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteCourse(Long id) {
         try {
             Course course = courseRepositoryGateway.findById(id)
-                    .orElseThrow(() -> new AppException("The selected category doesn't exist!", HttpStatus.NOT_FOUND));
-            fileService.deleteCover(course.getCoverImagePath());
+                    .orElseThrow(() -> new AppException("The selected course doesn't exist!", HttpStatus.NOT_FOUND));
+            List<String> courseLectureVideos = courseLectureRepositoryGateway.getCourseLectureVideos(id);
+            List<CourseLecture> courseLectures = courseLectureRepositoryGateway.getCourseLecturesByCourseId(course.getId());
+            List<String> courseLectureFiles =
+                    courseLectures.stream().map(CourseLecture::getLectureFilePaths).flatMap(List::stream).collect(Collectors.toList());
+            fileService.deleteCover(course.getCoverImagePath(), course.getFolder());
+            fileService.deleteCourseLectureFiles(courseLectureFiles, course.getFolder());
+            fileService.deleteCourseLectureVideos(courseLectureVideos, course.getFolder());
+            fileService.deleteBaseFolder(course.getFolder());
             courseRepositoryGateway.deleteById(id);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
@@ -119,7 +128,7 @@ public class CourseService {
     public void addCourseLectureFiles(Long courseId, Long courseLectureId, MultipartFile[] multipartFiles) {
         try {
             CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseLectureId, courseId)
-                    .orElseThrow(() -> new AppException("The selected course id does not exist!", HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new AppException("The selected course lecture does not exist!", HttpStatus.NOT_FOUND));
             String courseFolder = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist!", HttpStatus.BAD_REQUEST));
             courseLecture.setLectureFilePaths(getLectureFileNames(multipartFiles, courseLecture.getName(), courseFolder));
