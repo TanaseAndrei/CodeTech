@@ -32,4 +32,8 @@ public class CourseRepositoryGateway {
     public Optional<String> getCourseFolderName(Long id) {
         return courseRepository.getCourseFolderName(id);
     }
+
+    public boolean existsByName(String name) {
+        return courseRepository.existsByName(name);
+    }
 }

@@ -14,6 +14,7 @@ import com.ucv.codetech.service.converter.CourseConverter;
 import com.ucv.codetech.service.converter.CourseLectureConverter;
 import com.ucv.codetech.service.file.FileService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,9 @@ public class CourseService {
     @Transactional
     public Long createCourse(CourseDto courseDto) {
         try {
+            if(courseRepositoryGateway.existsByName(courseDto.getName())) {
+                throw new AppException("The course already exists with this name!", HttpStatus.BAD_REQUEST);
+            }
             Category category = categoryRepositoryGateway.findById(courseDto.getCategoryId())
                     .orElseThrow(() -> new AppException("The selected category does not exist!", HttpStatus.NOT_FOUND));
             String courseFolder = fileService.createCourseFolder(courseDto.getName());
@@ -79,9 +83,8 @@ public class CourseService {
 
     //TODO here the returned Course represents a full course
     public Course getById(Long id) {
-        Course course = courseRepositoryGateway.findById(id)
+        return courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
-        return course;
     }
 
     public List<DisplayCourseDto> getAll() {
@@ -132,6 +135,19 @@ public class CourseService {
             String courseFolder = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist!", HttpStatus.BAD_REQUEST));
             courseLecture.setLectureFilePaths(getLectureFileNames(multipartFiles, courseLecture.getName(), courseFolder));
+        } catch (IOException ioException) {
+            throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public Resource downloadFile(Long courseId, Long courseLectureId, String fileName) {
+        try {
+            CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
+                    .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
+            String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
+                    .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));
+            return fileService.downloadFile(folderName, fileName);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }

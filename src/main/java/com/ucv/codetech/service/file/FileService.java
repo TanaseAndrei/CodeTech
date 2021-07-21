@@ -1,11 +1,14 @@
 package com.ucv.codetech.service.file;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,5 +75,10 @@ public class FileService {
 
     public void deleteBaseFolder(String folder) throws IOException {
         Files.delete(Paths.get(applicationBaseFolder + SLASH + folder));
+    }
+
+    public Resource downloadFile(String folder, String fileName) throws MalformedURLException {
+        Path path = Paths.get(applicationBaseFolder + SLASH + folder + SLASH + fileName);
+        return new UrlResource(path.toUri());
     }
 }

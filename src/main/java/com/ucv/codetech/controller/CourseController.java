@@ -1,19 +1,20 @@
 package com.ucv.codetech.controller;
 
+import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.CourseDto;
 import com.ucv.codetech.controller.model.CourseLectureDto;
 import com.ucv.codetech.controller.model.DisplayCourseDto;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.service.CourseService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @RestController
 @RequestMapping(path = "/courses")
@@ -74,4 +75,21 @@ public class CourseController {
                                    @RequestParam("files") MultipartFile[] multipartFiles) {
         courseService.addCourseLectureFiles(courseId, lectureId, multipartFiles);
     }
+
+    @GetMapping(path = "/{courseId}/lectures/{lectureId}/download/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable("courseId") Long courseId,
+                                                 @PathVariable("lectureId") Long lectureId,
+                                                 @PathVariable("fileName") String fileName) {
+        Resource resource = courseService.downloadFile(courseId, lectureId, fileName);
+        MediaType mediaType = MediaTypeFactory.getMediaType(resource)
+                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
+        return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
+    }
+
+    private HttpHeaders createHeader(Resource resource) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(CONTENT_DISPOSITION, "attachment;file-name=" + resource.getFilename());
+        return httpHeaders;
+    }
+
 }
