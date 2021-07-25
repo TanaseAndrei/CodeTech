@@ -24,3 +24,4 @@ spring:
 #application configuration
 application:
   base-folder: E:\\Programming\\CodeTechOutput
+  version: @project.version@
