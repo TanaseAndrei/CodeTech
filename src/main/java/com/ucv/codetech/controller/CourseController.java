@@ -86,9 +86,18 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
     }
 
+    @GetMapping(path = "/{courseId}/lectures/{lectureId}/zip-files")
+    public ResponseEntity<Resource> zipLectureFiles(@PathVariable("courseId") Long courseId,
+                                                 @PathVariable("lectureId") Long lectureId) {
+        Resource resource = courseService.zipLectureFiles(courseId, lectureId);
+        MediaType mediaType = MediaTypeFactory.getMediaType(resource)
+                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
+        return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
+    }
+
     private HttpHeaders createHeader(Resource resource) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(CONTENT_DISPOSITION, "attachment;file-name=" + resource.getFilename());
+        httpHeaders.add(CONTENT_DISPOSITION, "attachment;filename=" + resource.getFilename());
         return httpHeaders;
     }
 

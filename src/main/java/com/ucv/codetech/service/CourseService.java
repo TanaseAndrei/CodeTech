@@ -13,14 +13,17 @@ import com.ucv.codetech.repository.CourseRepositoryGateway;
 import com.ucv.codetech.service.converter.CourseConverter;
 import com.ucv.codetech.service.converter.CourseLectureConverter;
 import com.ucv.codetech.service.file.FileService;
+import com.ucv.codetech.service.file.ZipService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +38,7 @@ public class CourseService {
     private final CourseConverter courseConverter;
     private final CourseLectureConverter courseLectureConverter;
     private final FileService fileService;
+    private final ZipService zipService;
 
     @Transactional
     public Long createCourse(CourseDto courseDto) {
@@ -145,11 +149,28 @@ public class CourseService {
         try {
             CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
                     .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
+            if(!courseLecture.getLectureFilePaths().contains(fileName)) {
+                throw new AppException("The file does not exist!", HttpStatus.NOT_FOUND);
+            }
             String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));
             return fileService.downloadFile(folderName, fileName);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional
+    public Resource zipLectureFiles(Long courseId, Long courseLectureId) {
+        try {
+            CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
+                    .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
+            String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
+                    .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));
+            String zipFilePath = zipService.zipFiles(courseLecture.getLectureFilePaths(), folderName);
+            return new UrlResource(Paths.get(zipFilePath).toUri());
+        } catch (IOException ioException) {
+            throw new AppException("The files could not have been zipped", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
