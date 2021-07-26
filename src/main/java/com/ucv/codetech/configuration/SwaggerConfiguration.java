@@ -18,7 +18,7 @@ import java.util.Collections;
 public class SwaggerConfiguration {
 
     private static final String SWAGGER_TITLE = "CodeTech API Swagger documentation";
-    private static final String SWAGGER_DESCRIPTION = "This represent the application's api.";
+    private static final String SWAGGER_DESCRIPTION = "This represents the application's api.";
     private static final String SWAGGER_LICENSE = "Apache License Version 2.0, January 2004";
     private static final String SWAGGER_LICENSE_URL = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 

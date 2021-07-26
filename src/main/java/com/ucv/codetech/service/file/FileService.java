@@ -1,5 +1,6 @@
 package com.ucv.codetech.service.file;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FileService {
 
     private static final String SLASH = File.separator;
@@ -29,47 +31,27 @@ public class FileService {
         return courseName;
     }
 
-    public Path getCoverPath(String courseName, String coverName) {
-        return Paths.get(applicationBaseFolder + SLASH + courseName + SLASH + coverName);
-    }
-
-    public String moveCoverFile(MultipartFile multipartFile, String courseName, String folder) throws IOException {
+    public String moveFile(MultipartFile multipartFile, String courseName, String folder) throws IOException {
         byte[] fileBytes = multipartFile.getBytes();
-        String newCoverName = courseName + "-cover-" + System.currentTimeMillis() + multipartFile.getOriginalFilename();
-        String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newCoverName;
+        String newFilename = courseName + "-cover-" + System.currentTimeMillis() + multipartFile.getOriginalFilename();
+        String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newFilename;
         Files.write(Paths.get(savedFilePath), fileBytes);
-        return newCoverName;
+        return newFilename;
     }
 
-    public String moveVideoLecture(MultipartFile video, String courseLectureName, String folder) throws IOException {
-        byte[] fileBytes = video.getBytes();
-        String newVideoName = courseLectureName + "-video-" + System.currentTimeMillis() + video.getOriginalFilename();
-        String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newVideoName;
-        Files.write(Paths.get(savedFilePath), fileBytes);
-        return newVideoName;
+    public void deleteCover(String filename, String folder) throws IOException {
+        Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + filename));
     }
 
-    public String moveCourseLectureFile(MultipartFile file, String lectureName, String folder) throws IOException {
-        byte[] fileBytes = file.getBytes();
-        String newFileName = lectureName + "-lecture-" + System.currentTimeMillis() + file.getOriginalFilename();
-        String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newFileName;
-        Files.write(Paths.get(savedFilePath), fileBytes);
-        return newFileName;
-    }
-
-    public void deleteCover(String path, String folder) throws IOException {
-        Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + path));
-    }
-
-    public void deleteCourseLectureVideos(List<String> courseLectureVideos, String folder) throws IOException {
-        for (String courseLectureVideo : courseLectureVideos) {
+    public void deleteCourseLectureVideos(List<String> fileNames, String folder) throws IOException {
+        for (String courseLectureVideo : fileNames) {
             Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureVideo));
         }
     }
 
-    public void deleteCourseLectureFiles(List<String> courseLectureFiles, String folder) throws IOException {
-        for (String courseLectureVideo : courseLectureFiles) {
-            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureVideo));
+    public void deleteCourseLectureFiles(List<String> filenames, String folder) throws IOException {
+        for (String courseLectureFile : filenames) {
+            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureFile));
         }
     }
 
@@ -77,7 +59,7 @@ public class FileService {
         Files.delete(Paths.get(applicationBaseFolder + SLASH + folder));
     }
 
-    public Resource downloadFile(String folder, String fileName) throws MalformedURLException {
+    public Resource getFileAsResource(String folder, String fileName) throws MalformedURLException {
         Path path = Paths.get(applicationBaseFolder + SLASH + folder + SLASH + fileName);
         return new UrlResource(path.toUri());
     }

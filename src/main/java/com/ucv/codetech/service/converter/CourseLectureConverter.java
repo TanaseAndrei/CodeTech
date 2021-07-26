@@ -13,7 +13,7 @@ public class CourseLectureConverter {
         CourseLecture courseLecture = new CourseLecture();
         courseLecture.setName(courseLectureDto.getName());
         courseLecture.setDescription(courseLectureDto.getDescription());
-        courseLecture.setLectureFilePaths(Collections.emptyList());
+        courseLecture.setLectureFileNames(Collections.emptyList());
         return courseLecture;
     }
 }

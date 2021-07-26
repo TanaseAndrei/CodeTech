@@ -29,8 +29,8 @@ public class CourseLecture {
     private Course course;
 
     @ElementCollection(targetClass = String.class)
-    private List<String> lectureFilePaths;
+    private List<String> lectureFileNames;
 
-    @Column(name = "lectureVideoPath")
-    private String lectureVideoPath;
+    @Column(name = "lecture_video_name")
+    private String lectureVideoName;
 }

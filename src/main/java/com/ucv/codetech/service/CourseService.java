@@ -15,6 +15,7 @@ import com.ucv.codetech.service.converter.CourseLectureConverter;
 import com.ucv.codetech.service.file.FileService;
 import com.ucv.codetech.service.file.ZipService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CourseService {
 
     private final CategoryRepositoryGateway categoryRepositoryGateway;
@@ -63,8 +65,7 @@ public class CourseService {
         try {
             Course course = courseRepositoryGateway.findById(id)
                     .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
-            String coverPath = fileService.moveCoverFile(multipartFile, course.getName(), course.getFolder());
-            course.setCoverImagePath(coverPath);
+            course.setCoverImageName(fileService.moveFile(multipartFile, course.getName(), course.getFolder()));
             courseRepositoryGateway.save(course);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
@@ -92,8 +93,7 @@ public class CourseService {
     }
 
     public List<DisplayCourseDto> getAll() {
-        List<Course> allCourses = courseRepositoryGateway.findAll();
-        return allCourses.stream().map(courseConverter::courseToDisplayCourseDto).collect(Collectors.toList());
+    return null ;
     }
 
     @Transactional
@@ -104,8 +104,8 @@ public class CourseService {
             List<String> courseLectureVideos = courseLectureRepositoryGateway.getCourseLectureVideos(id);
             List<CourseLecture> courseLectures = courseLectureRepositoryGateway.getCourseLecturesByCourseId(course.getId());
             List<String> courseLectureFiles =
-                    courseLectures.stream().map(CourseLecture::getLectureFilePaths).flatMap(List::stream).collect(Collectors.toList());
-            fileService.deleteCover(course.getCoverImagePath(), course.getFolder());
+                    courseLectures.stream().map(CourseLecture::getLectureFileNames).flatMap(List::stream).collect(Collectors.toList());
+            fileService.deleteCover(course.getCoverImageName(), course.getFolder());
             fileService.deleteCourseLectureFiles(courseLectureFiles, course.getFolder());
             fileService.deleteCourseLectureVideos(courseLectureVideos, course.getFolder());
             fileService.deleteBaseFolder(course.getFolder());
@@ -120,9 +120,9 @@ public class CourseService {
         try {
             Course course = courseRepositoryGateway.findById(courseId)
                     .orElseThrow(() -> new AppException("The selected course does not exist!", HttpStatus.NOT_FOUND));
-            String videoName = fileService.moveVideoLecture(courseLectureDto.getLectureVideo(), courseLectureDto.getName(), course.getFolder());
+            String videoName = fileService.moveFile(courseLectureDto.getLectureVideo(), courseLectureDto.getName(), course.getFolder());
             CourseLecture courseLecture = courseLectureConverter.courseLectureDtoToCourseLecture(courseLectureDto);
-            courseLecture.setLectureVideoPath(videoName);
+            courseLecture.setLectureVideoName(videoName);
             courseLecture.setCourse(course);
             course.getCourseLectures().add(courseLecture);
             courseRepositoryGateway.save(course);
@@ -138,7 +138,7 @@ public class CourseService {
                     .orElseThrow(() -> new AppException("The selected course lecture does not exist!", HttpStatus.NOT_FOUND));
             String courseFolder = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist!", HttpStatus.BAD_REQUEST));
-            courseLecture.setLectureFilePaths(getLectureFileNames(multipartFiles, courseLecture.getName(), courseFolder));
+            courseLecture.setLectureFileNames(getLectureFileNames(multipartFiles, courseLecture.getName(), courseFolder));
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -149,12 +149,12 @@ public class CourseService {
         try {
             CourseLecture courseLecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
                     .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
-            if(!courseLecture.getLectureFilePaths().contains(fileName)) {
+            if(!courseLecture.getLectureFileNames().contains(fileName)) {
                 throw new AppException("The file does not exist!", HttpStatus.NOT_FOUND);
             }
             String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));
-            return fileService.downloadFile(folderName, fileName);
+            return fileService.getFileAsResource(folderName, fileName);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -167,7 +167,7 @@ public class CourseService {
                     .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
             String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));
-            String zipFilePath = zipService.zipFiles(courseLecture.getLectureFilePaths(), folderName);
+            String zipFilePath = zipService.zipFiles(courseLecture.getLectureFileNames(), folderName);
             return new UrlResource(Paths.get(zipFilePath).toUri());
         } catch (IOException ioException) {
             throw new AppException("The files could not have been zipped", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -177,7 +177,7 @@ public class CourseService {
     private List<String> getLectureFileNames(MultipartFile[] multipartFiles, String lectureName, String courseFolder) throws IOException {
         List<String> fileNames = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            fileNames.add(fileService.moveCourseLectureFile(multipartFile, lectureName, courseFolder));
+            fileNames.add(fileService.moveFile(multipartFile, lectureName, courseFolder));
         }
         return fileNames;
     }

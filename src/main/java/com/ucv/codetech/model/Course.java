@@ -44,8 +44,8 @@ public class Course {
     @Column(name = "available")
     private boolean available;
 
-    @Column(name = "cover_image_path")
-    private String coverImagePath;
+    @Column(name = "cover_image_name")
+    private String coverImageName;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<CourseLecture> courseLectures;

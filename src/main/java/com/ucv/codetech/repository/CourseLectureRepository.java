@@ -12,7 +12,7 @@ public interface CourseLectureRepository extends JpaRepository<CourseLecture, Lo
 
     Optional<CourseLecture> findByIdAndCourseId(Long courseLectureId, Long courseId);
 
-    @Query("SELECT courseLecture.lectureVideoPath FROM CourseLecture courseLecture WHERE courseLecture.course.id = :courseId")
+    @Query("SELECT courseLecture.lectureVideoName FROM CourseLecture courseLecture WHERE courseLecture.course.id = :courseId")
     List<String> getCourseLectureVideos(@Param("courseId")Long courseId);
 
     List<CourseLecture> getCourseLecturesByCourseId(Long courseId);
