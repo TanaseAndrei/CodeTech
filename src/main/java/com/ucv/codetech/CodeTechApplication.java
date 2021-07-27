@@ -6,7 +6,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@PropertySource("application.yml")
 @EnableAsync
 public class CodeTechApplication {
 

@@ -14,5 +14,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c.folder FROM Course c WHERE c.id = :id")
     Optional<String> getCourseFolderName(@Param("id") Long id);
 
+    @Query("SELECT c.folder FROM Course c WHERE c.name = :courseName")
+    Optional<String> getCourseFolderName(@Param("courseName") String courseName);
+
     boolean existsByName(String name);
 }

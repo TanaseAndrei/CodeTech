@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "course_comments")
+@Table(name = "comments")
 @Setter
 @Getter
 public class Comment {

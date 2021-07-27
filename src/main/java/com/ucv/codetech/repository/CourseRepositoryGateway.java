@@ -33,6 +33,8 @@ public class CourseRepositoryGateway {
         return courseRepository.getCourseFolderName(id);
     }
 
+    public Optional<String> getCourseFolderName(String name) { return courseRepository.getCourseFolderName(name); }
+
     public boolean existsByName(String name) {
         return courseRepository.existsByName(name);
     }

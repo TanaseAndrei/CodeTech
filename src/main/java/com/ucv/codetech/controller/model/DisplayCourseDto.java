@@ -1,12 +1,16 @@
 package com.ucv.codetech.controller.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 
 @Setter
 @Getter
-public class DisplayCourseDto {
+@EqualsAndHashCode(callSuper = false)
+public class DisplayCourseDto extends RepresentationModel<DisplayCourseDto>  {
 
     private Long id;
 
@@ -18,5 +22,6 @@ public class DisplayCourseDto {
 
     private int numberOfLectures;
 
-    private String base64ConvertedImage;
+    @JsonIgnore
+    private String coverImageName;
 }

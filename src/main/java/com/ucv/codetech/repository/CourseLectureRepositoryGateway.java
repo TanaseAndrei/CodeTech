@@ -1,6 +1,6 @@
 package com.ucv.codetech.repository;
 
-import com.ucv.codetech.model.CourseLecture;
+import com.ucv.codetech.model.Lecture;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,11 @@ public class CourseLectureRepositoryGateway {
 
     private final CourseLectureRepository courseLectureRepository;
 
-    public Optional<CourseLecture> findByCourseLectureIdAndCourseId(Long courseLectureId, Long courseId) {
+    public void save(Lecture lecture) {
+        courseLectureRepository.save(lecture);
+    }
+
+    public Optional<Lecture> findByCourseLectureIdAndCourseId(Long courseLectureId, Long courseId) {
         return courseLectureRepository.findByIdAndCourseId(courseLectureId, courseId);
     }
 
@@ -21,7 +25,7 @@ public class CourseLectureRepositoryGateway {
         return courseLectureRepository.getCourseLectureVideos(courseId);
     }
 
-    public List<CourseLecture> getCourseLecturesByCourseId(Long courseId) {
+    public List<Lecture> getCourseLecturesByCourseId(Long courseId) {
         return courseLectureRepository.getCourseLecturesByCourseId(courseId);
     }
 }

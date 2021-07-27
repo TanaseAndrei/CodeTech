@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,28 +32,27 @@ public class FileService {
         return courseName;
     }
 
-    public String moveFile(MultipartFile multipartFile, String courseName, String folder) throws IOException {
+    public String moveFile(MultipartFile multipartFile, String folder) throws IOException {
         byte[] fileBytes = multipartFile.getBytes();
-        String newFilename = courseName + "-cover-" + System.currentTimeMillis() + multipartFile.getOriginalFilename();
+        String newFilename = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
         String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newFilename;
         Files.write(Paths.get(savedFilePath), fileBytes);
         return newFilename;
     }
 
-    public void deleteCover(String filename, String folder) throws IOException {
+    public void deleteFiles(List<String> fileNames, String folder) throws IOException {
+        for (String fileName : fileNames) {
+            deleteFile(fileName, folder);
+        }
+    }
+
+    public void deleteCourseFilesData(List<String> filenames, String folder) throws IOException {
+        deleteFiles(filenames, folder);
+        deleteBaseFolder(folder);
+    }
+
+    public void deleteFile(String filename, String folder) throws IOException {
         Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + filename));
-    }
-
-    public void deleteCourseLectureVideos(List<String> fileNames, String folder) throws IOException {
-        for (String courseLectureVideo : fileNames) {
-            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureVideo));
-        }
-    }
-
-    public void deleteCourseLectureFiles(List<String> filenames, String folder) throws IOException {
-        for (String courseLectureFile : filenames) {
-            Files.delete(Paths.get(applicationBaseFolder + SLASH + folder + SLASH + courseLectureFile));
-        }
     }
 
     public void deleteBaseFolder(String folder) throws IOException {

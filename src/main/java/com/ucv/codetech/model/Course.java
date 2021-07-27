@@ -48,7 +48,7 @@ public class Course {
     private String coverImageName;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<CourseLecture> courseLectures;
+    private List<Lecture> lectures;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "course_id")

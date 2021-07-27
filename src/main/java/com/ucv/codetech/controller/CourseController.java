@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @RestController
@@ -42,8 +44,10 @@ public class CourseController {
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Course getCourse(@PathVariable("id") Long id) {
-        return courseService.getById(id);
+    public DisplayCourseDto getCourse(@PathVariable("id") Long id) {
+        DisplayCourseDto displayCourseDto = courseService.getById(id);
+        displayCourseDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+        return displayCourseDto;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -90,6 +94,15 @@ public class CourseController {
     public ResponseEntity<Resource> zipLectureFiles(@PathVariable("courseId") Long courseId,
                                                  @PathVariable("lectureId") Long lectureId) {
         Resource resource = courseService.zipLectureFiles(courseId, lectureId);
+        MediaType mediaType = MediaTypeFactory.getMediaType(resource)
+                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
+        return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
+    }
+
+    @GetMapping(path = "/{courseName}/media/{filename}")
+    public ResponseEntity<Resource> getFileAsResource(@PathVariable("courseName") String courseName,
+                                                      @PathVariable("filename") String filename) {
+        Resource resource = courseService.getMediaAsResource(courseName, filename);
         MediaType mediaType = MediaTypeFactory.getMediaType(resource)
                 .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);

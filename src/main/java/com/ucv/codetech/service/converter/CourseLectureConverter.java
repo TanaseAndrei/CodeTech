@@ -1,7 +1,7 @@
 package com.ucv.codetech.service.converter;
 
 import com.ucv.codetech.controller.model.CourseLectureDto;
-import com.ucv.codetech.model.CourseLecture;
+import com.ucv.codetech.model.Lecture;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -9,11 +9,11 @@ import java.util.Collections;
 @Component
 public class CourseLectureConverter {
 
-    public CourseLecture courseLectureDtoToCourseLecture(CourseLectureDto courseLectureDto) {
-        CourseLecture courseLecture = new CourseLecture();
-        courseLecture.setName(courseLectureDto.getName());
-        courseLecture.setDescription(courseLectureDto.getDescription());
-        courseLecture.setLectureFileNames(Collections.emptyList());
-        return courseLecture;
+    public Lecture courseLectureDtoToCourseLecture(CourseLectureDto courseLectureDto) {
+        Lecture lecture = new Lecture();
+        lecture.setName(courseLectureDto.getName());
+        lecture.setDescription(courseLectureDto.getDescription());
+        lecture.setLectureFileNames(Collections.emptyList());
+        return lecture;
     }
 }
