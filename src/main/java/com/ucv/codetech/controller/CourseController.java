@@ -1,18 +1,21 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.controller.model.CourseDto;
-import com.ucv.codetech.controller.model.CourseLectureDto;
-import com.ucv.codetech.controller.model.DisplayCourseDto;
-import com.ucv.codetech.model.Course;
+import com.ucv.codetech.controller.model.input.CourseDto;
+import com.ucv.codetech.controller.model.input.CourseLectureDto;
+import com.ucv.codetech.controller.model.output.DisplayCourseDto;
+import com.ucv.codetech.controller.model.output.DisplayLectureDto;
+import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.service.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -44,15 +47,27 @@ public class CourseController {
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DisplayCourseDto getCourse(@PathVariable("id") Long id) {
-        DisplayCourseDto displayCourseDto = courseService.getById(id);
-        displayCourseDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
-        return displayCourseDto;
+    public FullDisplayCourseDto getCourse(@PathVariable("id") Long id) {
+        FullDisplayCourseDto fullDisplayCourseDto = courseService.getById(id);
+        fullDisplayCourseDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(fullDisplayCourseDto.getName(),
+                fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
+        for (DisplayLectureDto displayLectureDto : fullDisplayCourseDto.getDisplayLectureDtos()) {
+            for (String lectureFileName : displayLectureDto.getLectureFileNames()) {
+                displayLectureDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(fullDisplayCourseDto.getName(), lectureFileName)).withRel(LinkRelation.of("file")));
+            }
+            displayLectureDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(fullDisplayCourseDto.getName(), displayLectureDto.getLectureVideoName())).withRel(LinkRelation.of("video")));
+        }
+        return fullDisplayCourseDto;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DisplayCourseDto> getAllCourses() {
-        return courseService.getAll();
+        List<DisplayCourseDto> displayCourseDtos = courseService.getAll();
+        for (DisplayCourseDto displayCourseDto : displayCourseDtos) {
+            displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
+            displayCourseDto.add(linkTo(methodOn(CourseController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+        }
+        return displayCourseDtos;
     }
 
     @PatchMapping(path = "/{id}/enable")

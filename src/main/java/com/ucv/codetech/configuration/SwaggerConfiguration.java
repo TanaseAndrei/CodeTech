@@ -42,14 +42,6 @@ public class SwaggerConfiguration {
                 .apiInfo(this.apiInfo());
     }
 
-    @Primary
-    @Bean
-    public LinkDiscoverers discoverers() {
-        List<LinkDiscoverer> plugins = new ArrayList<>();
-        plugins.add(new CollectionJsonLinkDiscoverer());
-        return new LinkDiscoverers(SimplePluginRegistry.create(plugins));
-    }
-
     private ApiInfo apiInfo() {
         return new ApiInfo(getTitle(), getDescription(), applicationVersion, null, getContact(),
                 getLicense(), getLicenseUrl(), Collections.emptyList());

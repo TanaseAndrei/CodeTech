@@ -1,9 +1,10 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.controller.model.CourseDto;
-import com.ucv.codetech.controller.model.CourseLectureDto;
-import com.ucv.codetech.controller.model.DisplayCourseDto;
+import com.ucv.codetech.controller.model.input.CourseDto;
+import com.ucv.codetech.controller.model.input.CourseLectureDto;
+import com.ucv.codetech.controller.model.output.DisplayCourseDto;
+import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Lecture;
@@ -25,7 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,15 +93,16 @@ public class CourseService {
     }
 
     //TODO here the returned Course represents a full course
-    public DisplayCourseDto getById(Long id) {
+    public FullDisplayCourseDto getById(Long id) {
         Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
-        return courseConverter.courseToDisplayCourseDto(course);
+        return courseConverter.courseToFullDisplayCourseDto(course);
     }
 
-    //TODO
+    //TODO paginatation and filtering
     public List<DisplayCourseDto> getAll() {
-    return Collections.emptyList();
+        List<Course> courses = courseRepositoryGateway.findAll();
+        return courseConverter.courseListToDisplayCourseDtoList(courses);
     }
 
     @Transactional

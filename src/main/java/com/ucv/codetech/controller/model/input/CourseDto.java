@@ -1,18 +1,19 @@
-package com.ucv.codetech.controller.model;
+package com.ucv.codetech.controller.model.input;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class CourseLectureDto {
+public class CourseDto {
 
     private String name;
 
+    private String instructorName;
+
     private String description;
 
-    private MultipartFile lectureVideo;
+    private Long categoryId;
 }

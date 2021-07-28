@@ -1,6 +1,6 @@
 package com.ucv.codetech.service.converter;
 
-import com.ucv.codetech.controller.model.CategoryDto;
+import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.model.Category;
 import org.springframework.stereotype.Component;
 

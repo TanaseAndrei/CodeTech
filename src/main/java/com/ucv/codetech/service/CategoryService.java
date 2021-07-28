@@ -1,7 +1,7 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.controller.model.CategoryDto;
+import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.repository.CategoryRepositoryGateway;
 import com.ucv.codetech.service.converter.CategoryConverter;

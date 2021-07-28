@@ -1,4 +1,4 @@
-package com.ucv.codetech.controller.model;
+package com.ucv.codetech.controller.model.input;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

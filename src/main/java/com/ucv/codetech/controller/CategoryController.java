@@ -1,6 +1,6 @@
 package com.ucv.codetech.controller;
 
-import com.ucv.codetech.controller.model.CategoryDto;
+import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
