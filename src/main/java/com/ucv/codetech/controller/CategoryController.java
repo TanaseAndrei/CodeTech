@@ -1,7 +1,7 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
-import com.ucv.codetech.service.CategoryService;
+import com.ucv.codetech.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,29 +15,29 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final CategoryFacade categoryFacade;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> createCategory(@RequestBody CategoryDto categoryDto) {
-        Long id = categoryService.createOrUpdate(categoryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long createCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryFacade.createOrUpdate(categoryDto);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        List<CategoryDto> categoryDtos = categoryService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(categoryDtos);
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryDto> getAllCategories() {
+        return categoryFacade.findAll();
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
-        CategoryDto categoryDto = categoryService.getById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(categoryDto);
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto getCategory(@PathVariable Long id) {
+        return categoryFacade.findById(id);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Object> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long id) {
+        categoryFacade.deleteById(id);
     }
 }

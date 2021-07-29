@@ -13,8 +13,8 @@ public class CategoryRepositoryGateway {
 
     private final CategoryRepository categoryRepository;
 
-    public Long saveOrUpdate(Category category) {
-        return categoryRepository.save(category).getId();
+    public Category saveOrUpdate(Category category) {
+        return categoryRepository.save(category);
     }
 
     public List<Category> findAll() {

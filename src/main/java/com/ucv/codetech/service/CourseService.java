@@ -9,7 +9,7 @@ import com.ucv.codetech.model.Category;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.repository.CategoryRepositoryGateway;
-import com.ucv.codetech.repository.CourseLectureRepositoryGateway;
+import com.ucv.codetech.repository.LectureRepositoryGateway;
 import com.ucv.codetech.repository.CourseRepositoryGateway;
 import com.ucv.codetech.service.converter.CourseConverter;
 import com.ucv.codetech.service.converter.CourseLectureConverter;
@@ -42,7 +42,7 @@ public class CourseService {
 
     private final CategoryRepositoryGateway categoryRepositoryGateway;
     private final CourseRepositoryGateway courseRepositoryGateway;
-    private final CourseLectureRepositoryGateway courseLectureRepositoryGateway;
+    private final LectureRepositoryGateway lectureRepositoryGateway;
     private final CourseConverter courseConverter;
     private final CourseLectureConverter courseLectureConverter;
     private final FileService fileService;
@@ -51,7 +51,7 @@ public class CourseService {
     @Transactional
     public Long createCourse(CourseDto courseDto) {
         try {
-            if(courseRepositoryGateway.existsByName(courseDto.getName())) {
+            if(courseRepositoryGateway.courseExistsByName(courseDto.getName())) {
                 throw new AppException("The course already exists with this name!", HttpStatus.BAD_REQUEST);
             }
             Category category = categoryRepositoryGateway.findById(courseDto.getCategoryId())
@@ -60,7 +60,7 @@ public class CourseService {
             Course course = courseConverter.courseDtoToCourse(courseDto);
             course.setCategory(category);
             course.setFolder(courseFolder);
-            return courseRepositoryGateway.save(course).getId();
+            return courseRepositoryGateway.saveOrUpdate(course).getId();
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -72,7 +72,7 @@ public class CourseService {
             Course course = courseRepositoryGateway.findById(id)
                     .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
             course.setCoverImageName(fileService.moveFile(multipartFile, course.getFolder()));
-            courseRepositoryGateway.save(course);
+            courseRepositoryGateway.saveOrUpdate(course);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -82,14 +82,14 @@ public class CourseService {
         Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         course.setAvailable(true);
-        courseRepositoryGateway.save(course);
+        courseRepositoryGateway.saveOrUpdate(course);
     }
 
     public void disableCourse(Long id) {
         Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         course.setAvailable(false);
-        courseRepositoryGateway.save(course);
+        courseRepositoryGateway.saveOrUpdate(course);
     }
 
     //TODO here the returned Course represents a full course
@@ -110,8 +110,8 @@ public class CourseService {
         try {
             Course course = courseRepositoryGateway.findById(id)
                     .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
-            List<String> videoNames = courseLectureRepositoryGateway.getCourseLectureVideos(id);
-            List<Lecture> lectures = courseLectureRepositoryGateway.getCourseLecturesByCourseId(course.getId());
+            List<String> videoNames = lectureRepositoryGateway.getLectureVideos(id);
+            List<Lecture> lectures = lectureRepositoryGateway.getLecturesByCourseId(course.getId());
             List<String> lectureFiles = collectAllLectureFiles(lectures);
             List<String> allFileNames = collectAllFilesToDelete(course.getCoverImageName(), videoNames, lectureFiles);
             fileService.deleteCourseFilesData(allFileNames, course.getFolder());
@@ -131,7 +131,7 @@ public class CourseService {
             lecture.setLectureVideoName(videoName);
             lecture.setCourse(course);
             course.getLectures().add(lecture);
-            courseRepositoryGateway.save(course);
+            courseRepositoryGateway.saveOrUpdate(course);
         } catch (IOException ioException) {
             throw new AppException(ioException.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -140,7 +140,7 @@ public class CourseService {
     @Transactional
     public void addCourseLectureFiles(Long courseId, Long courseLectureId, MultipartFile[] multipartFiles) {
         try {
-            Lecture lecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseLectureId, courseId)
+            Lecture lecture = lectureRepositoryGateway.findByLectureIdAndCourseId(courseLectureId, courseId)
                     .orElseThrow(() -> new AppException("The selected course lecture does not exist!", HttpStatus.NOT_FOUND));
             String courseFolder = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist!", HttpStatus.BAD_REQUEST));
@@ -153,7 +153,7 @@ public class CourseService {
     @Transactional
     public Resource downloadFile(Long courseId, Long courseLectureId, String fileName) {
         try {
-            Lecture lecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
+            Lecture lecture = lectureRepositoryGateway.findByLectureIdAndCourseId(courseId, courseLectureId)
                     .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
             if(!lecture.getLectureFileNames().contains(fileName)) {
                 throw new AppException("The file does not exist!", HttpStatus.NOT_FOUND);
@@ -169,7 +169,7 @@ public class CourseService {
     @Transactional
     public Resource zipLectureFiles(Long courseId, Long courseLectureId) {
         try {
-            Lecture lecture = courseLectureRepositoryGateway.findByCourseLectureIdAndCourseId(courseId, courseLectureId)
+            Lecture lecture = lectureRepositoryGateway.findByLectureIdAndCourseId(courseId, courseLectureId)
                     .orElseThrow(() -> new AppException("The course lecture does not exist", HttpStatus.NOT_FOUND));
             String folderName = courseRepositoryGateway.getCourseFolderName(courseId)
                     .orElseThrow(() -> new AppException("The course folder does not exist", HttpStatus.NOT_FOUND));

@@ -17,7 +17,7 @@ public class CourseRepositoryGateway {
         return courseRepository.findById(id);
     }
 
-    public Course save(Course course) {
+    public Course saveOrUpdate(Course course) {
         return courseRepository.save(course);
     }
 
@@ -33,9 +33,11 @@ public class CourseRepositoryGateway {
         return courseRepository.getCourseFolderName(id);
     }
 
-    public Optional<String> getCourseFolderName(String name) { return courseRepository.getCourseFolderName(name); }
+    public Optional<String> getCourseFolderName(String name) {
+        return courseRepository.getCourseFolderName(name);
+    }
 
-    public boolean existsByName(String name) {
-        return courseRepository.existsByName(name);
+    public boolean courseExistsByName(String name) {
+        return courseRepository.courseExistsByName(name);
     }
 }

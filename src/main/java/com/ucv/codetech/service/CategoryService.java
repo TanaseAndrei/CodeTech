@@ -18,20 +18,17 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepositoryGateway categoryRepositoryGateway;
-    private final CategoryConverter categoryConverter;
 
-    public Long createOrUpdate(CategoryDto categoryDto) {
-        Category category = categoryConverter.categoryDtoToCategory(categoryDto);
+    public Category createOrUpdate(Category category) {
         return categoryRepositoryGateway.saveOrUpdate(category);
     }
 
-    public List<CategoryDto> getAll() {
-        List<Category> categories = categoryRepositoryGateway.findAll();
-        return categoryConverter.categoriesToCategoryDtos(categories);
+    public List<Category> findAll() {
+        return categoryRepositoryGateway.findAll();
     }
 
-    public CategoryDto getById(Long id) {
-        return categoryRepositoryGateway.findById(id).map(categoryConverter::categoryToCategoryDto)
+    public Category findById(Long id) {
+        return categoryRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The specified category has not beed found!", HttpStatus.NOT_FOUND));
     }
 
