@@ -5,13 +5,13 @@ import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
+import com.ucv.codetech.facade.converter.CourseConverter;
+import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.service.CourseService;
-import com.ucv.codetech.facade.converter.CourseConverter;
-import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.service.file.FileService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,8 +47,7 @@ public class CourseFacade {
             course.setFolderName(folderName);
             return courseService.createOrUpdate(course).getId();
         } catch (IOException ioException) {
-            //TODO throw appexception
-            return null;
+            throw new AppException("Error occurred while creating the course's folder", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,7 +59,7 @@ public class CourseFacade {
             course.setCoverImageName(filename);
             courseService.createOrUpdate(course);
         } catch (IOException ioException) {
-            //TODO throw appexception
+            throw new AppException("Error occurred while adding the course cover", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -104,12 +103,9 @@ public class CourseFacade {
         try {
             String courseFolderName = courseService.getCourseFolderName(id);
             List<String> filesToDelete = courseService.deleteCourse(id);
-            fileService.deleteFiles(filesToDelete, courseFolderName);
+            fileService.deleteCourseFilesData(filesToDelete, courseFolderName);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     }
-
-
-
 }

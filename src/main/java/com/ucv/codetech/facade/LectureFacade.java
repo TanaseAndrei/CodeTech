@@ -2,7 +2,6 @@ package com.ucv.codetech.facade;
 
 import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.service.LectureService;
 import com.ucv.codetech.service.file.FileService;
@@ -24,7 +23,6 @@ import java.util.List;
 public class LectureFacade {
 
     private final LectureService lectureService;
-    private final LectureConverter lectureConverter;
     private final FileService fileService;
     private final ZipService zipService;
 
@@ -68,10 +66,10 @@ public class LectureFacade {
     public Resource downloadLectureFile(Long lectureId, String fileName) {
         try {
             String folder = lectureService.getAssociatedCourseFolder(lectureId);
-            if(!lectureService.fileExistsInLecture(fileName, lectureId)) {
+            if (!lectureService.fileExistsInLecture(fileName, lectureId)) {
                 throw new AppException("The file does not exist in the lecture", HttpStatus.NOT_FOUND);
             }
-           return fileService.getFileAsResource(folder, fileName);
+            return fileService.getFileAsResource(folder, fileName);
         } catch (IOException ioException) {
             throw new AppException("There was a problem while downloading the file", HttpStatus.INTERNAL_SERVER_ERROR);
         }

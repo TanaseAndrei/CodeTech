@@ -13,9 +13,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseDto> {
 
-    @JsonIgnore
-    private Long id;
-
     private String name;
 
     private String instructorName;
