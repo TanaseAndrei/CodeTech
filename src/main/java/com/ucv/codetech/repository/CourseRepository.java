@@ -11,11 +11,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     void deleteById(Long id);
 
-    @Query("SELECT c.folder FROM Course c WHERE c.id = :id")
+    @Query("SELECT c.folderName FROM Course c WHERE c.id = :id")
     Optional<String> getCourseFolderName(@Param("id") Long id);
 
-    @Query("SELECT c.folder FROM Course c WHERE c.name = :courseName")
+    @Query("SELECT c.folderName FROM Course c WHERE c.name = :courseName")
     Optional<String> getCourseFolderName(@Param("courseName") String courseName);
 
-    boolean courseExistsByName(String name);
+    boolean existsByName(String name);
 }

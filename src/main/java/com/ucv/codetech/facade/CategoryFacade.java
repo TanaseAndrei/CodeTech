@@ -3,7 +3,7 @@ package com.ucv.codetech.facade;
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.service.CategoryService;
-import com.ucv.codetech.service.converter.CategoryConverter;
+import com.ucv.codetech.facade.converter.CategoryConverter;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

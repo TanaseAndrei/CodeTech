@@ -23,6 +23,8 @@ public class CategoryController {
         return categoryFacade.createOrUpdate(categoryDto);
     }
 
+    //TODO PUT for updating a category
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getAllCategories() {

@@ -1,4 +1,4 @@
-package com.ucv.codetech.service.converter;
+package com.ucv.codetech.facade.converter;
 
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CourseConverter {
 
-    private final CourseLectureConverter courseLectureConverter;
+    private final LectureConverter lectureConverter;
 
     public Course courseDtoToCourse(CourseDto courseDto) {
         Course course = new Course();
@@ -52,7 +52,7 @@ public class CourseConverter {
         fullDisplayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
         fullDisplayCourseDto.setInstructorName(course.getInstructorName());
         fullDisplayCourseDto.setName(course.getName());
-        fullDisplayCourseDto.setDisplayLectureDtos(course.getLectures().stream().map(courseLectureConverter::lectureToDisplayLectureDto).collect(Collectors.toList()));
+        fullDisplayCourseDto.setDisplayLectureDtos(course.getLectures().stream().map(lectureConverter::lectureToDisplayLectureDto).collect(Collectors.toList()));
         return fullDisplayCourseDto;
     }
 }

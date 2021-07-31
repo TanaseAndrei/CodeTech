@@ -38,6 +38,6 @@ public class CourseRepositoryGateway {
     }
 
     public boolean courseExistsByName(String name) {
-        return courseRepository.courseExistsByName(name);
+        return courseRepository.existsByName(name);
     }
 }

@@ -16,4 +16,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
     List<String> getLectureVideoNames(@Param("courseId")Long courseId);
 
     List<Lecture> getLecturesByCourseId(Long courseId);
+
+    @Query("SELECT lecture.course.folderName FROM Lecture lecture WHERE lecture.id = :lectureId")
+    Optional<String> getAssociatedCourseFolder(@Param("lectureId") Long id);
 }

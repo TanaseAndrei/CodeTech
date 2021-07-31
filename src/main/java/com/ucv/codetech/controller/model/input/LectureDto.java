@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CourseLectureDto {
+public class LectureDto {
 
     private String name;
 

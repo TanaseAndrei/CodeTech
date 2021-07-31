@@ -13,6 +13,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class DisplayLectureDto extends RepresentationModel<DisplayLectureDto> {
 
+    private Long id;
+
     private String name;
 
     private String description;

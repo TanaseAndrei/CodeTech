@@ -1,10 +1,8 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.repository.CategoryRepositoryGateway;
-import com.ucv.codetech.service.converter.CategoryConverter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,9 @@ public class CategoryService {
     private final CategoryRepositoryGateway categoryRepositoryGateway;
 
     public Category createOrUpdate(Category category) {
+        if(categoryRepositoryGateway.existsByName(category.getName())) {
+            throw new AppException("The category already exists with this name", HttpStatus.BAD_REQUEST);
+        }
         return categoryRepositoryGateway.saveOrUpdate(category);
     }
 
@@ -33,6 +34,9 @@ public class CategoryService {
     }
 
     public void deleteById(Long id) {
+        if(!categoryRepositoryGateway.existsById(id)) {
+            throw new AppException("The category with id " + id + " does not exist", HttpStatus.BAD_REQUEST);
+        }
         categoryRepositoryGateway.delete(id);
     }
 }

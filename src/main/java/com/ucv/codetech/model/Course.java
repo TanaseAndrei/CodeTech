@@ -38,8 +38,8 @@ public class Course {
     @Column(name = "creation_date")
     private String creationDate;
 
-    @Column(name = "folder")
-    private String folder;
+    @Column(name = "folder_name")
+    private String folderName;
 
     @Column(name = "available")
     private boolean available;
@@ -62,5 +62,9 @@ public class Course {
         this.enrolledStudents = 0;
         this.creationDate = LocalDateTime.now().format(dateTimeFormatter);
         this.available = false;
+    }
+
+    public void addLecture(Lecture lecture) {
+        lectures.add(lecture);
     }
 }

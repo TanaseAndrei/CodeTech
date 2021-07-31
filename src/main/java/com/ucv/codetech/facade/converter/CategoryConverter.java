@@ -1,4 +1,4 @@
-package com.ucv.codetech.service.converter;
+package com.ucv.codetech.facade.converter;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.model.Category;

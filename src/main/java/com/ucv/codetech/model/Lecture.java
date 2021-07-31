@@ -33,4 +33,12 @@ public class Lecture {
 
     @Column(name = "lecture_video_name")
     private String lectureVideoName;
+
+    public boolean containsLectureFile(String fileName) {
+        return lectureFileNames.contains(fileName);
+    }
+
+    public boolean deleteLectureFile(String fileName) {
+        return lectureFileNames.remove(fileName);
+    }
 }
