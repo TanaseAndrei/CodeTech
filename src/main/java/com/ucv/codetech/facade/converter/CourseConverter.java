@@ -4,6 +4,7 @@ import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.model.Course;
+import com.ucv.codetech.model.Difficulty;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ public class CourseConverter {
         course.setDescription(courseDto.getDescription());
         course.setComments(Collections.emptyList());
         course.setLectures(Collections.emptyList());
+        course.setDifficulty(Difficulty.getByName(courseDto.getDifficulty().name()));
         return course;
     }
 
@@ -31,10 +33,12 @@ public class CourseConverter {
         DisplayCourseDto displayCourseDto = new DisplayCourseDto();
         displayCourseDto.setCoverImageName(course.getCoverImageName());
         displayCourseDto.setId(course.getId());
-        displayCourseDto.setNumberOfLectures(course.getLectures().size());
+        displayCourseDto.setNumberOfLectures(course.getNumberOfLectures());
+        displayCourseDto.setNumberOfComments(course.getNumberOfComments());
         displayCourseDto.setName(course.getName());
         displayCourseDto.setInstructorName(course.getInstructorName());
         displayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
+        displayCourseDto.setDifficulty(course.getDifficulty().toString());
         return displayCourseDto;
     }
 

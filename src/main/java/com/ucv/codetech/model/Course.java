@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,12 +48,22 @@ public class Course {
     @Column(name = "cover_image_name")
     private String coverImageName;
 
+    @Column(name = "difficulty")
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Lecture> lectures;
+    private List<Lecture> lectures = new ArrayList<>();
+
+    @Column(name = "number_of_lectures")
+    private int numberOfLectures;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "course_id")
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = "nuber_of_comments")
+    private int numberOfComments;
 
     @Transient
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -60,8 +71,16 @@ public class Course {
     @PrePersist
     private void initEntity() {
         this.enrolledStudents = 0;
+        this.numberOfLectures = 0;
+        this.numberOfComments = 0;
         this.creationDate = LocalDateTime.now().format(dateTimeFormatter);
         this.available = false;
+    }
+
+    @PreUpdate
+    private void update() {
+        this.numberOfLectures = lectures.size();
+        this.numberOfComments = comments.size();
     }
 
     public void addLecture(Lecture lecture) {

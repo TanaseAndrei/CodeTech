@@ -22,6 +22,10 @@ public class DisplayCourseDto extends RepresentationModel<DisplayCourseDto>  {
 
     private int numberOfLectures;
 
+    private int numberOfComments;
+
+    private String difficulty;
+
     @JsonIgnore
     private String coverImageName;
 }

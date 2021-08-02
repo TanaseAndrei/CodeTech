@@ -1,13 +1,11 @@
 package com.ucv.codetech.controller.exception.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@NoArgsConstructor
 @Setter
 @Getter
 public class AppExceptionDto {

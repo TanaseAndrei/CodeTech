@@ -41,9 +41,9 @@ public class CourseFacade {
                         HttpStatus.BAD_REQUEST);
             }
             Category category = categoryService.findById(courseDto.getCategoryId());
-            String folderName = fileService.createCourseFolder(courseDto.getName());
             Course course = courseConverter.courseDtoToCourse(courseDto);
             course.setCategory(category);
+            String folderName = fileService.createCourseFolder(courseDto.getName());
             course.setFolderName(folderName);
             return courseService.createOrUpdate(course).getId();
         } catch (IOException ioException) {
