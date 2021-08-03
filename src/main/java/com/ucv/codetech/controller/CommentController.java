@@ -13,14 +13,12 @@ public class CommentController {
 
     private final CommentFacade commentFacade;
 
-    //TODO here a dto will be needed to update the description
     @PatchMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void edit(@PathVariable("id") Long id, @RequestBody UpdateCommentDto updateComment) {
         commentFacade.editComment(id, updateComment);
     }
 
-    //TODO for upvoting and downvoting, we need to save the user too because an user, have to upvote only once for a comment, not twice
     @PatchMapping(path = "/{id}/upvote")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void upVote(@PathVariable("id") Long id) {

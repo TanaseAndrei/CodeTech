@@ -9,7 +9,6 @@ import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.facade.CourseFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.LinkRelation;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

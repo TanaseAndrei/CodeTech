@@ -24,18 +24,17 @@ public class CategoryController {
     }
 
     @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void editCateogry(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void editCategory(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
         categoryFacade.edit(id, updateCategory);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getAllCategories() {
         return categoryFacade.findAll();
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategory(@PathVariable Long id) {
         return categoryFacade.findById(id);
     }
