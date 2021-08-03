@@ -1,14 +1,25 @@
 package com.ucv.codetech.service.user;
 
+import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;
-import com.ucv.codetech.model.Role;
 import com.ucv.codetech.model.Student;
 
 public interface UserService {
+    AppUser getAppUser(String name);
+
     Instructor saveInstructor(Instructor instructor);
+
     Instructor getInstructor(String name);
+
+    Instructor getInstructor(Long id);
+
     Student saveStudent(Student student);
+
     Student getStudent(String name);
-    Role saveRole(Role role);
-    void addRoleToUser(String username, String role);
+
+    Student getStudent(Long id);
+
+    boolean userExistsByName(String name);
+
+    boolean userExistsByEmail(String email);
 }

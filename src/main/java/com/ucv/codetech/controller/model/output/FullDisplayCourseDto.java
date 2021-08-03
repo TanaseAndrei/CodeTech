@@ -21,6 +21,8 @@ public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseD
 
     private int numberOfLectures;
 
+    private List<DisplayCommentDto> comments;
+
     @JsonIgnore
     private String coverImageName;
 

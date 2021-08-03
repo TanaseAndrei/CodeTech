@@ -24,8 +24,9 @@ public class Course {
     @Column(name = "name", unique = true)
     private String name;
 
-    @Column(name = "instructor_name")
-    private String instructorName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
 
     @Column(name = "description")
     private String description;
@@ -85,5 +86,9 @@ public class Course {
 
     public void addLecture(Lecture lecture) {
         lectures.add(lecture);
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 }

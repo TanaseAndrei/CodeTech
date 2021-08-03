@@ -1,5 +1,6 @@
 package com.ucv.codetech.controller;
 
+import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
@@ -37,6 +38,11 @@ public class CourseController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
         courseFacade.addCourseCover(multipartFile, id);
+    }
+
+    @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
+        courseFacade.addComment(id, commentDto);
     }
 
     @PatchMapping(path = "/{id}/enable")

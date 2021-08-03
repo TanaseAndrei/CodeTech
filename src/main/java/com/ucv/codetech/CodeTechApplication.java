@@ -2,9 +2,11 @@ package com.ucv.codetech;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication
+//TODO delete exclude option when done with testing the api
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableAsync
 public class CodeTechApplication {
 

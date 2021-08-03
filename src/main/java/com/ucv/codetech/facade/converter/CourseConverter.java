@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CourseConverter {
 
+    private final CommentConverter commentConverter;
     private final LectureConverter lectureConverter;
 
     public Course courseDtoToCourse(CourseDto courseDto) {
         Course course = new Course();
         course.setName(courseDto.getName());
-        course.setInstructorName(courseDto.getInstructorName());
         course.setDescription(courseDto.getDescription());
         course.setComments(Collections.emptyList());
         course.setLectures(Collections.emptyList());
@@ -36,7 +36,7 @@ public class CourseConverter {
         displayCourseDto.setNumberOfLectures(course.getNumberOfLectures());
         displayCourseDto.setNumberOfComments(course.getNumberOfComments());
         displayCourseDto.setName(course.getName());
-        displayCourseDto.setInstructorName(course.getInstructorName());
+        displayCourseDto.setInstructorName(course.getInstructor().getUsername());
         displayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
         displayCourseDto.setDifficulty(course.getDifficulty().toString());
         return displayCourseDto;
@@ -54,8 +54,9 @@ public class CourseConverter {
         fullDisplayCourseDto.setNumberOfLectures(course.getLectures().size());
         fullDisplayCourseDto.setCoverImageName(course.getCoverImageName());
         fullDisplayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
-        fullDisplayCourseDto.setInstructorName(course.getInstructorName());
+        fullDisplayCourseDto.setInstructorName(course.getInstructor().getUsername());
         fullDisplayCourseDto.setName(course.getName());
+        fullDisplayCourseDto.setComments(commentConverter.entitiesToDisplayCommentDtos(course.getComments()));
         fullDisplayCourseDto.setDisplayLectureDtos(course.getLectures().stream().map(lectureConverter::lectureToDisplayLectureDto).collect(Collectors.toList()));
         return fullDisplayCourseDto;
     }

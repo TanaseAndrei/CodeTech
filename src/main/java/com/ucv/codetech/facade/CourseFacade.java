@@ -1,18 +1,20 @@
 package com.ucv.codetech.facade;
 
 import com.ucv.codetech.controller.exception.AppException;
+import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
+import com.ucv.codetech.facade.converter.CommentConverter;
 import com.ucv.codetech.facade.converter.CourseConverter;
 import com.ucv.codetech.facade.converter.LectureConverter;
-import com.ucv.codetech.model.Category;
-import com.ucv.codetech.model.Course;
-import com.ucv.codetech.model.Lecture;
+import com.ucv.codetech.model.*;
+import com.ucv.codetech.repository.StudentRepository;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.service.CourseService;
 import com.ucv.codetech.service.file.FileService;
+import com.ucv.codetech.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +34,9 @@ public class CourseFacade {
     private final FileService fileService;
     private final CourseConverter courseConverter;
     private final LectureConverter lectureConverter;
+    private final StudentRepository studentRepository;
+    private final CommentConverter commentConverter;
+    private final UserService userService;
 
     @Transactional
     public Long createCourse(CourseDto courseDto) {
@@ -40,11 +45,15 @@ public class CourseFacade {
                 throw new AppException("The course already exists with this name!",
                         HttpStatus.BAD_REQUEST);
             }
+            Instructor instructor = userService.getInstructor(courseDto.getInstructorName());
             Category category = categoryService.findById(courseDto.getCategoryId());
             Course course = courseConverter.courseDtoToCourse(courseDto);
+            instructor.addCourse(course);
+            course.setInstructor(instructor);
             course.setCategory(category);
             String folderName = fileService.createCourseFolder(courseDto.getName());
             course.setFolderName(folderName);
+            userService.saveInstructor(instructor);
             return courseService.createOrUpdate(course).getId();
         } catch (IOException ioException) {
             throw new AppException("Error occurred while creating the course's folder", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,5 +116,19 @@ public class CourseFacade {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+    }
+
+    @Transactional
+    public void addComment(Long id, CommentDto commentDto) {
+        Course course = courseService.getById(id);
+        Student student = studentRepository.findById(commentDto.getStudentId())
+                .orElseThrow(() -> new AppException("The student with the id " + commentDto.getStudentId() + " does not exist", HttpStatus.NOT_FOUND));
+        Comment comment = commentConverter.dtoToEntity(commentDto);
+        comment.setCourse(course);
+        comment.setStudent(student);
+        course.addComment(comment);
+        student.addComment(comment);
+        courseService.createOrUpdate(course);
+        studentRepository.save(student);
     }
 }

@@ -1,20 +1,16 @@
 package com.ucv.codetech.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Arrays;
 
-import javax.persistence.*;
+public enum Role {
+    STUDENT,
+    INSTRUCTOR;
 
-@Entity
-@Table(name = "role")
-@Setter
-@Getter
-public class Role {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "name")
-    private String name;
+    public static Role getByName(String name) {
+        return Arrays
+                .stream(values())
+                .filter(role -> name.equals(role.name()))
+                .findFirst()
+                .orElseThrow(() -> new EnumConstantNotPresentException(Role.class, name));
+    }
 }

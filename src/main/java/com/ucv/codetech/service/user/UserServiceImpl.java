@@ -3,11 +3,9 @@ package com.ucv.codetech.service.user;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;
-import com.ucv.codetech.model.Role;
 import com.ucv.codetech.model.Student;
 import com.ucv.codetech.repository.AppUserRepository;
 import com.ucv.codetech.repository.InstructorRepository;
-import com.ucv.codetech.repository.RoleRepository;
 import com.ucv.codetech.repository.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,12 @@ public class UserServiceImpl implements UserService {
     private final AppUserRepository appUserRepository;
     private final StudentRepository studentRepository;
     private final InstructorRepository instructorRepository;
-    private final RoleRepository roleRepository;
+
+    @Override
+    public AppUser getAppUser(String name) {
+        return appUserRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException("The user with the name " + name + " does not exist", HttpStatus.NOT_FOUND));
+    }
 
     @Override
     public Instructor saveInstructor(Instructor instructor) {
@@ -32,6 +35,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Instructor getInstructor(String name) {
         return instructorRepository.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public Instructor getInstructor(Long id) {
+        return instructorRepository.findById(id).orElseThrow(() -> new AppException("The instructor with the id " + id + " has not been found", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -45,16 +53,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Role saveRole(Role role) {
-        return roleRepository.save(role);
+    public Student getStudent(Long id) {
+        return studentRepository.findById(id).orElseThrow(() -> new AppException("The student with the id " + id + " has not been found", HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
-        AppUser appUser = appUserRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException("The user with name " + username + " has not been found", HttpStatus.NOT_FOUND));
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new AppException("The role with name " + roleName + " has not been found", HttpStatus.NOT_FOUND));
-        appUser.addRole(role);
+    public boolean userExistsByName(String name) {
+        return appUserRepository.existsByUsername(name);
+    }
+
+    @Override
+    public boolean userExistsByEmail(String email) {
+        return appUserRepository.existsByEmail(email);
     }
 }

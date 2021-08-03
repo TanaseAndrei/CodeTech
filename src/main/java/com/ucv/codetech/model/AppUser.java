@@ -6,8 +6,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Entity
 @Table(name = "app_user")
@@ -32,8 +30,8 @@ public class AppUser {
     @Column(name = "registration_date")
     private String registrationDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<Role> roles = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Transient
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
@@ -41,9 +39,5 @@ public class AppUser {
     @PrePersist
     private void initEntity() {
         this.registrationDate = LocalDateTime.now().format(dateTimeFormatter);
-    }
-
-    public void addRole(Role role) {
-        roles.add(role);
     }
 }
