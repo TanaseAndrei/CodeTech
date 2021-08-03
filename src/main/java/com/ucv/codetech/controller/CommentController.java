@@ -1,5 +1,6 @@
 package com.ucv.codetech.controller;
 
+import com.ucv.codetech.controller.model.input.UpdateCommentDto;
 import com.ucv.codetech.facade.CommentFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,8 @@ public class CommentController {
     //TODO here a dto will be needed to update the description
     @PatchMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void edit(@PathVariable("id") Long id, @RequestBody String description) {
-        commentFacade.editComment(id, description);
+    public void edit(@PathVariable("id") Long id, @RequestBody UpdateCommentDto updateComment) {
+        commentFacade.editComment(id, updateComment);
     }
 
     //TODO for upvoting and downvoting, we need to save the user too because an user, have to upvote only once for a comment, not twice

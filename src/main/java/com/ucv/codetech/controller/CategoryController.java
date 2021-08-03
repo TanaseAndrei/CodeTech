@@ -1,11 +1,11 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
+import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
 import com.ucv.codetech.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +23,10 @@ public class CategoryController {
         return categoryFacade.createOrUpdate(categoryDto);
     }
 
-    //TODO PUT for updating a category
+    @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void editCateogry(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
+        categoryFacade.edit(id, updateCategory);
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)

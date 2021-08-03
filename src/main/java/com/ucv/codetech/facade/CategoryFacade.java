@@ -1,6 +1,7 @@
 package com.ucv.codetech.facade;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
+import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.facade.converter.CategoryConverter;
@@ -34,5 +35,9 @@ public class CategoryFacade {
 
     public void deleteById(Long id) {
         categoryService.deleteById(id);
+    }
+
+    public void edit(Long id, UpdateCategoryDto updateCategory) {
+        categoryService.edit(id, updateCategory.getName());
     }
 }

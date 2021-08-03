@@ -1,6 +1,7 @@
 package com.ucv.codetech.facade;
 
 import com.ucv.codetech.StartupComponent.Facade;
+import com.ucv.codetech.controller.model.input.UpdateCommentDto;
 import com.ucv.codetech.model.Comment;
 import com.ucv.codetech.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,8 @@ public class CommentFacade {
         return commentService.getCommentById(id);
     }
 
-    public void editComment(Long id, String description) {
-        commentService.edit(id, description);
+    public void editComment(Long id, UpdateCommentDto updateComment) {
+        commentService.edit(id, updateComment.getDescription());
     }
 
     public void deleteComment(Long id) {
