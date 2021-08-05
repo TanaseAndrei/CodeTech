@@ -1,5 +1,6 @@
 package com.ucv.codetech.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Table(name = "answer")
 @Setter
 @Getter
+@EqualsAndHashCode
 public class Answer {
 
     @Id
@@ -24,4 +26,9 @@ public class Answer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
+
+    @PreRemove
+    public void deleteParent() {
+        this.question = null;
+    }
 }

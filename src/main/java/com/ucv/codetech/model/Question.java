@@ -1,5 +1,6 @@
 package com.ucv.codetech.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,13 +12,14 @@ import java.util.List;
 @Table(name = "question")
 @Setter
 @Getter
+@EqualsAndHashCode
 public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
@@ -37,7 +39,6 @@ public class Question {
 
     @PreRemove
     public void deleteParent() {
-        quiz.getQuestions().remove(this);
         this.quiz = null;
     }
 }

@@ -137,6 +137,9 @@ public class CourseFacade {
 
     @Transactional
     public void createQuiz(Long id, QuizDto quizDto) {
+        if(courseService.hasQuiz(id)) {
+            throw new AppException("The course already has an associated quiz", HttpStatus.BAD_REQUEST);
+        }
         Course course = courseService.getById(id);
         Quiz quiz = quizConverter.quizDtoToEntity(quizDto);
         course.setQuiz(quiz);
