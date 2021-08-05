@@ -28,5 +28,8 @@ public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseD
     @JsonIgnore
     private String coverImageName;
 
+    @JsonIgnore
+    private Long quizId;
+
     private List<DisplayLectureDto> displayLectureDtos;
 }

@@ -72,13 +72,18 @@ public class CourseController {
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public FullDisplayCourseDto getCourse(@PathVariable("id") Long id) {
         FullDisplayCourseDto fullDisplayCourseDto = courseFacade.getById(id);
-        fullDisplayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(fullDisplayCourseDto.getName(),
-                fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
+        if (fullDisplayCourseDto.getCoverImageName() != null) {
+            fullDisplayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(fullDisplayCourseDto.getName(),
+                    fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
+        }
         for (DisplayLectureDto displayLectureDto : fullDisplayCourseDto.getDisplayLectureDtos()) {
             for (String lectureFileName : displayLectureDto.getLectureFileNames()) {
                 displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), lectureFileName)).withRel(LinkRelation.of("file")));
             }
             displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), displayLectureDto.getLectureVideoName())).withRel(LinkRelation.of("video")));
+        }
+        if (fullDisplayCourseDto.getQuizId() != null) {
+            fullDisplayCourseDto.add(linkTo(methodOn(QuizController.class).getQuiz(fullDisplayCourseDto.getQuizId())).withRel(LinkRelation.of("quiz")));
         }
         return fullDisplayCourseDto;
     }
@@ -88,7 +93,9 @@ public class CourseController {
         List<DisplayCourseDto> displayCourseDtos = courseFacade.getAll();
         for (DisplayCourseDto displayCourseDto : displayCourseDtos) {
             displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
-            displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+            if (displayCourseDto.getCoverImageName() != null) {
+                displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+            }
         }
         return displayCourseDtos;
     }
