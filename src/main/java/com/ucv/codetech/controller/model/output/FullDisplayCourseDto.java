@@ -17,6 +17,8 @@ public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseD
 
     private String instructorName;
 
+    private String description;
+
     private int enrolledStudents;
 
     private int numberOfLectures;

@@ -4,11 +4,13 @@ import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
+import com.ucv.codetech.controller.model.input.QuizDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.facade.converter.CommentConverter;
 import com.ucv.codetech.facade.converter.CourseConverter;
 import com.ucv.codetech.facade.converter.LectureConverter;
+import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.repository.StudentRepository;
 import com.ucv.codetech.service.CategoryService;
@@ -34,6 +36,7 @@ public class CourseFacade {
     private final FileService fileService;
     private final CourseConverter courseConverter;
     private final LectureConverter lectureConverter;
+    private final QuizConverter quizConverter;
     private final StudentRepository studentRepository;
     private final CommentConverter commentConverter;
     private final UserService userService;
@@ -130,5 +133,14 @@ public class CourseFacade {
         student.addComment(comment);
         courseService.createOrUpdate(course);
         studentRepository.save(student);
+    }
+
+    @Transactional
+    public void createQuiz(Long id, QuizDto quizDto) {
+        Course course = courseService.getById(id);
+        Quiz quiz = quizConverter.quizDtoToEntity(quizDto);
+        course.setQuiz(quiz);
+        quiz.setCourse(course);
+        courseService.createOrUpdate(course);
     }
 }

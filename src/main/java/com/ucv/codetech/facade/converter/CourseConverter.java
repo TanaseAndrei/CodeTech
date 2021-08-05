@@ -56,6 +56,7 @@ public class CourseConverter {
         fullDisplayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
         fullDisplayCourseDto.setInstructorName(course.getInstructor().getUsername());
         fullDisplayCourseDto.setName(course.getName());
+        fullDisplayCourseDto.setDescription(course.getDescription());
         fullDisplayCourseDto.setComments(commentConverter.entitiesToDisplayCommentDtos(course.getComments()));
         fullDisplayCourseDto.setDisplayLectureDtos(course.getLectures().stream().map(lectureConverter::lectureToDisplayLectureDto).collect(Collectors.toList()));
         return fullDisplayCourseDto;

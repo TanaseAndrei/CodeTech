@@ -3,6 +3,7 @@ package com.ucv.codetech.controller;
 import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
+import com.ucv.codetech.controller.model.input.QuizDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.DisplayLectureDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
@@ -33,15 +34,27 @@ public class CourseController {
         return courseFacade.createCourse(courseDto);
     }
 
+    @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
+        courseFacade.addComment(id, commentDto);
+    }
+
+    @PostMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void uploadLectures(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
+        courseFacade.createLecture(courseId, lectureDto);
+    }
+
+    @PostMapping(path = "/{id}/quiz", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
+        courseFacade.createQuiz(id, quizDto);
+    }
+
     @PatchMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
         courseFacade.addCourseCover(multipartFile, id);
-    }
-
-    @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
-        courseFacade.addComment(id, commentDto);
     }
 
     @PatchMapping(path = "/{id}/enable")
@@ -54,12 +67,6 @@ public class CourseController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void disableCourse(@PathVariable Long id) {
         courseFacade.disableCourse(id);
-    }
-
-    @PatchMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void uploadCourseLectures(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
-        courseFacade.createLecture(courseId, lectureDto);
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

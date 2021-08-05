@@ -31,6 +31,9 @@ public class Course {
     @Column(name = "description")
     private String description;
 
+    @OneToOne(mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    private Quiz quiz;
+
     @OneToOne
     private Category category;
 

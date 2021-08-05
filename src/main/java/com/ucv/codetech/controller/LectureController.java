@@ -26,7 +26,7 @@ public class LectureController {
     public ResponseEntity<Resource> zipLectureFiles(@PathVariable("lectureId") Long lectureId) {
         Resource resource = lectureFacade.zipLectureFiles(lectureId);
         MediaType mediaType = MediaTypeFactory.getMediaType(resource)
-                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.INTERNAL_SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
     }
 
@@ -34,7 +34,7 @@ public class LectureController {
     public ResponseEntity<Resource> downloadFile(@PathVariable("lectureId") Long lectureId, @PathVariable("fileName") String fileName) {
         Resource resource = lectureFacade.downloadLectureFile(lectureId, fileName);
         MediaType mediaType = MediaTypeFactory.getMediaType(resource)
-                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.INTERNAL_SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
     }
 

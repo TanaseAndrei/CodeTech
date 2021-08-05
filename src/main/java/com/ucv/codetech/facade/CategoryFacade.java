@@ -18,7 +18,7 @@ public class CategoryFacade {
     private final CategoryService categoryService;
     private final CategoryConverter categoryConverter;
 
-    public Long createOrUpdate(CategoryDto categoryDto) {
+    public Long create(CategoryDto categoryDto) {
         Category category = categoryConverter.categoryDtoToCategory(categoryDto);
         return categoryService.createOrUpdate(category).getId();
     }

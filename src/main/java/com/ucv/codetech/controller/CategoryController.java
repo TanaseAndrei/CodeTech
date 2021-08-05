@@ -20,7 +20,7 @@ public class CategoryController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryFacade.createOrUpdate(categoryDto);
+        return categoryFacade.create(categoryDto);
     }
 
     @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
