@@ -23,4 +23,8 @@ public class QuizRepositoryGateway {
     public boolean existsQuiz(Long id) {
         return quizRepository.existsById(id);
     }
+
+    public void saveOrUpdate(Quiz quiz) {
+        quizRepository.save(quiz);
+    }
 }

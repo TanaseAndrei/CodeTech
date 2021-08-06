@@ -24,10 +24,25 @@ public class QuizConverter {
         return quiz;
     }
 
+    public Question questionDtoToEntity(QuestionDto questionDto) {
+        Question question = new Question();
+        question.setQuestionContent(questionDto.getQuestion());
+        List<Answer> answers = answerDtosToEntities(questionDto.getAnswers());
+        answers.forEach(question::addAnswer);
+        return question;
+    }
+
     public DisplayQuizDto entityToDisplayQuizDto(Quiz quiz) {
         DisplayQuizDto displayQuizDto = new DisplayQuizDto();
         displayQuizDto.setQuestions(entitiesToDisplayQuestionDtos(quiz.getQuestions()));
         return displayQuizDto;
+    }
+
+    public Answer answerDtoToEntity(AnswerDto answerDto) {
+        Answer answer = new Answer();
+        answer.setCorrectAnswer(answerDto.isCorrectAnswer());
+        answer.setDescription(answerDto.getAnswer());
+        return answer;
     }
 
     private List<Question> questionDtosToEntities(List<QuestionDto> questions) {
@@ -37,26 +52,11 @@ public class QuizConverter {
                 .collect(Collectors.toList());
     }
 
-    private Question questionDtoToEntity(QuestionDto questionDto) {
-        Question question = new Question();
-        question.setQuestionContent(questionDto.getQuestion());
-        List<Answer> answers = answerDtosToEntities(questionDto.getAnswers());
-        answers.forEach(question::addAnswer);
-        return question;
-    }
-
     private List<Answer> answerDtosToEntities(List<AnswerDto> answers) {
         return answers
                 .stream()
                 .map(this::answerDtoToEntity)
                 .collect(Collectors.toList());
-    }
-
-    private Answer answerDtoToEntity(AnswerDto answerDto) {
-        Answer answer = new Answer();
-        answer.setCorrectAnswer(answerDto.isCorrectAnswer());
-        answer.setDescription(answerDto.getAnswer());
-        return answer;
     }
 
     private List<DisplayQuestionDto> entitiesToDisplayQuestionDtos(List<Question> questions) {

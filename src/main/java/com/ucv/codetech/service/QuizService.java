@@ -13,6 +13,10 @@ public class QuizService {
 
     private final QuizRepositoryGateway quizRepositoryGateway;
 
+    public void saveOrUpdate(Quiz quiz) {
+        quizRepositoryGateway.saveOrUpdate(quiz);
+    }
+
     public Quiz findById(Long id) {
         return quizRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The quiz with id " + id + " does not exist", HttpStatus.NOT_FOUND));

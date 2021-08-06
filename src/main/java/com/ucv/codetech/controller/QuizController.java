@@ -1,5 +1,6 @@
 package com.ucv.codetech.controller;
 
+import com.ucv.codetech.controller.model.input.QuestionDto;
 import com.ucv.codetech.controller.model.output.DisplayQuizDto;
 import com.ucv.codetech.facade.QuizFacade;
 import lombok.AllArgsConstructor;
@@ -12,9 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class QuizController {
 
-    //TODO implement the flow for quizzes: getById, getAll, delete a quizz + for its subentities like question and answer
-    //TODO implement endpoint to check if answer is correct
     private final QuizFacade quizFacade;
+
+    @PostMapping(path = "/{id}/add-question", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addQuestion(@PathVariable("id") Long id, @RequestBody QuestionDto questionDto) {
+        quizFacade.addQuestion(id, questionDto);
+    }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public DisplayQuizDto getQuiz(@PathVariable("id") Long id) {
