@@ -7,6 +7,7 @@ import com.ucv.codetech.controller.model.input.QuizDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.DisplayLectureDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
+import com.ucv.codetech.controller.swagger.CourseApi;
 import com.ucv.codetech.facade.CourseFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.LinkRelation;
@@ -24,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping(path = "/courses")
 @AllArgsConstructor
-public class CourseController {
+public class CourseController implements CourseApi {
 
     private final CourseFacade courseFacade;
 
@@ -72,19 +73,9 @@ public class CourseController {
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public FullDisplayCourseDto getCourse(@PathVariable("id") Long id) {
         FullDisplayCourseDto fullDisplayCourseDto = courseFacade.getById(id);
-        if (fullDisplayCourseDto.getCoverImageName() != null) {
-            fullDisplayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(fullDisplayCourseDto.getName(),
-                    fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
-        }
-        for (DisplayLectureDto displayLectureDto : fullDisplayCourseDto.getDisplayLectureDtos()) {
-            for (String lectureFileName : displayLectureDto.getLectureFileNames()) {
-                displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), lectureFileName)).withRel(LinkRelation.of("file")));
-            }
-            displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), displayLectureDto.getLectureVideoName())).withRel(LinkRelation.of("video")));
-        }
-        if (fullDisplayCourseDto.getQuizId() != null) {
-            fullDisplayCourseDto.add(linkTo(methodOn(QuizController.class).getQuiz(fullDisplayCourseDto.getQuizId())).withRel(LinkRelation.of("quiz")));
-        }
+        addHateoasFullCourseCoverImage(fullDisplayCourseDto);
+        addHateoasLectures(fullDisplayCourseDto);
+        addHateoasQuiz(fullDisplayCourseDto);
         return fullDisplayCourseDto;
     }
 
@@ -92,17 +83,55 @@ public class CourseController {
     public List<DisplayCourseDto> getAllCourses() {
         List<DisplayCourseDto> displayCourseDtos = courseFacade.getAll();
         for (DisplayCourseDto displayCourseDto : displayCourseDtos) {
-            displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
-            if (displayCourseDto.getCoverImageName() != null) {
-                displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
-            }
+            addHateoasCourseSelfRel(displayCourseDto);
+            addHateoasDisplayCourse(displayCourseDto);
         }
         return displayCourseDtos;
+    }
+
+    private void addHateoasDisplayCourse(DisplayCourseDto displayCourseDto) {
+        if (displayCourseDto.getCoverImageName() != null) {
+            displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+        }
+    }
+
+    private void addHateoasCourseSelfRel(DisplayCourseDto displayCourseDto) {
+        displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteCourse(@PathVariable("id") Long id) {
         courseFacade.deleteCourse(id);
+    }
+
+    private void addHateoasQuiz(FullDisplayCourseDto fullDisplayCourseDto) {
+        if (fullDisplayCourseDto.getQuizId() != null) {
+            fullDisplayCourseDto.add(linkTo(methodOn(QuizController.class).getQuiz(fullDisplayCourseDto.getQuizId())).withRel(LinkRelation.of("quiz")));
+        }
+    }
+
+    private void addHateoasLectures(FullDisplayCourseDto fullDisplayCourseDto) {
+        for (DisplayLectureDto displayLectureDto : fullDisplayCourseDto.getDisplayLectureDtos()) {
+            addHateoasFile(displayLectureDto);
+            addHateoasVideo(displayLectureDto);
+        }
+    }
+
+    private void addHateoasFile(DisplayLectureDto displayLectureDto) {
+        for (String lectureFileName : displayLectureDto.getLectureFileNames()) {
+            displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), lectureFileName)).withRel(LinkRelation.of("file")));
+        }
+    }
+
+    private void addHateoasVideo(DisplayLectureDto displayLectureDto) {
+        displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), displayLectureDto.getLectureVideoName())).withRel(LinkRelation.of("video")));
+    }
+
+    private void addHateoasFullCourseCoverImage(FullDisplayCourseDto fullDisplayCourseDto) {
+        if (fullDisplayCourseDto.getCoverImageName() != null) {
+            fullDisplayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(fullDisplayCourseDto.getName(),
+                    fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
+        }
     }
 }

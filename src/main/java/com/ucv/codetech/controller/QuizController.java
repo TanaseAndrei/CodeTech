@@ -2,6 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.QuestionDto;
 import com.ucv.codetech.controller.model.output.DisplayQuizDto;
+import com.ucv.codetech.controller.swagger.QuizApi;
 import com.ucv.codetech.facade.QuizFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/quiz")
 @AllArgsConstructor
-public class QuizController {
+public class QuizController implements QuizApi {
 
     private final QuizFacade quizFacade;
 

@@ -1,6 +1,7 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.UpdateAnswerDto;
+import com.ucv.codetech.controller.swagger.AnswerApi;
 import com.ucv.codetech.facade.AnswerFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/answers")
 @AllArgsConstructor
-public class AnswerController {
+public class AnswerController implements AnswerApi {
 
     private final AnswerFacade answerFacade;
 

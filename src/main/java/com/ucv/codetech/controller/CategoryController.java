@@ -2,6 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
+import com.ucv.codetech.controller.swagger.CategoryApi;
 import com.ucv.codetech.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 @AllArgsConstructor
-public class CategoryController {
+public class CategoryController implements CategoryApi {
 
     private final CategoryFacade categoryFacade;
 

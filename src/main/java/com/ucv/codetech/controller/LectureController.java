@@ -1,6 +1,7 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.exception.AppException;
+import com.ucv.codetech.controller.swagger.LectureApi;
 import com.ucv.codetech.facade.LectureFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -13,7 +14,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @RestController
 @RequestMapping("/lectures")
 @AllArgsConstructor
-public class LectureController {
+public class LectureController implements LectureApi {
 
     private final LectureFacade lectureFacade;
 

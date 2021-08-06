@@ -1,6 +1,7 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.UpdateCommentDto;
+import com.ucv.codetech.controller.swagger.CommentApi;
 import com.ucv.codetech.facade.CommentFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/comments")
 @AllArgsConstructor
-public class CommentController {
+public class CommentController implements CommentApi {
 
     private final CommentFacade commentFacade;
 

@@ -2,6 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
+import com.ucv.codetech.controller.swagger.UserApi;
 import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
 
     private final UserFacade userFacade;
 
@@ -26,6 +27,6 @@ public class UserController {
         return userFacade.registerInstructor(instructorDto);
     }
 
-    //TODO verificari pentru student si instructor
-    //TODO login with jwt
+    //TODO check for an user (student/instructor)
+    //TODO jwt
 }
