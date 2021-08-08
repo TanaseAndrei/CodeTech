@@ -11,13 +11,9 @@ public interface UserService {
 
     Instructor getInstructor(String name);
 
-    Instructor getInstructor(Long id);
-
     Student saveStudent(Student student);
 
     Student getStudent(String name);
-
-    Student getStudent(Long id);
 
     boolean userExistsByName(String name);
 

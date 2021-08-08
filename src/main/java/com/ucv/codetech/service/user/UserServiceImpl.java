@@ -3,23 +3,40 @@ package com.ucv.codetech.service.user;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;
+import com.ucv.codetech.model.Role;
 import com.ucv.codetech.model.Student;
 import com.ucv.codetech.repository.AppUserRepository;
 import com.ucv.codetech.repository.InstructorRepository;
 import com.ucv.codetech.repository.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Service
 @AllArgsConstructor
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final AppUserRepository appUserRepository;
     private final StudentRepository studentRepository;
     private final InstructorRepository instructorRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser appUser = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException("The user with name " + username + " does not exist", HttpStatus.NOT_FOUND));
+        return new org.springframework.security.core.userdetails.User(appUser.getUsername(), appUser.getPassword(), getAppUserAuthority(appUser.getRole()));
+
+    }
 
     @Override
     public AppUser getAppUser(String name) {
@@ -38,11 +55,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Instructor getInstructor(Long id) {
-        return instructorRepository.findById(id).orElseThrow(() -> new AppException("The instructor with the id " + id + " has not been found", HttpStatus.NOT_FOUND));
-    }
-
-    @Override
     public Student saveStudent(Student student) {
         return studentRepository.save(student);
     }
@@ -53,11 +65,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Student getStudent(Long id) {
-        return studentRepository.findById(id).orElseThrow(() -> new AppException("The student with the id " + id + " has not been found", HttpStatus.NOT_FOUND));
-    }
-
-    @Override
     public boolean userExistsByName(String name) {
         return appUserRepository.existsByUsername(name);
     }
@@ -65,5 +72,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean userExistsByEmail(String email) {
         return appUserRepository.existsByEmail(email);
+    }
+
+    private Collection<? extends GrantedAuthority> getAppUserAuthority(Role role) {
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 }
