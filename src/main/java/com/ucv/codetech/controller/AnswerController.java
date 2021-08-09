@@ -20,7 +20,7 @@ public class AnswerController implements AnswerApi {
 
     private final AnswerFacade answerFacade;
 
-    @PreAuthorize("hasAnyRole('ROLE_INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto, Principal principal) {
@@ -28,14 +28,14 @@ public class AnswerController implements AnswerApi {
         answerFacade.update(id, updateAnswerDto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
         answerFacade.delete(id);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{id}/is-correct", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean isCorrect(@PathVariable("id") Long id, Principal principal) {
         log.info("Student {} is trying to access is-correct", principal.getName());
