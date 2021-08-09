@@ -75,6 +75,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> getAppUserAuthority(Role role) {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 }

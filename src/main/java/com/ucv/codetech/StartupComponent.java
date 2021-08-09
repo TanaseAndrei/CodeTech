@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 @Slf4j
 public class StartupComponent implements CommandLineRunner {
 
-
     @Value("${application.base-folder}")
     private String applicationBaseFolder;
 

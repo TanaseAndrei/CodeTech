@@ -17,9 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.PUT;
-
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -38,8 +35,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login", "/users/**").permitAll()
-                .antMatchers(PUT, "/api/answers/(\\d+)").hasAnyAuthority("ROLE_INSTRUCTOR")
-                .antMatchers(GET, "/api/answers/(\\d+)/is-correct").hasAnyAuthority("ROLE_STUDENT")
+                .antMatchers("/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new CustomAuthenticationFilter(authenticationManagerBean())) //used to return a jwt when logging in

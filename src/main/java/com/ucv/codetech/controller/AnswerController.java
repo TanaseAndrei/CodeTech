@@ -20,18 +20,22 @@ public class AnswerController implements AnswerApi {
 
     private final AnswerFacade answerFacade;
 
+    @PreAuthorize("hasAnyRole('ROLE_INSTRUCTOR')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto) {
+    public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto, Principal principal) {
+        log.info("Instructor {} is trying to access put method", principal.getName());
         answerFacade.update(id, updateAnswerDto);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
         answerFacade.delete(id);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT')")
     @GetMapping(path = "/{id}/is-correct", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean isCorrect(@PathVariable("id") Long id, Principal principal) {
         log.info("Student {} is trying to access is-correct", principal.getName());

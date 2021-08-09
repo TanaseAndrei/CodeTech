@@ -10,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class AppExceptionConverter {
         validationExceptionDto.setMessage("Some fields are not valid");
         Map<String, String> fieldsWithErrors = new LinkedHashMap<>();
         methodArgumentNotValidException.getBindingResult().getAllErrors().forEach(objectError -> {
-            String fieldName = ((FieldError)objectError).getField();
+            String fieldName = ((FieldError) objectError).getField();
             String errorMessage = objectError.getDefaultMessage();
             fieldsWithErrors.put(fieldName, errorMessage);
         });

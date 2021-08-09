@@ -75,7 +75,6 @@ public class CourseService {
                 .orElseThrow(() -> new AppException("The course does not have an associated folder!", HttpStatus.NOT_FOUND));
     }
 
-
     public boolean hasQuiz(Long id) {
         Course course = getById(id);
         return course.getQuiz() != null;
