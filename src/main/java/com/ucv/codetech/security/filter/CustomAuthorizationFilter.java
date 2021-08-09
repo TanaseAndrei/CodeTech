@@ -37,7 +37,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         //if the incoming request has the path /api/login, we pass the request to the next filter chain
         //if the user is trying to login, don't do anything, let the request go through
         String servletPath = request.getServletPath();
-        if ("/users/register".equals(servletPath) || "/login".equals(servletPath) || "/users/refresh-token".equals(servletPath)) {
+        if ("/users/register".equals(servletPath) || "/auth/login".equals(servletPath) || "/users/refresh-token".equals(servletPath)) {
             filterChain.doFilter(request, response);
         } else { //here start the checks for authorizationn
             String authorizationHeader = request.getHeader(AUTHORIZATION);

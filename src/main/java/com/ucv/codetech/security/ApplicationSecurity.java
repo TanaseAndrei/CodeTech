@@ -33,12 +33,14 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
                 .antMatchers("/login", "/users/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new CustomAuthenticationFilter(authenticationManagerBean())) //used to return a jwt when logging in
+                .addFilter(customAuthenticationFilter) //used to return a jwt when logging in
                 .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) //used to intercept a request, taking its jwt and validating
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
