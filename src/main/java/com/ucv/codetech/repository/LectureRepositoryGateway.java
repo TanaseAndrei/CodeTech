@@ -42,4 +42,8 @@ public class LectureRepositoryGateway {
     public Optional<Lecture> getById(Long id) {
         return lectureRepository.findById(id);
     }
+
+    public boolean lectureExistsInCourse(String lectureName, Long id) {
+        return lectureRepository.existsByNameAndCourseId(lectureName, id);
+    }
 }

@@ -56,12 +56,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //this "secret" should be saved somewhere safe encrypted, then decrypt when using it here, but right now it is ok like this
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 5 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         Map<String, String> headerTokens = new HashMap<>();
         headerTokens.put("access_token", accessToken);

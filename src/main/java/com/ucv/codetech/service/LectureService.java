@@ -1,6 +1,7 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
+import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.repository.LectureRepositoryGateway;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,10 @@ public class LectureService {
         Lecture lecture = lectureRepositoryGateway.getById(id)
                 .orElseThrow(() -> new AppException("The lecture does not exist", HttpStatus.NOT_FOUND));
         return lecture.getLectureVideoName();
+    }
+
+    public boolean lectureExistsInCourse(String lectureName, Long id) {
+        return lectureRepositoryGateway.lectureExistsInCourse(lectureName, id);
     }
 
     public boolean fileExistsInLecture(String fileName, Long id) {

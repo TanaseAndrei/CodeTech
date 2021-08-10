@@ -19,4 +19,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     @Query("SELECT lecture.course.folderName FROM Lecture lecture WHERE lecture.id = :lectureId")
     Optional<String> getAssociatedCourseFolder(@Param("lectureId") Long id);
+
+    boolean existsByNameAndCourseId(String lectureName, Long id);
 }

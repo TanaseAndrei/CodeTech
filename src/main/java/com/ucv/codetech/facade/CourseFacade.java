@@ -15,15 +15,19 @@ import com.ucv.codetech.model.*;
 import com.ucv.codetech.repository.StudentRepository;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.service.CourseService;
+import com.ucv.codetech.service.EnrolledCourseService;
+import com.ucv.codetech.service.LectureService;
 import com.ucv.codetech.service.file.FileService;
 import com.ucv.codetech.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ucv.codetech.StartupComponent.Facade;
 
@@ -31,7 +35,9 @@ import static com.ucv.codetech.StartupComponent.Facade;
 @AllArgsConstructor
 public class CourseFacade {
 
+    private final LectureService lectureService;
     private final CourseService courseService;
+    private final EnrolledCourseService enrolledCourseService;
     private final CategoryService categoryService;
     private final FileService fileService;
     private final CourseConverter courseConverter;
@@ -42,13 +48,13 @@ public class CourseFacade {
     private final UserService userService;
 
     @Transactional
-    public Long createCourse(CourseDto courseDto) {
+    public Long createCourse(CourseDto courseDto, Principal principal) {
         try {
             if (courseService.courseExistsByName(courseDto.getName())) {
                 throw new AppException("The course already exists with this name!",
                         HttpStatus.BAD_REQUEST);
             }
-            Instructor instructor = userService.getInstructor(courseDto.getInstructorName());
+            Instructor instructor = userService.getInstructor(principal.getName());
             Category category = categoryService.findById(courseDto.getCategoryId());
             Course course = courseConverter.courseDtoToCourse(courseDto);
             instructor.addCourse(course);
@@ -96,8 +102,11 @@ public class CourseFacade {
     }
 
     @Transactional
-    public void createLecture(Long courseId, LectureDto lectureDto) {
+    public Long createLecture(Long courseId, LectureDto lectureDto) {
         try {
+            if(lectureService.lectureExistsInCourse(lectureDto.getName(), courseId)) {
+                throw new AppException("A lecture with the name " + lectureDto.getName() + " already exists in the course", HttpStatus.BAD_REQUEST);
+            }
             Course course = courseService.getById(courseId);
             String lectureVideoName = fileService.moveFile(lectureDto.getLectureVideo(), course.getFolderName());
             Lecture lecture = lectureConverter.lectureDtoToLecture(lectureDto);
@@ -105,8 +114,10 @@ public class CourseFacade {
             lecture.setCourse(course);
             course.addLecture(lecture);
             courseService.createOrUpdate(course);
-        } catch (IOException e) {
-            e.printStackTrace();
+            return lecture.getId();
+        } catch (IOException ioException) {
+            throw new AppException("Something went wrong while creating the video to the course with id: " + courseId,
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -122,7 +133,7 @@ public class CourseFacade {
     }
 
     @Transactional
-    public void addComment(Long id, CommentDto commentDto) {
+    public Long addComment(Long id, CommentDto commentDto) {
         Course course = courseService.getById(id);
         Student student = studentRepository.findById(commentDto.getStudentId())
                 .orElseThrow(() -> new AppException("The student with the id " + commentDto.getStudentId() + " does not exist", HttpStatus.NOT_FOUND));
@@ -133,10 +144,11 @@ public class CourseFacade {
         student.addComment(comment);
         courseService.createOrUpdate(course);
         studentRepository.save(student);
+        return comment.getId();
     }
 
     @Transactional
-    public void createQuiz(Long id, QuizDto quizDto) {
+    public Long createQuiz(Long id, QuizDto quizDto) {
         if(courseService.hasQuiz(id)) {
             throw new AppException("The course already has an associated quiz", HttpStatus.BAD_REQUEST);
         }
@@ -145,5 +157,40 @@ public class CourseFacade {
         course.setQuiz(quiz);
         quiz.setCourse(course);
         courseService.createOrUpdate(course);
+        return quiz.getId();
+    }
+
+    @Transactional
+    public void enrollToCourse(Long id, String username) {
+        Course course = courseService.getById(id);
+        Student student = userService.getStudent(username);
+        if(course.getEnrolledStudents().contains(student)) {
+            throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(), HttpStatus.BAD_REQUEST);
+        }
+        student.enrollCourse(courseToEnrolledCourse(course, student));
+        userService.saveStudent(student);
+    }
+
+    private EnrolledCourse courseToEnrolledCourse(Course course, Student student) {
+        EnrolledCourse enrolledCourse = new EnrolledCourse();
+        enrolledCourse.setCourse(course);
+        enrolledCourse.setStudent(student);
+        List<LectureWrapper> lectureWrappers = lecturesToLectureWrappers(course.getLectures());
+        lectureWrappers.forEach(enrolledCourse::addLectureWrapper);
+        enrolledCourse.setLectureWrappers(lectureWrappers);
+        return enrolledCourse;
+    }
+
+    private List<LectureWrapper> lecturesToLectureWrappers(List<Lecture> lectures) {
+        return lectures
+                .stream()
+                .map(this::lectureToLectureWrapper)
+                .collect(Collectors.toList());
+    }
+
+    private LectureWrapper lectureToLectureWrapper(Lecture lecture) {
+        LectureWrapper lectureWrapper = new LectureWrapper();
+        lectureWrapper.setLecture(lecture);
+        return lectureWrapper;
     }
 }

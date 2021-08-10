@@ -37,7 +37,7 @@ public class CourseConverter {
         displayCourseDto.setNumberOfComments(course.getNumberOfComments());
         displayCourseDto.setName(course.getName());
         displayCourseDto.setInstructorName(course.getInstructor().getUsername());
-        displayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
+        displayCourseDto.setEnrolledStudents(course.getNrOfEnrolledStudents());
         displayCourseDto.setDifficulty(course.getDifficulty().toString());
         return displayCourseDto;
     }
@@ -53,7 +53,7 @@ public class CourseConverter {
         FullDisplayCourseDto fullDisplayCourseDto = new FullDisplayCourseDto();
         fullDisplayCourseDto.setNumberOfLectures(course.getLectures().size());
         fullDisplayCourseDto.setCoverImageName(course.getCoverImageName());
-        fullDisplayCourseDto.setEnrolledStudents(course.getEnrolledStudents());
+        fullDisplayCourseDto.setEnrolledStudents(course.getNrOfEnrolledStudents());
         fullDisplayCourseDto.setInstructorName(course.getInstructor().getUsername());
         fullDisplayCourseDto.setName(course.getName());
         fullDisplayCourseDto.setDescription(course.getDescription());

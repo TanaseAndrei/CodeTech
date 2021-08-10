@@ -16,11 +16,12 @@ public class QuestionFacade {
     private final QuizConverter quizConverter;
     private final QuestionService questionService;
 
-    public void addAnswer(Long id, AnswerDto answerDto) {
+    public Long addAnswer(Long id, AnswerDto answerDto) {
         Question question = questionService.findById(id);
         Answer answer = quizConverter.answerDtoToEntity(answerDto);
         question.addAnswer(answer);
         questionService.saveOrUpdate(question);
+        return answer.getId();
     }
 
     public void update(Long id, UpdateQuestionDto updateQuestionDto) {

@@ -50,7 +50,7 @@ public class TokenController {
                 Role role = appUser.getRole();
                 String accessToken = JWT.create()
                         .withSubject(appUser.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", Stream.of(role).map(Role::name).collect(Collectors.toList()))
                         .sign(algorithm);
                 Map<String, String> headerTokens = new HashMap<>();

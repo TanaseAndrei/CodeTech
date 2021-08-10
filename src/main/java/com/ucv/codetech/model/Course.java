@@ -1,5 +1,6 @@
 package com.ucv.codetech.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode
 public class Course {
 
     @Id
@@ -31,23 +33,24 @@ public class Course {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    private Quiz quiz;
-
     @OneToOne
     private Category category;
 
+    @OneToOne(mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    private Quiz quiz;
+
     @Column(name = "enrolled_students")
-    private int enrolledStudents;
+    private int nrOfEnrolledStudents;
 
     @Column(name = "creation_date")
     private String creationDate;
 
-    @Column(name = "folder_name")
-    private String folderName;
 
     @Column(name = "available")
     private boolean available;
+
+    @Column(name = "folder_name")
+    private String folderName;
 
     @Column(name = "cover_image_name")
     private String coverImageName;
@@ -55,6 +58,9 @@ public class Course {
     @Column(name = "difficulty")
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Student> enrolledStudents = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Lecture> lectures = new ArrayList<>();
@@ -74,7 +80,7 @@ public class Course {
 
     @PrePersist
     private void initEntity() {
-        this.enrolledStudents = 0;
+        this.nrOfEnrolledStudents = 0;
         this.numberOfLectures = 0;
         this.numberOfComments = 0;
         this.creationDate = LocalDateTime.now().format(dateTimeFormatter);
@@ -85,6 +91,7 @@ public class Course {
     private void update() {
         this.numberOfLectures = lectures.size();
         this.numberOfComments = comments.size();
+        this.nrOfEnrolledStudents = enrolledStudents.size();
     }
 
     public void addLecture(Lecture lecture) {

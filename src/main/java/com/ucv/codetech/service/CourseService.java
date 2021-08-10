@@ -2,6 +2,7 @@ package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.Course;
+import com.ucv.codetech.model.EnrolledCourse;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.repository.CourseRepositoryGateway;
 import com.ucv.codetech.repository.LectureRepositoryGateway;

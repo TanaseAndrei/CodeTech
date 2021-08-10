@@ -16,6 +16,14 @@ public class Student extends AppUser {
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<EnrolledCourse> enrolledCourses = new ArrayList<>();
+
+    public void enrollCourse(EnrolledCourse enrolledCourse) {
+        enrolledCourse.setStudent(this);
+        enrolledCourses.add(enrolledCourse);
+    }
+
     public void addComment(Comment comment) {
         comments.add(comment);
     }

@@ -10,6 +10,7 @@ import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
 import com.ucv.codetech.controller.swagger.CourseApi;
 import com.ucv.codetech.facade.CourseFacade;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -26,6 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping(path = "/courses")
 @AllArgsConstructor
+@Slf4j
 public class CourseController implements CourseApi {
 
     private final CourseFacade courseFacade;
@@ -33,28 +36,29 @@ public class CourseController implements CourseApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createCourse(@Valid @RequestBody CourseDto courseDto) {
-        return courseFacade.createCourse(courseDto);
+    public Long createCourse(@Valid @RequestBody CourseDto courseDto, Principal principal) {
+        return courseFacade.createCourse(courseDto, principal);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
-        courseFacade.addComment(id, commentDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
+        return courseFacade.addComment(id, commentDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void uploadLectures(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
-        courseFacade.createLecture(courseId, lectureDto);
+    public Long uploadLecture(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
+        return courseFacade.createLecture(courseId, lectureDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/quiz", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
-        courseFacade.createQuiz(id, quizDto);
+    public Long createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
+        return courseFacade.createQuiz(id, quizDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
@@ -76,6 +80,14 @@ public class CourseController implements CourseApi {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void disableCourse(@PathVariable Long id) {
         courseFacade.disableCourse(id);
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @PatchMapping(path = "/{id}/enroll")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void enrollToCourse(@PathVariable("id") Long id, Principal principal) {
+        log.info("Student {} is enrolling into course with id {}", principal.getName(), id);
+        courseFacade.enrollToCourse(id, principal.getName());
     }
 
     @PreAuthorize("hasRole('STUDENT')")

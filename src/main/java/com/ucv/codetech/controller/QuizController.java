@@ -24,7 +24,7 @@ public class QuizController implements QuizApi {
         quizFacade.addQuestion(id, questionDto);
     }
 
-    @PreAuthorize("hasRole('STUDENT')")
+    @PreAuthorize("hasRole('STUDENT, INSTRUCTOR')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public DisplayQuizDto getQuiz(@PathVariable("id") Long id) {
         return quizFacade.getQuiz(id);
