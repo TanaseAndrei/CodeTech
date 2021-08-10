@@ -16,10 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -27,17 +24,19 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * This OncerPerRequestFilter intercepts every request that comes into application
+ * This OncePerRequestFilter intercepts every request that comes into application
  */
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    private static final List<String> freeUrls = Arrays.asList("/signup/student", "/signup/instructor", "/auth/login", "/token/refresh");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //if the incoming request has the path /api/login, we pass the request to the next filter chain
         //if the user is trying to login, don't do anything, let the request go through
         String servletPath = request.getServletPath();
-        if ("/users/register".equals(servletPath) || "/auth/login".equals(servletPath) || "/users/refresh-token".equals(servletPath)) {
+        if (freeUrls.contains(servletPath)) {
             filterChain.doFilter(request, response);
         } else { //here start the checks for authorizationn
             String authorizationHeader = request.getHeader(AUTHORIZATION);

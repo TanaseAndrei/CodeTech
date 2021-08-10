@@ -36,8 +36,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
-                .antMatchers("/login", "/users/**").permitAll()
-                .antMatchers("/**").authenticated()
+                .antMatchers("/login", "/signup/**", "/token/**").permitAll()
+                .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**",
+                        "/media/**", "/questions/**", "/quiz/**", "/users/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(customAuthenticationFilter) //used to return a jwt when logging in

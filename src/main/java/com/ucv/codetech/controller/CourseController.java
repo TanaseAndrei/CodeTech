@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,47 +30,55 @@ public class CourseController implements CourseApi {
 
     private final CourseFacade courseFacade;
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCourse(@Valid @RequestBody CourseDto courseDto) {
         return courseFacade.createCourse(courseDto);
     }
 
+    @PreAuthorize("hasRole('STUDENT')")
     @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
         courseFacade.addComment(id, commentDto);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void uploadLectures(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
         courseFacade.createLecture(courseId, lectureDto);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/quiz", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
         courseFacade.createQuiz(id, quizDto);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PatchMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
         courseFacade.addCourseCover(multipartFile, id);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PatchMapping(path = "/{id}/enable")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void enableCourse(@PathVariable Long id) {
         courseFacade.enableCourse(id);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PatchMapping(path = "/{id}/disable")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void disableCourse(@PathVariable Long id) {
         courseFacade.disableCourse(id);
     }
 
+    @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public FullDisplayCourseDto getCourse(@PathVariable("id") Long id) {
         FullDisplayCourseDto fullDisplayCourseDto = courseFacade.getById(id);
@@ -79,6 +88,7 @@ public class CourseController implements CourseApi {
         return fullDisplayCourseDto;
     }
 
+    @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DisplayCourseDto> getAllCourses() {
         List<DisplayCourseDto> displayCourseDtos = courseFacade.getAll();
@@ -89,6 +99,13 @@ public class CourseController implements CourseApi {
         return displayCourseDtos;
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteCourse(@PathVariable("id") Long id) {
+        courseFacade.deleteCourse(id);
+    }
+
     private void addHateoasDisplayCourse(DisplayCourseDto displayCourseDto) {
         if (displayCourseDto.getCoverImageName() != null) {
             displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
@@ -97,12 +114,6 @@ public class CourseController implements CourseApi {
 
     private void addHateoasCourseSelfRel(DisplayCourseDto displayCourseDto) {
         displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
-    }
-
-    @DeleteMapping(path = "/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteCourse(@PathVariable("id") Long id) {
-        courseFacade.deleteCourse(id);
     }
 
     private void addHateoasQuiz(FullDisplayCourseDto fullDisplayCourseDto) {

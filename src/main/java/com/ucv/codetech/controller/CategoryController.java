@@ -7,6 +7,7 @@ import com.ucv.codetech.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +19,33 @@ public class CategoryController implements CategoryApi {
 
     private final CategoryFacade categoryFacade;
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCategory(@RequestBody CategoryDto categoryDto) {
         return categoryFacade.create(categoryDto);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void editCategory(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
         categoryFacade.edit(id, updateCategory);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CategoryDto> getAllCategories() {
         return categoryFacade.findAll();
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CategoryDto getCategory(@PathVariable Long id) {
         return categoryFacade.findById(id);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
