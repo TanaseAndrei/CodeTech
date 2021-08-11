@@ -15,11 +15,11 @@ public class CommentController implements CommentApi {
 
     private final CommentFacade commentFacade;
 
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PreAuthorize("hasRole('STUDENT')")
     @PatchMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void edit(@PathVariable("id") Long id, @RequestBody UpdateCommentDto updateComment) {
-        commentFacade.editComment(id, updateComment);
+        commentFacade.update(id, updateComment);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
@@ -36,10 +36,10 @@ public class CommentController implements CommentApi {
         commentFacade.downVote(id);
     }
 
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PreAuthorize("hasRole('STUDENT')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
-        commentFacade.deleteComment(id);
+        commentFacade.delete(id);
     }
 }

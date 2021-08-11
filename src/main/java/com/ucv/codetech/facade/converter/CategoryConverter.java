@@ -10,20 +10,23 @@ import java.util.stream.Collectors;
 @Component
 public class CategoryConverter {
 
-    public Category categoryDtoToCategory(CategoryDto categoryDto) {
+    public Category dtoToEntity(CategoryDto categoryDto) {
         Category category = new Category();
         category.setName(categoryDto.getName());
         return category;
     }
 
-    public CategoryDto categoryToCategoryDto(Category category) {
+    public List<CategoryDto> categoriesToCategoryDtos(List<Category> categories) {
+        return categories
+                .stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    public CategoryDto entityToDto(Category category) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(category.getName());
         categoryDto.setId(category.getId());
         return categoryDto;
-    }
-
-    public List<CategoryDto> categoriesToCategoryDtos(List<Category> categories) {
-        return categories.stream().map(this::categoryToCategoryDto).collect(Collectors.toList());
     }
 }

@@ -43,8 +43,8 @@ public class CourseController implements CourseApi {
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping(path = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
-        return courseFacade.addComment(id, commentDto);
+    public Long addComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto, Principal principal) {
+        return courseFacade.addComment(id, commentDto, principal.getName());
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")

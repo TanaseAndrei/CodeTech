@@ -4,15 +4,18 @@ import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
+import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentFullDisplayCourseDto;
 import com.ucv.codetech.facade.converter.AppUserConverter;
-import com.ucv.codetech.model.AppUser;
-import com.ucv.codetech.model.EnrolledCourse;
-import com.ucv.codetech.model.Instructor;
-import com.ucv.codetech.model.Student;
+import com.ucv.codetech.facade.converter.EnrolledCourseConverter;
+import com.ucv.codetech.model.*;
+import com.ucv.codetech.service.EnrolledCourseService;
+import com.ucv.codetech.service.LectureWrapperService;
 import com.ucv.codetech.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +26,8 @@ public class UserFacade {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserConverter appUserConverter;
+    private final LectureWrapperService lectureWrapperService;
+    private final EnrolledCourseConverter enrolledCourseConverter;
 
     public Long registerStudent(StudentDto studentDto) {
         validateUserName(studentDto.getUsername());
@@ -44,9 +49,17 @@ public class UserFacade {
         return userService.getAppUser(username);
     }
 
-    public List<EnrolledCourse> getEnrolledCourses(String username) {
+    public List<StudentCourseDisplayDto> getEnrolledCourses(String username) {
         Student student = userService.getStudent(username);
-        return student.getEnrolledCourses();
+        List<EnrolledCourse> enrolledCourses = student.getEnrolledCourses();
+        return enrolledCourseConverter.entitiesToStudentCourseDisplayDtos(enrolledCourses);
+    }
+
+    @Transactional
+    public void completeLecture(Long id) {
+        LectureWrapper lectureWrapper = lectureWrapperService.findById(id);
+        lectureWrapper.completeLecture();
+        lectureWrapperService.saveOrUpdate(lectureWrapper);
     }
 
     private void validateUserName(String username) {

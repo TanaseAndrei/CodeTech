@@ -13,6 +13,10 @@ public class CommentService {
 
     private final CommentRepositoryGateway commentRepositoryGateway;
 
+    public Long saveOrUpdate(Comment comment) {
+        return commentRepositoryGateway.saveOrUpdate(comment);
+    }
+
     public Comment getCommentById(Long id) {
         return commentRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The comment with id " + id + " has not been found", HttpStatus.NOT_FOUND));

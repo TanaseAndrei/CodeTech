@@ -45,7 +45,6 @@ public class Course {
     @Column(name = "creation_date")
     private String creationDate;
 
-
     @Column(name = "available")
     private boolean available;
 
@@ -59,24 +58,27 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "number_of_lectures")
+    private int numberOfLectures;
+
+    @Column(name = "nuber_of_comments")
+    private int numberOfComments;
+
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<EnrolledCourse> enrolledCourses = new ArrayList<>();
+
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Student> enrolledStudents = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Lecture> lectures = new ArrayList<>();
 
-    @Column(name = "number_of_lectures")
-    private int numberOfLectures;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "course_id")
     private List<Comment> comments = new ArrayList<>();
 
-    @Column(name = "nuber_of_comments")
-    private int numberOfComments;
-
     @Transient
-    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
     @PrePersist
     private void initEntity() {
@@ -94,11 +96,21 @@ public class Course {
         this.nrOfEnrolledStudents = enrolledStudents.size();
     }
 
+    public void enrollStudent(Student student, EnrolledCourse enrolledCourse) {
+        student.addEnrolledCourse(enrolledCourse);
+        this.enrolledStudents.add(student);
+        this.enrolledCourses.add(enrolledCourse);
+    }
+
     public void addLecture(Lecture lecture) {
-        lectures.add(lecture);
+        this.lectures.add(lecture);
+        this.numberOfLectures++;
+        lecture.setCourse(this);
     }
 
     public void addComment(Comment comment) {
-        comments.add(comment);
+        this.comments.add(comment);
+        this.numberOfComments++;
+        comment.setCourse(this);
     }
 }

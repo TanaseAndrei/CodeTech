@@ -23,13 +23,13 @@ public class LectureController implements LectureApi {
     @PatchMapping("/{id}/files")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadLectureFiles(@PathVariable("id") Long lectureId, @RequestParam("files") MultipartFile[] multipartFiles) {
-        lectureFacade.uploadLectureFiles(lectureId, multipartFiles);
+        lectureFacade.uploadFiles(lectureId, multipartFiles);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{lectureId}/zip-files")
     public ResponseEntity<Resource> zipLectureFiles(@PathVariable("lectureId") Long lectureId) {
-        Resource resource = lectureFacade.zipLectureFiles(lectureId);
+        Resource resource = lectureFacade.zipFiles(lectureId);
         MediaType mediaType = MediaTypeFactory.getMediaType(resource)
                 .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.INTERNAL_SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
@@ -38,7 +38,7 @@ public class LectureController implements LectureApi {
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{lectureId}/file/{fileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("lectureId") Long lectureId, @PathVariable("fileName") String fileName) {
-        Resource resource = lectureFacade.downloadLectureFile(lectureId, fileName);
+        Resource resource = lectureFacade.downloadFile(lectureId, fileName);
         MediaType mediaType = MediaTypeFactory.getMediaType(resource)
                 .orElseThrow(() -> new AppException("The media type could not be determined", HttpStatus.INTERNAL_SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType).headers(createHeader(resource)).body(resource);
@@ -48,14 +48,14 @@ public class LectureController implements LectureApi {
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLecture(@PathVariable("id") Long id) {
-        lectureFacade.deleteLecture(id);
+        lectureFacade.delete(id);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}/file/{fileName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLectureFile(@PathVariable("id") Long lectureId, @PathVariable("fileName") String fileName) {
-        lectureFacade.deleteLectureFile(lectureId, fileName);
+        lectureFacade.deleteFile(lectureId, fileName);
     }
 
     private HttpHeaders createHeader(Resource resource) {

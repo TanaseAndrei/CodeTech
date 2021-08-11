@@ -14,4 +14,8 @@ public class EnrolledCourseService {
     public void enroll(EnrolledCourse enrolledCourse) {
         enrolledCourseRepositoryGateway.createOrUpdate(enrolledCourse);
     }
+
+    public void saveOrUpdate(EnrolledCourse enrolledCourse) {
+        enrolledCourseRepositoryGateway.createOrUpdate(enrolledCourse);
+    }
 }

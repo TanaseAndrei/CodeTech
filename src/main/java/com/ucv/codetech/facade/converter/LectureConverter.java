@@ -10,7 +10,7 @@ import java.util.Collections;
 @Component
 public class LectureConverter {
 
-    public Lecture lectureDtoToLecture(LectureDto lectureDto) {
+    public Lecture dtoToEntity(LectureDto lectureDto) {
         Lecture lecture = new Lecture();
         lecture.setName(lectureDto.getName());
         lecture.setDescription(lectureDto.getDescription());
@@ -18,7 +18,7 @@ public class LectureConverter {
         return lecture;
     }
 
-    public DisplayLectureDto lectureToDisplayLectureDto(Lecture lecture) {
+    public DisplayLectureDto entityToDisplayLectureDto(Lecture lecture) {
         DisplayLectureDto displayLectureDto = new DisplayLectureDto();
         displayLectureDto.setId(lecture.getId());
         displayLectureDto.setLectureVideoName(lecture.getLectureVideoName());

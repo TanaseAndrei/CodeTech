@@ -1,6 +1,5 @@
 package com.ucv.codetech.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,11 +19,11 @@ public class EnrolledCourse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE})
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE})
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -37,8 +36,10 @@ public class EnrolledCourse {
     @Column(name = "number_of_completed_lectures")
     private int numberOfCompletedLectures;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "enrolled_course_id")
+    @Column(name = "is_course_completed")
+    private boolean isCourseCompleted;
+
+    @OneToMany(mappedBy = "enrolledCourse", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LectureWrapper> lectureWrappers = new ArrayList<>();
 
     @Transient
@@ -46,16 +47,24 @@ public class EnrolledCourse {
 
     @PrePersist
     public void init() {
+        this.isCourseCompleted = false;
         this.enrolledDate = LocalDateTime.now().format(dateTimeFormatter);
     }
 
     @PreUpdate
     public void update() {
-        this.numberOfLectures = lectureWrappers.size();
-        this.numberOfCompletedLectures = (int) lectureWrappers.stream().filter(LectureWrapper::isCompletedLecture).count();
+        if(numberOfCompletedLectures == numberOfLectures) {
+            this.isCourseCompleted = true;
+        }
     }
 
     public void addLectureWrapper(LectureWrapper lectureWrapper) {
-        lectureWrappers.add(lectureWrapper);
+        lectureWrapper.setEnrolledCourse(this);
+        this.lectureWrappers.add(lectureWrapper);
+        this.numberOfLectures++;
+    }
+
+    public void increaseNumberOfCompletedLectures() {
+        this.numberOfCompletedLectures++;
     }
 }

@@ -19,6 +19,15 @@ public class LectureWrapper {
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @JoinColumn(name = "enrolled_course_id")
+    private EnrolledCourse enrolledCourse;
+
     @Column(name = "completed_lecture")
     public boolean completedLecture = false;
+
+    public void completeLecture() {
+        this.completedLecture = true;
+        this.enrolledCourse.increaseNumberOfCompletedLectures();
+    }
 }

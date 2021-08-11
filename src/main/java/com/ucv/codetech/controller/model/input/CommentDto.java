@@ -7,9 +7,5 @@ import lombok.Setter;
 @Getter
 public class CommentDto {
 
-    private Long studentId;
-
-    private Long courseId;
-
     private String description;
 }

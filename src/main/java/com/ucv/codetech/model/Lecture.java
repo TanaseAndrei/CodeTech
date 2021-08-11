@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +30,7 @@ public class Lecture {
     private Course course;
 
     @ElementCollection(targetClass = String.class)
-    private List<String> lectureFileNames;
+    private List<String> lectureFileNames = new ArrayList<>();
 
     @Column(name = "lecture_video_name")
     private String lectureVideoName;

@@ -26,14 +26,14 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
-    public void addQuestion(Question question) {
-        questions.add(question);
-        question.setQuiz(this);
-    }
-
     @PreRemove
     public void deleteQuiz() {
         this.course.setQuiz(null);
         this.course = null;
+    }
+
+    public void addQuestion(Question question) {
+        questions.add(question);
+        question.setQuiz(this);
     }
 }

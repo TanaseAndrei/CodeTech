@@ -13,18 +13,18 @@ import java.util.List;
 @Getter
 public class Student extends AppUser {
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<EnrolledCourse> enrolledCourses = new ArrayList<>();
 
-    public void enrollCourse(EnrolledCourse enrolledCourse) {
-        enrolledCourse.setStudent(this);
-        enrolledCourses.add(enrolledCourse);
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setStudent(this);
     }
 
-    public void addComment(Comment comment) {
-        comments.add(comment);
+    public void addEnrolledCourse(EnrolledCourse enrolledCourse) {
+        this.enrolledCourses.add(enrolledCourse);
     }
 }

@@ -20,8 +20,8 @@ public class QuizController implements QuizApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/add-question", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addQuestion(@PathVariable("id") Long id, @RequestBody QuestionDto questionDto) {
-        quizFacade.addQuestion(id, questionDto);
+    public Long addQuestion(@PathVariable("id") Long id, @RequestBody QuestionDto questionDto) {
+       return quizFacade.addQuestion(id, questionDto);
     }
 
     @PreAuthorize("hasRole('STUDENT, INSTRUCTOR')")

@@ -27,7 +27,7 @@ public class LectureFacade {
     private final ZipService zipService;
 
     @Transactional
-    public void deleteLecture(Long id) {
+    public void delete(Long id) {
         try {
             List<String> filesToDelete = new ArrayList<>(lectureService.getLectureFiles(id));
             filesToDelete.add(lectureService.getLectureVideo(id));
@@ -40,7 +40,7 @@ public class LectureFacade {
     }
 
     @Transactional
-    public void uploadLectureFiles(Long id, MultipartFile[] multipartFiles) {
+    public void uploadFiles(Long id, MultipartFile[] multipartFiles) {
         try {
             Lecture lecture = lectureService.getById(id);
             String folder = lectureService.getAssociatedCourseFolder(id);
@@ -51,7 +51,7 @@ public class LectureFacade {
     }
 
     @Transactional
-    public Resource zipLectureFiles(Long lectureId) {
+    public Resource zipFiles(Long lectureId) {
         try {
             String folder = lectureService.getAssociatedCourseFolder(lectureId);
             List<String> lectureFilesNames = lectureService.getLectureFiles(lectureId);
@@ -63,7 +63,7 @@ public class LectureFacade {
     }
 
     @Transactional
-    public Resource downloadLectureFile(Long lectureId, String fileName) {
+    public Resource downloadFile(Long lectureId, String fileName) {
         try {
             String folder = lectureService.getAssociatedCourseFolder(lectureId);
             if (!lectureService.fileExistsInLecture(fileName, lectureId)) {
@@ -76,7 +76,7 @@ public class LectureFacade {
     }
 
     @Transactional
-    public void deleteLectureFile(Long lectureId, String fileName) {
+    public void deleteFile(Long lectureId, String fileName) {
         try {
             String folder = lectureService.getAssociatedCourseFolder(lectureId);
             Lecture lecture = lectureService.getById(lectureId);

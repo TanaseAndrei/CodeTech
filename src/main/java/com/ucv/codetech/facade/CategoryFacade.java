@@ -19,13 +19,13 @@ public class CategoryFacade {
     private final CategoryConverter categoryConverter;
 
     public Long create(CategoryDto categoryDto) {
-        Category category = categoryConverter.categoryDtoToCategory(categoryDto);
-        return categoryService.createOrUpdate(category).getId();
+        Category category = categoryConverter.dtoToEntity(categoryDto);
+        return categoryService.saveOrUpdate(category).getId();
     }
 
     public CategoryDto findById(Long id) {
         Category category = categoryService.findById(id);
-        return categoryConverter.categoryToCategoryDto(category);
+        return categoryConverter.entityToDto(category);
     }
 
     public List<CategoryDto> findAll() {

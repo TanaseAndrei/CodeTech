@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Setter
@@ -11,12 +12,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class CourseDto {
 
+    @NotBlank(message = "The course name should not be empty")
     private String name;
 
-    private String instructorName;
-
+    @NotBlank(message = "The description should not be empty")
     private String description;
 
+    @NotBlank(message = "The category")
     private Long categoryId;
 
     @NotNull(message = "Difficulty should not be null")

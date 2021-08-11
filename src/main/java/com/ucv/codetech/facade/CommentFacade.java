@@ -17,11 +17,11 @@ public class CommentFacade {
         return commentService.getCommentById(id);
     }
 
-    public void editComment(Long id, UpdateCommentDto updateComment) {
+    public void update(Long id, UpdateCommentDto updateComment) {
         commentService.edit(id, updateComment.getDescription());
     }
 
-    public void deleteComment(Long id) {
+    public void delete(Long id) {
         commentService.deleteComment(id);
     }
 

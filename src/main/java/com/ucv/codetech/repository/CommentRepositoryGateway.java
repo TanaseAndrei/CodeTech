@@ -20,8 +20,8 @@ public class CommentRepositoryGateway {
         return commentRepository.findById(id);
     }
 
-    public void saveOrUpdate(Comment comment) {
-        commentRepository.save(comment);
+    public Long saveOrUpdate(Comment comment) {
+        return commentRepository.save(comment).getId();
     }
 
     public boolean existsById(Long id) {

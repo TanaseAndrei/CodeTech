@@ -17,7 +17,7 @@ public class CategoryService {
 
     private final CategoryRepositoryGateway categoryRepositoryGateway;
 
-    public Category createOrUpdate(Category category) {
+    public Category saveOrUpdate(Category category) {
         if(categoryRepositoryGateway.existsByName(category.getName())) {
             throw new AppException("The category already exists with this name", HttpStatus.BAD_REQUEST);
         }

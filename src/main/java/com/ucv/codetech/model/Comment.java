@@ -16,10 +16,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private Course course;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -56,5 +56,12 @@ public class Comment {
 
     public void downVote() {
         downVotes--;
+    }
+
+    public void setComment(Student student, Course course) {
+        this.course = course;
+        this.student = student;
+        student.addComment(this);
+        course.addComment(this);
     }
 }
