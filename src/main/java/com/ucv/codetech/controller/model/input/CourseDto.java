@@ -18,7 +18,7 @@ public class CourseDto {
     @NotBlank(message = "The description should not be empty")
     private String description;
 
-    @NotBlank(message = "The category")
+    @NotNull(message = "The category should be specified")
     private Long categoryId;
 
     @NotNull(message = "Difficulty should not be null")

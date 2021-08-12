@@ -74,7 +74,6 @@ public class Course {
     private List<Lecture> lectures = new ArrayList<>();
 
     @OneToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "course_id")
     private List<Comment> comments = new ArrayList<>();
 
     @Transient

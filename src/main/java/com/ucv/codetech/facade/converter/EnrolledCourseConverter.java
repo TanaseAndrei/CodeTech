@@ -1,7 +1,8 @@
 package com.ucv.codetech.facade.converter;
 
 import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
-import com.ucv.codetech.controller.model.output.StudentLectureWrapperDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentFullLectureWrapperDisplayDto;
 import com.ucv.codetech.model.EnrolledCourse;
 import com.ucv.codetech.model.LectureWrapper;
 import org.springframework.stereotype.Component;
@@ -21,30 +22,43 @@ public class EnrolledCourseConverter {
 
     public StudentCourseDisplayDto entityToStudentCourseDisplayDto(EnrolledCourse enrolledCourse) {
         StudentCourseDisplayDto studentCourseDisplayDto = new StudentCourseDisplayDto();
-        studentCourseDisplayDto.setId(enrolledCourse.getId());
+        studentCourseDisplayDto.setEnrolledCourseId(enrolledCourse.getId());
+        studentCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
         studentCourseDisplayDto.setName(enrolledCourse.getCourse().getName());
-        studentCourseDisplayDto.setEnrolledDate(enrolledCourse.getEnrolledDate());
         studentCourseDisplayDto.setNumberOfCompletedLectures(enrolledCourse.getNumberOfCompletedLectures());
         studentCourseDisplayDto.setNumberOfLectures(enrolledCourse.getNumberOfLectures());
-        studentCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
-        studentCourseDisplayDto.setLectureWrapperDisplayDtos(lectureWrappersToStudentLectureWrapperDisplayDtos(enrolledCourse.getLectureWrappers()));
+        studentCourseDisplayDto.setCoverImageName(enrolledCourse.getCourse().getCoverImageName());
         return studentCourseDisplayDto;
     }
 
-    private List<StudentLectureWrapperDisplayDto> lectureWrappersToStudentLectureWrapperDisplayDtos(List<LectureWrapper> lectureWrappers) {
+    public StudentFullCourseDisplayDto entityToStudentFullCourseDisplayDto(EnrolledCourse enrolledCourse) {
+        StudentFullCourseDisplayDto studentFullCourseDisplayDto = new StudentFullCourseDisplayDto();
+        studentFullCourseDisplayDto.setCoverImageName(enrolledCourse.getCourse().getCoverImageName());
+        studentFullCourseDisplayDto.setId(enrolledCourse.getId());
+        studentFullCourseDisplayDto.setName(enrolledCourse.getCourse().getName());
+        studentFullCourseDisplayDto.setEnrolledDate(enrolledCourse.getEnrolledDate());
+        studentFullCourseDisplayDto.setNumberOfCompletedLectures(enrolledCourse.getNumberOfCompletedLectures());
+        studentFullCourseDisplayDto.setNumberOfLectures(enrolledCourse.getNumberOfLectures());
+        studentFullCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
+        studentFullCourseDisplayDto.setLectureWrapperDisplayDtos(lectureWrappersToStudentFullLectureWrapperDisplayDtos(enrolledCourse.getLectureWrappers()));
+        return studentFullCourseDisplayDto;
+    }
+
+    private List<StudentFullLectureWrapperDisplayDto> lectureWrappersToStudentFullLectureWrapperDisplayDtos(List<LectureWrapper> lectureWrappers) {
         return lectureWrappers
                 .stream()
-                .map(this::lectureWrapperToStudentLectureWrapperDisplayDto)
+                .map(this::lectureWrapperToStudentFullLectureWrapperDisplayDto)
                 .collect(Collectors.toList());
     }
 
-    private StudentLectureWrapperDisplayDto lectureWrapperToStudentLectureWrapperDisplayDto(LectureWrapper lectureWrapper) {
-        StudentLectureWrapperDisplayDto studentLectureWrapperDisplayDto = new StudentLectureWrapperDisplayDto();
-        studentLectureWrapperDisplayDto.setId(lectureWrapper.getId());
-        studentLectureWrapperDisplayDto.setName(lectureWrapper.getLecture().getName());
-        studentLectureWrapperDisplayDto.setCompletedLecture(lectureWrapper.isCompletedLecture());
-        studentLectureWrapperDisplayDto.setLectureVideoName(lectureWrapper.getLecture().getLectureVideoName());
-        studentLectureWrapperDisplayDto.setLectureFileNames(lectureWrapper.getLecture().getLectureFileNames());
-        return studentLectureWrapperDisplayDto;
+    private StudentFullLectureWrapperDisplayDto lectureWrapperToStudentFullLectureWrapperDisplayDto(LectureWrapper lectureWrapper) {
+        StudentFullLectureWrapperDisplayDto studentFullLectureWrapperDisplayDto = new StudentFullLectureWrapperDisplayDto();
+        studentFullLectureWrapperDisplayDto.setId(lectureWrapper.getId());
+        studentFullLectureWrapperDisplayDto.setName(lectureWrapper.getLecture().getName());
+        studentFullLectureWrapperDisplayDto.setDescription(lectureWrapper.getLecture().getDescription());
+        studentFullLectureWrapperDisplayDto.setLectureVideoName(lectureWrapper.getLecture().getLectureVideoName());
+        studentFullLectureWrapperDisplayDto.setLectureFileNames(lectureWrapper.getLecture().getLectureFileNames());
+        studentFullLectureWrapperDisplayDto.setCompletedLecture(lectureWrapper.isCompletedLecture());
+        return studentFullLectureWrapperDisplayDto;
     }
 }

@@ -5,7 +5,7 @@ import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
 import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
-import com.ucv.codetech.controller.model.output.StudentFullDisplayCourseDto;
+import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
 import com.ucv.codetech.facade.converter.AppUserConverter;
 import com.ucv.codetech.facade.converter.EnrolledCourseConverter;
 import com.ucv.codetech.model.*;
@@ -24,6 +24,7 @@ import java.util.List;
 public class UserFacade {
 
     private final UserService userService;
+    private final EnrolledCourseService enrolledCourseService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserConverter appUserConverter;
     private final LectureWrapperService lectureWrapperService;
@@ -49,6 +50,11 @@ public class UserFacade {
         return userService.getAppUser(username);
     }
 
+    public StudentFullCourseDisplayDto getEnrolledCourse(String username, Long id) {
+        EnrolledCourse enrolledCourse = enrolledCourseService.findById(id, username);
+        return enrolledCourseConverter.entityToStudentFullCourseDisplayDto(enrolledCourse);
+    }
+
     public List<StudentCourseDisplayDto> getEnrolledCourses(String username) {
         Student student = userService.getStudent(username);
         List<EnrolledCourse> enrolledCourses = student.getEnrolledCourses();
@@ -63,13 +69,13 @@ public class UserFacade {
     }
 
     private void validateUserName(String username) {
-        if(userService.userExistsByName(username)) {
+        if (userService.userExistsByName(username)) {
             throw new AppException("The user with the name " + username + " already exists", HttpStatus.BAD_REQUEST);
         }
     }
 
     private void validateEmail(String email) {
-        if(userService.userExistsByEmail(email)) {
+        if (userService.userExistsByEmail(email)) {
             throw new AppException("The user with the email " + email + " already exists", HttpStatus.BAD_REQUEST);
         }
     }

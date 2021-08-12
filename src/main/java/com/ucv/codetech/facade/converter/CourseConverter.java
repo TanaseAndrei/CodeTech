@@ -3,10 +3,8 @@ package com.ucv.codetech.facade.converter;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.output.DisplayCourseDto;
 import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
-import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
 import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Difficulty;
-import com.ucv.codetech.model.EnrolledCourse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

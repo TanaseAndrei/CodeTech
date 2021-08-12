@@ -3,21 +3,13 @@ package com.ucv.codetech.controller.model.output;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Dto used to display course for a student, including checkboxes for completion. This will be used with enrolled course class
- */
 @Setter
 @Getter
 public class StudentCourseDisplayDto {
 
-    private Long id;
+    private Long enrolledCourseId;
 
     private String name;
-
-    private String enrolledDate;
 
     private int numberOfCompletedLectures;
 
@@ -26,6 +18,4 @@ public class StudentCourseDisplayDto {
     private boolean isCourseCompleted;
 
     private String coverImageName;
-
-    List<StudentLectureWrapperDisplayDto> lectureWrapperDisplayDtos = new ArrayList<>();
 }

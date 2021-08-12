@@ -1,11 +1,9 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
-import com.ucv.codetech.controller.model.output.StudentFullDisplayCourseDto;
+import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
 import com.ucv.codetech.facade.UserFacade;
-import com.ucv.codetech.model.EnrolledCourse;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +16,6 @@ import java.util.List;
 @RequestMapping("/student")
 @PreAuthorize("hasRole('STUDENT')")
 @AllArgsConstructor
-@Slf4j
 public class StudentController {
 
     private final UserFacade userFacade;
@@ -29,9 +26,15 @@ public class StudentController {
         userFacade.completeLecture(id);
     }
 
+    //TODO add hateoas support
+    @GetMapping(path = "/courses/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public StudentFullCourseDisplayDto getUsersCourse(@PathVariable("id") Long id, Principal principal) {
+        return userFacade.getEnrolledCourse(principal.getName(), id);
+    }
+
+    //TODO add hateoas support
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<StudentCourseDisplayDto> getUsersCourses(Principal principal) {
-        log.info("Student {} is retrieving his enrolled courses", principal.getName());
         return userFacade.getEnrolledCourses(principal.getName());
     }
 }
