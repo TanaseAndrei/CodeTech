@@ -5,11 +5,13 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ucv.codetech.controller.swagger.TokenApi;
 import com.ucv.codetech.facade.UserFacade;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.token.Token;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/token")
 @AllArgsConstructor
-public class TokenController {
+public class TokenController implements TokenApi {
 
     private final UserFacade userFacade;
 

@@ -14,7 +14,7 @@ public class CommentFacade {
 
     //TODO return dto
     public Comment getCommentById(Long id) {
-        return commentService.getCommentById(id);
+        return commentService.findById(id);
     }
 
     public void update(Long id, UpdateCommentDto updateComment) {
@@ -22,7 +22,7 @@ public class CommentFacade {
     }
 
     public void delete(Long id) {
-        commentService.deleteComment(id);
+        commentService.delete(id);
     }
 
     public void upVote(Long id) {

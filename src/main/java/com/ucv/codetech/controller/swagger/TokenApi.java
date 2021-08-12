@@ -1,4 +1,4 @@
 package com.ucv.codetech.controller.swagger;
 
-public interface UserApi {
+public interface TokenApi {
 }

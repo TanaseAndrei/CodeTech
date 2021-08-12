@@ -61,7 +61,7 @@ public class CourseFacade {
             String folderName = fileService.createCourseFolder(courseDto.getName());
             course.setFolderName(folderName);
             userService.saveInstructor(instructor);
-            return courseService.createOrUpdate(course).getId();
+            return courseService.saveOrUpdate(course).getId();
         } catch (IOException ioException) {
             throw new AppException("Error occurred while creating the course's folder", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -70,10 +70,10 @@ public class CourseFacade {
     @Transactional
     public void addCourseCover(MultipartFile cover, Long id) {
         try {
-            Course course = courseService.getById(id);
+            Course course = courseService.findById(id);
             String filename = fileService.moveFile(cover, course.getFolderName());
             course.setCoverImageName(filename);
-            courseService.createOrUpdate(course);
+            courseService.saveOrUpdate(course);
         } catch (IOException ioException) {
             throw new AppException("Error occurred while adding the course cover", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -90,7 +90,7 @@ public class CourseFacade {
     }
 
     public FullDisplayCourseDto getById(Long id) {
-        Course course = courseService.getById(id);
+        Course course = courseService.findById(id);
         return courseConverter.entityToFullDisplayCourseDto(course);
     }
 
@@ -105,12 +105,12 @@ public class CourseFacade {
             if (lectureService.lectureExistsInCourse(lectureDto.getName(), courseId)) {
                 throw new AppException("A lecture with the name " + lectureDto.getName() + " already exists in the course", HttpStatus.BAD_REQUEST);
             }
-            Course course = courseService.getById(courseId);
+            Course course = courseService.findById(courseId);
             String lectureVideoName = fileService.moveFile(lectureDto.getLectureVideo(), course.getFolderName());
             Lecture lecture = lectureConverter.dtoToEntity(lectureDto);
             lecture.setLectureVideoName(lectureVideoName);
             course.addLecture(lecture);
-            courseService.createOrUpdate(course);
+            courseService.saveOrUpdate(course);
             return lecture.getId();
         } catch (IOException ioException) {
             throw new AppException("Something went wrong while creating the video to the course with id: " + courseId,
@@ -122,7 +122,7 @@ public class CourseFacade {
     public void deleteCourse(Long id) {
         try {
             String courseFolderName = courseService.getCourseFolderName(id);
-            List<String> filesToDelete = courseService.deleteCourse(id);
+            List<String> filesToDelete = courseService.delete(id);
             fileService.deleteCourseFilesData(filesToDelete, courseFolderName);
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -132,7 +132,7 @@ public class CourseFacade {
     @Transactional
     public Long addComment(Long id, CommentDto commentDto, String name) {
         Student student = userService.getStudent(name);
-        Course course = courseService.getById(id);
+        Course course = courseService.findById(id);
         Comment comment = commentConverter.dtoToEntity(commentDto);
         comment.setComment(student, course);
         return commentService.saveOrUpdate(comment);
@@ -143,17 +143,17 @@ public class CourseFacade {
         if (courseService.hasQuiz(id)) {
             throw new AppException("The course already has an associated quiz", HttpStatus.BAD_REQUEST);
         }
-        Course course = courseService.getById(id);
+        Course course = courseService.findById(id);
         Quiz quiz = quizConverter.quizDtoToEntity(quizDto);
         course.setQuiz(quiz);
         quiz.setCourse(course);
-        courseService.createOrUpdate(course);
+        courseService.saveOrUpdate(course);
         return quiz.getId();
     }
 
     @Transactional
     public void enrollToCourse(Long id, String username) {
-        Course course = courseService.getById(id);
+        Course course = courseService.findById(id);
         Student student = userService.getStudent(username);
         if (course.getEnrolledStudents().contains(student)) {
             throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(), HttpStatus.BAD_REQUEST);

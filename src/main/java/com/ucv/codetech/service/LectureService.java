@@ -1,7 +1,6 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.repository.LectureRepositoryGateway;
 import lombok.AllArgsConstructor;
@@ -24,8 +23,8 @@ public class LectureService {
         lectureRepositoryGateway.deleteById(id);
     }
 
-    public Lecture getById(Long id) {
-        return lectureRepositoryGateway.getById(id)
+    public Lecture findById(Long id) {
+        return lectureRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The lecture does not exist!", HttpStatus.NOT_FOUND));
     }
 
@@ -36,13 +35,13 @@ public class LectureService {
     }
 
     public List<String> getLectureFiles(Long id) {
-        Lecture lecture = lectureRepositoryGateway.getById(id)
+        Lecture lecture = lectureRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The lecture does not exist", HttpStatus.NOT_FOUND));
         return lecture.getLectureFileNames();
     }
 
     public String getLectureVideo(Long id) {
-        Lecture lecture = lectureRepositoryGateway.getById(id)
+        Lecture lecture = lectureRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The lecture does not exist", HttpStatus.NOT_FOUND));
         return lecture.getLectureVideoName();
     }
@@ -52,7 +51,7 @@ public class LectureService {
     }
 
     public boolean fileExistsInLecture(String fileName, Long id) {
-        Lecture lecture = getById(id);
+        Lecture lecture = findById(id);
         return lecture.containsLectureFile(fileName);
     }
 }

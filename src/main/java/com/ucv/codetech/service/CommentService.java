@@ -17,18 +17,18 @@ public class CommentService {
         return commentRepositoryGateway.saveOrUpdate(comment);
     }
 
-    public Comment getCommentById(Long id) {
+    public Comment findById(Long id) {
         return commentRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The comment with id " + id + " has not been found", HttpStatus.NOT_FOUND));
     }
 
     public void edit(Long id, String description) {
-        Comment comment = getCommentById(id);
+        Comment comment = findById(id);
         comment.setDescription(description);
         commentRepositoryGateway.saveOrUpdate(comment);
     }
 
-    public void deleteComment(Long id) {
+    public void delete(Long id) {
         if(!commentRepositoryGateway.existsById(id)) {
             throw new AppException("The comment with the id " + id + " does not exist", HttpStatus.NOT_FOUND);
         }
@@ -36,13 +36,13 @@ public class CommentService {
     }
 
     public void upVote(Long id) {
-        Comment comment = getCommentById(id);
+        Comment comment = findById(id);
         comment.upVote();
         commentRepositoryGateway.saveOrUpdate(comment);
     }
 
     public void downVote(Long id) {
-        Comment comment = getCommentById(id);
+        Comment comment = findById(id);
         comment.downVote();
         commentRepositoryGateway.saveOrUpdate(comment);
     }

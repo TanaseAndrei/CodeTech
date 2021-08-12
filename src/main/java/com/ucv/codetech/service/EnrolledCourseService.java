@@ -13,13 +13,13 @@ public class EnrolledCourseService {
 
     private final EnrolledCourseRepositoryGateway enrolledCourseRepositoryGateway;
 
+    public void saveOrUpdate(EnrolledCourse enrolledCourse) {
+        enrolledCourseRepositoryGateway.saveOrUpdate(enrolledCourse);
+    }
+
     public EnrolledCourse findById(Long id, String username) {
         return enrolledCourseRepositoryGateway.findByIdAndUsername(id, username)
                 .orElseThrow(() -> new AppException("The enrolled course with id " + id
                         + " does not exist in user's enrolled courses of student " + username, HttpStatus.NOT_FOUND));
-    }
-
-    public void saveOrUpdate(EnrolledCourse enrolledCourse) {
-        enrolledCourseRepositoryGateway.createOrUpdate(enrolledCourse);
     }
 }

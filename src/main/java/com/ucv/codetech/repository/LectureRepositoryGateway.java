@@ -39,7 +39,7 @@ public class LectureRepositoryGateway {
         return lectureRepository.getAssociatedCourseFolder(lectureId);
     }
 
-    public Optional<Lecture> getById(Long id) {
+    public Optional<Lecture> findById(Long id) {
         return lectureRepository.findById(id);
     }
 

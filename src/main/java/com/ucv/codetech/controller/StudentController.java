@@ -2,6 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
+import com.ucv.codetech.controller.swagger.StudentApi;
 import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/student")
 @PreAuthorize("hasRole('STUDENT')")
 @AllArgsConstructor
-public class StudentController {
+public class StudentController implements StudentApi {
 
     private final UserFacade userFacade;
 

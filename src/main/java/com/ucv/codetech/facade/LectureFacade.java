@@ -42,7 +42,7 @@ public class LectureFacade {
     @Transactional
     public void uploadFiles(Long id, MultipartFile[] multipartFiles) {
         try {
-            Lecture lecture = lectureService.getById(id);
+            Lecture lecture = lectureService.findById(id);
             String folder = lectureService.getAssociatedCourseFolder(id);
             lecture.setLectureFileNames(getLectureFileNames(multipartFiles, folder));
         } catch (IOException ioException) {
@@ -79,7 +79,7 @@ public class LectureFacade {
     public void deleteFile(Long lectureId, String fileName) {
         try {
             String folder = lectureService.getAssociatedCourseFolder(lectureId);
-            Lecture lecture = lectureService.getById(lectureId);
+            Lecture lecture = lectureService.findById(lectureId);
             if (!lecture.containsLectureFile(fileName)) {
                 throw new AppException("The file doesn't exist in the lecture", HttpStatus.NOT_FOUND);
             }

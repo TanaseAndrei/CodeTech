@@ -13,13 +13,13 @@ public class AnswerService {
 
     private final AnswerRepositoryGateway answerRepositoryGateway;
 
+    public void saveOrUpdate(Answer answer) {
+        answerRepositoryGateway.saveOrUpdate(answer);
+    }
+
     public Answer findById(Long id) {
         return answerRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException("The answer with id " + id + " does not exist", HttpStatus.NOT_FOUND));
-    }
-
-    public void saveOrUpdate(Answer answer) {
-        answerRepositoryGateway.saveOrUpdate(answer);
     }
 
     public void delete(Long id) {

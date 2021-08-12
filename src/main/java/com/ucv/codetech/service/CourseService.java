@@ -2,7 +2,6 @@ package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.Course;
-import com.ucv.codetech.model.EnrolledCourse;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.repository.CourseRepositoryGateway;
 import com.ucv.codetech.repository.LectureRepositoryGateway;
@@ -28,7 +27,7 @@ public class CourseService {
     private final CourseRepositoryGateway courseRepositoryGateway;
     private final LectureRepositoryGateway lectureRepositoryGateway;
 
-    public Course createOrUpdate(Course course) {
+    public Course saveOrUpdate(Course course) {
         return courseRepositoryGateway.saveOrUpdate(course);
     }
 
@@ -46,7 +45,7 @@ public class CourseService {
         courseRepositoryGateway.saveOrUpdate(course);
     }
 
-    public Course getById(Long id) {
+    public Course findById(Long id) {
         return courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
     }
@@ -57,7 +56,7 @@ public class CourseService {
     }
 
     @Transactional
-    public List<String> deleteCourse(Long id) {
+    public List<String> delete(Long id) {
         Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         List<String> videoNames = lectureRepositoryGateway.getLectureVideos(id);
@@ -77,7 +76,7 @@ public class CourseService {
     }
 
     public boolean hasQuiz(Long id) {
-        Course course = getById(id);
+        Course course = findById(id);
         return course.getQuiz() != null;
     }
 

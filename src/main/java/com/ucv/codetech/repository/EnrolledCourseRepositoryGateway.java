@@ -16,7 +16,7 @@ public class EnrolledCourseRepositoryGateway {
         return enrolledCourseRepository.findByIdAndStudentUsername(id, username);
     }
 
-    public void createOrUpdate(EnrolledCourse enrolledCourse) {
+    public void saveOrUpdate(EnrolledCourse enrolledCourse) {
         enrolledCourseRepository.save(enrolledCourse);
     }
 }
