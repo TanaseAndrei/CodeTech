@@ -55,6 +55,7 @@ public class EnrolledCourseConverter {
         StudentFullLectureWrapperDisplayDto studentFullLectureWrapperDisplayDto = new StudentFullLectureWrapperDisplayDto();
         studentFullLectureWrapperDisplayDto.setId(lectureWrapper.getId());
         studentFullLectureWrapperDisplayDto.setName(lectureWrapper.getLecture().getName());
+        studentFullLectureWrapperDisplayDto.setLectureId(lectureWrapper.getLecture().getId());
         studentFullLectureWrapperDisplayDto.setDescription(lectureWrapper.getLecture().getDescription());
         studentFullLectureWrapperDisplayDto.setLectureVideoName(lectureWrapper.getLecture().getLectureVideoName());
         studentFullLectureWrapperDisplayDto.setLectureFileNames(lectureWrapper.getLecture().getLectureFileNames());

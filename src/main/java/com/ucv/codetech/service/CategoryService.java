@@ -40,9 +40,7 @@ public class CategoryService {
         categoryRepositoryGateway.delete(id);
     }
 
-    public void edit(Long id, String name) {
-        Category category = findById(id);
-        category.setName(name);
+    public void edit(Category category) {
         categoryRepositoryGateway.saveOrUpdate(category);
     }
 }

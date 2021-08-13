@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/quiz")
 @AllArgsConstructor
@@ -24,7 +26,7 @@ public class QuizController implements QuizApi {
        return quizFacade.addQuestion(id, questionDto);
     }
 
-    @PreAuthorize("hasRole('STUDENT, INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public DisplayQuizDto getQuiz(@PathVariable("id") Long id) {
         return quizFacade.getQuiz(id);
@@ -35,5 +37,11 @@ public class QuizController implements QuizApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteQuiz(@PathVariable("id") Long id) {
         quizFacade.deleteQuiz(id);
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @PostMapping(path = "/{id}/complete")
+    public Long completeQuiz(@PathVariable("id") Long id, Principal principal) {
+        return quizFacade.completeQuiz(id, principal.getName());
     }
 }

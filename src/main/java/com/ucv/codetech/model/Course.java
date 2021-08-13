@@ -1,22 +1,22 @@
 package com.ucv.codetech.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "courses")
 @NoArgsConstructor
 @Setter
 @Getter
-@EqualsAndHashCode
 public class Course {
 
     @Id
@@ -111,5 +111,23 @@ public class Course {
         this.comments.add(comment);
         this.numberOfComments++;
         comment.setCourse(this);
+    }
+
+    public boolean containsStudent(Student student) {
+        return enrolledStudents.contains(student);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Course course = (Course) o;
+
+        return Objects.equals(id, course.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 1702818130;
     }
 }

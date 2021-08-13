@@ -1,6 +1,7 @@
 package com.ucv.codetech.facade.converter;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
+import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
 import com.ucv.codetech.model.Category;
 import org.springframework.stereotype.Component;
 
@@ -28,5 +29,11 @@ public class CategoryConverter {
         categoryDto.setName(category.getName());
         categoryDto.setId(category.getId());
         return categoryDto;
+    }
+
+    public Category updateDtoToEntity(UpdateCategoryDto updateCategoryDto) {
+        Category category = new Category();
+        category.setName(updateCategoryDto.getName());
+        return category;
     }
 }

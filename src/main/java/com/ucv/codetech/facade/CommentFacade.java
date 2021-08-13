@@ -5,6 +5,7 @@ import com.ucv.codetech.controller.model.input.UpdateCommentDto;
 import com.ucv.codetech.model.Comment;
 import com.ucv.codetech.service.CommentService;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @AllArgsConstructor
@@ -17,10 +18,12 @@ public class CommentFacade {
         return commentService.findById(id);
     }
 
+    @Transactional
     public void update(Long id, UpdateCommentDto updateComment) {
         commentService.edit(id, updateComment.getDescription());
     }
 
+    @Transactional
     public void delete(Long id) {
         commentService.delete(id);
     }

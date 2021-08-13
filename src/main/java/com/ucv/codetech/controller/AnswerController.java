@@ -24,7 +24,6 @@ public class AnswerController implements AnswerApi {
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto, Principal principal) {
-        log.info("Instructor {} is trying to access put method", principal.getName());
         answerFacade.update(id, updateAnswerDto);
     }
 
@@ -37,8 +36,7 @@ public class AnswerController implements AnswerApi {
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{id}/is-correct", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean isCorrect(@PathVariable("id") Long id, Principal principal) {
-        log.info("Student {} is trying to access is-correct", principal.getName());
+    public boolean isCorrect(@PathVariable("id") Long id) {
         return answerFacade.isCorrect(id);
     }
 }

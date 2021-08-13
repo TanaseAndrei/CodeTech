@@ -62,7 +62,7 @@ public class CourseController implements CourseApi {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PatchMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
         courseFacade.addCourseCover(multipartFile, id);

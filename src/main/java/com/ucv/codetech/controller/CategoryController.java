@@ -27,7 +27,7 @@ public class CategoryController implements CategoryApi {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void editCategory(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
         categoryFacade.edit(id, updateCategory);

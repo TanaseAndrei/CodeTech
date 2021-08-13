@@ -1,18 +1,18 @@
 package com.ucv.codetech.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "quiz")
 @Setter
 @Getter
-@EqualsAndHashCode
 public class Quiz {
 
     @Id
@@ -35,5 +35,19 @@ public class Quiz {
     public void addQuestion(Question question) {
         questions.add(question);
         question.setQuiz(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Quiz quiz = (Quiz) o;
+
+        return Objects.equals(id, quiz.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 1760944903;
     }
 }

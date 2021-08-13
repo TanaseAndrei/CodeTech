@@ -4,9 +4,11 @@ import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
+import com.ucv.codetech.controller.model.output.StudentCertificationDisplayDto;
 import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
 import com.ucv.codetech.facade.converter.AppUserConverter;
+import com.ucv.codetech.facade.converter.CertificationConverter;
 import com.ucv.codetech.facade.converter.EnrolledCourseConverter;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.EnrolledCourseService;
@@ -24,12 +26,14 @@ import java.util.List;
 public class UserFacade {
 
     private final UserService userService;
+    private final CertificationConverter certificationConverter;
     private final EnrolledCourseService enrolledCourseService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserConverter appUserConverter;
     private final LectureWrapperService lectureWrapperService;
     private final EnrolledCourseConverter enrolledCourseConverter;
 
+    @Transactional
     public Long registerStudent(StudentDto studentDto) {
         validateUserName(studentDto.getUsername());
         validateEmail(studentDto.getEmail());
@@ -38,6 +42,7 @@ public class UserFacade {
         return userService.saveStudent(student).getId();
     }
 
+    @Transactional
     public Long registerInstructor(InstructorDto instructorDto) {
         validateUserName(instructorDto.getUsername());
         validateEmail(instructorDto.getEmail());
@@ -66,6 +71,11 @@ public class UserFacade {
         LectureWrapper lectureWrapper = lectureWrapperService.findById(id);
         lectureWrapper.completeLecture();
         lectureWrapperService.saveOrUpdate(lectureWrapper);
+    }
+
+    public List<StudentCertificationDisplayDto> getCertifications(String name) {
+        Student student = userService.getStudent(name);
+        return certificationConverter.entitiesToStudentCertificationDisplayDtos(student.getCertifications());
     }
 
     private void validateUserName(String username) {

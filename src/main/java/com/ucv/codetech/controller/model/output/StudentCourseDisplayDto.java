@@ -2,10 +2,11 @@ package com.ucv.codetech.controller.model.output;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 @Setter
 @Getter
-public class StudentCourseDisplayDto {
+public class StudentCourseDisplayDto extends RepresentationModel<StudentCourseDisplayDto> {
 
     private Long enrolledCourseId;
 

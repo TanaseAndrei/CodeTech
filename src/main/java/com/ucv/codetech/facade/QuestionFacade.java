@@ -8,6 +8,7 @@ import com.ucv.codetech.model.Answer;
 import com.ucv.codetech.model.Question;
 import com.ucv.codetech.service.QuestionService;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class QuestionFacade {
     private final QuizConverter quizConverter;
     private final QuestionService questionService;
 
+    @Transactional
     public Long addAnswer(Long id, AnswerDto answerDto) {
         Question question = questionService.findById(id);
         Answer answer = quizConverter.answerDtoToEntity(answerDto);
@@ -24,6 +26,7 @@ public class QuestionFacade {
         return answer.getId();
     }
 
+    @Transactional
     public void update(Long id, UpdateQuestionDto updateQuestionDto) {
         Question question = questionService.findById(id);
         question.setQuestionContent(updateQuestionDto.getQuestion());
@@ -31,6 +34,7 @@ public class QuestionFacade {
         questionService.saveOrUpdate(question);
     }
 
+    @Transactional
     public void delete(Long id) {
         questionService.delete(id);
     }

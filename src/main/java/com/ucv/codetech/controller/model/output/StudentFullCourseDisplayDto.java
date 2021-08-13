@@ -1,17 +1,18 @@
 package com.ucv.codetech.controller.model.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Dto used to display course for a student, including checkboxes for completion. This will be used with enrolled course class
- */
 @Setter
 @Getter
-public class StudentFullCourseDisplayDto {
+@EqualsAndHashCode(callSuper = true)
+public class StudentFullCourseDisplayDto extends RepresentationModel<StudentFullCourseDisplayDto> {
 
     private Long id;
 
@@ -25,6 +26,7 @@ public class StudentFullCourseDisplayDto {
 
     private boolean isCourseCompleted;
 
+    @JsonIgnore
     private String coverImageName;
 
     List<StudentFullLectureWrapperDisplayDto> lectureWrapperDisplayDtos = new ArrayList<>();

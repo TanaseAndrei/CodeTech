@@ -6,6 +6,7 @@ import com.ucv.codetech.model.Category;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.facade.converter.CategoryConverter;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CategoryFacade {
     private final CategoryService categoryService;
     private final CategoryConverter categoryConverter;
 
+    @Transactional
     public Long create(CategoryDto categoryDto) {
         Category category = categoryConverter.dtoToEntity(categoryDto);
         return categoryService.saveOrUpdate(category).getId();
@@ -38,6 +40,8 @@ public class CategoryFacade {
     }
 
     public void edit(Long id, UpdateCategoryDto updateCategory) {
-        categoryService.edit(id, updateCategory.getName());
+        Category category = categoryConverter.updateDtoToEntity(updateCategory);
+        category.setId(id);
+        categoryService.edit(category);
     }
 }
