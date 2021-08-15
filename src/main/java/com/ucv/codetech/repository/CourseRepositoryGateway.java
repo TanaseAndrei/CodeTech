@@ -1,6 +1,7 @@
 package com.ucv.codetech.repository;
 
 import com.ucv.codetech.model.Course;
+import com.ucv.codetech.model.projection.CourseCoverImage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,15 @@ public class CourseRepositoryGateway {
         return courseRepository.getCourseFolderName(id);
     }
 
-    public Optional<String> getCourseFolderName(String name) {
-        return courseRepository.getCourseFolderName(name);
-    }
-
     public boolean courseExistsByName(String name) {
         return courseRepository.existsByName(name);
+    }
+
+    public Optional<Course> findByIdAndUsername(Long id, String username) {
+        return courseRepository.findByIdAndInstructorUsername(id, username);
+    }
+
+    public Optional<CourseCoverImage> getCourseCoverById(Long id) {
+        return courseRepository.getCourseCoverById(id);
     }
 }

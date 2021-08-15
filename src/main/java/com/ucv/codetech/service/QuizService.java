@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class QuizService {
@@ -27,5 +29,9 @@ public class QuizService {
             throw new AppException("The quiz with id " + id + " does not exist", HttpStatus.NOT_FOUND);
         }
         quizRepositoryGateway.deleteById(id);
+    }
+
+    public List<Quiz> findAllByInstructorName(String name) {
+        return quizRepositoryGateway.findAllByInstructorName(name);
     }
 }

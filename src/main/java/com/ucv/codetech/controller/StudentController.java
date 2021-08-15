@@ -1,7 +1,9 @@
 package com.ucv.codetech.controller;
 
-import com.ucv.codetech.controller.model.input.QuizDto;
-import com.ucv.codetech.controller.model.output.*;
+import com.ucv.codetech.controller.model.output.StudentCertificationDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentFullLectureWrapperDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentPreviewCourseDisplayDto;
 import com.ucv.codetech.controller.swagger.StudentApi;
 import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/student")
 @PreAuthorize("hasRole('STUDENT')")
 @AllArgsConstructor
 public class StudentController implements StudentApi {
@@ -26,8 +28,8 @@ public class StudentController implements StudentApi {
     private final UserFacade userFacade;
 
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<StudentCourseDisplayDto> getUsersCourses(Principal principal) {
-        List<StudentCourseDisplayDto> enrolledCourses = userFacade.getEnrolledCourses(principal.getName());
+    public List<StudentPreviewCourseDisplayDto> getCourses(Principal principal) {
+        List<StudentPreviewCourseDisplayDto> enrolledCourses = userFacade.getEnrolledCourses(principal.getName());
         addHateoasForEnrolledCourses(enrolledCourses, principal.getName());
         return enrolledCourses;
     }
@@ -46,32 +48,35 @@ public class StudentController implements StudentApi {
     }
 
     @GetMapping(path = "/{username}/courses/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public StudentFullCourseDisplayDto getUsersCourse(@PathVariable("id") Long id, @PathVariable("username") String username) {
+    public StudentFullCourseDisplayDto getCourse(@PathVariable("id") Long id, @PathVariable("username") String username) {
         StudentFullCourseDisplayDto enrolledCourse = userFacade.getEnrolledCourse(username, id);
-        enrolledCourse.add(linkTo(methodOn(MediaController.class).getFileAsResource(enrolledCourse.getName(), enrolledCourse.getCoverImageName())).withRel("src"));
-        addHateoasForLectures(enrolledCourse.getLectureWrapperDisplayDtos());
+        enrolledCourse.add(linkTo(methodOn(MediaController.class).getFileAsResource(enrolledCourse.getName(), enrolledCourse.getCoverImageName())).withRel("cover-image"));
+        addHateoasForLectures(enrolledCourse.getLectureWrapperDisplayDtos(), enrolledCourse.getName());
         return enrolledCourse;
     }
 
     private void addHateoasForCertifications(List<StudentCertificationDisplayDto> certifications, String username) {
         for (StudentCertificationDisplayDto certification : certifications) {
-            certification.add(linkTo(methodOn(StudentController.class).getUsersCourse(certification.getCourseId(), username)).withRel(LinkRelation.of("enrolled-course")));
+            certification.add(linkTo(methodOn(StudentController.class).getCourse(certification.getCourseId(), username)).withRel(LinkRelation.of("enrolled-course")));
         }
     }
 
-    private void addHateoasForEnrolledCourses(List<StudentCourseDisplayDto> enrolledCourses, String name) {
-        for (StudentCourseDisplayDto enrolledCourse : enrolledCourses) {
-            enrolledCourse.add(linkTo(methodOn(StudentController.class).getUsersCourse(enrolledCourse.getEnrolledCourseId(), name)).withRel(LinkRelation.of("enrolled-course")));
+    private void addHateoasForEnrolledCourses(List<StudentPreviewCourseDisplayDto> enrolledCourses, String name) {
+        for (StudentPreviewCourseDisplayDto enrolledCourse : enrolledCourses) {
+            enrolledCourse.add(linkTo(methodOn(StudentController.class).getCourse(enrolledCourse.getEnrolledCourseId(), name)).withRel(LinkRelation.of("enrolled-course")));
+            enrolledCourse.add(linkTo(methodOn(MediaController.class).getFileAsResource(enrolledCourse.getName(), enrolledCourse.getCoverImageName())).withRel(LinkRelation.of("cover-image")));
         }
     }
 
-    private void addHateoasForLectures(List<StudentFullLectureWrapperDisplayDto> lectureWrapperDisplayDtos) {
+    private void addHateoasForLectures(List<StudentFullLectureWrapperDisplayDto> lectureWrapperDisplayDtos, String folderName) {
         for (StudentFullLectureWrapperDisplayDto lectureWrapperDisplayDto : lectureWrapperDisplayDtos) {
-            lectureWrapperDisplayDto.add(linkTo(methodOn(LectureController.class).zipLectureFiles(lectureWrapperDisplayDto.getLectureId())).withRel(LinkRelation.of("zip-lectures")));
-            for (String lectureFileName : lectureWrapperDisplayDto.getLectureFileNames()) {
-                lectureWrapperDisplayDto.add(linkTo(methodOn(LectureController.class).downloadFile(lectureWrapperDisplayDto.getLectureId(), lectureFileName)).withRel(LinkRelation.of("download-file")));
+            if (!lectureWrapperDisplayDto.getLectureFileNames().isEmpty()) {
+                lectureWrapperDisplayDto.add(linkTo(methodOn(LectureController.class).zipLectureFiles(lectureWrapperDisplayDto.getLectureId())).withRel(LinkRelation.of("zip-lectures")));
+                for (String lectureFileName : lectureWrapperDisplayDto.getLectureFileNames()) {
+                    lectureWrapperDisplayDto.add(linkTo(methodOn(LectureController.class).downloadFile(lectureWrapperDisplayDto.getLectureId(), lectureFileName)).withRel(LinkRelation.of("download-file")));
+                }
             }
-            lectureWrapperDisplayDto.add(linkTo(methodOn(LectureController.class).downloadFile(lectureWrapperDisplayDto.getLectureId(), lectureWrapperDisplayDto.getLectureVideoName())).withRel("video"));
+            lectureWrapperDisplayDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(folderName, lectureWrapperDisplayDto.getLectureVideoName())).withRel("video"));
         }
     }
 }

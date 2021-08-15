@@ -113,6 +113,11 @@ public class Course {
         comment.setCourse(this);
     }
 
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+        quiz.setCourse(this);
+    }
+
     public boolean containsStudent(Student student) {
         return enrolledStudents.contains(student);
     }

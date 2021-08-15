@@ -5,17 +5,14 @@ import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
 import com.ucv.codetech.controller.model.input.QuizDto;
-import com.ucv.codetech.controller.model.output.DisplayCourseDto;
-import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
+import com.ucv.codetech.controller.model.output.PreviewCourseDto;
+import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
 import com.ucv.codetech.facade.converter.CommentConverter;
 import com.ucv.codetech.facade.converter.CourseConverter;
 import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
-import com.ucv.codetech.service.CategoryService;
-import com.ucv.codetech.service.CommentService;
-import com.ucv.codetech.service.CourseService;
-import com.ucv.codetech.service.LectureService;
+import com.ucv.codetech.service.*;
 import com.ucv.codetech.service.file.FileService;
 import com.ucv.codetech.service.user.UserService;
 import lombok.AllArgsConstructor;
@@ -24,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,15 +40,16 @@ public class CourseFacade {
     private final QuizConverter quizConverter;
     private final CommentConverter commentConverter;
     private final UserService userService;
+    private final QuizService quizService;
 
     @Transactional
-    public Long createCourse(CourseDto courseDto, Principal principal) {
+    public Long createCourse(CourseDto courseDto, String username) {
         try {
             if (courseService.courseExistsByName(courseDto.getName())) {
                 throw new AppException("The course already exists with this name!",
                         HttpStatus.BAD_REQUEST);
             }
-            Instructor instructor = userService.getInstructor(principal.getName());
+            Instructor instructor = userService.getInstructor(username);
             Category category = categoryService.findById(courseDto.getCategoryId());
             Course course = courseConverter.dtoToEntity(courseDto);
             instructor.addCourse(course);
@@ -69,8 +66,11 @@ public class CourseFacade {
 
     @Transactional
     public void addCourseCover(MultipartFile cover, Long id) {
+        if (courseService.containsCourseCover(id)) {
+            throw new AppException("The course with id " + id + " already has a cover", HttpStatus.BAD_REQUEST);
+        }
+        Course course = courseService.findById(id);
         try {
-            Course course = courseService.findById(id);
             String filename = fileService.moveFile(cover, course.getFolderName());
             course.setCoverImageName(filename);
             courseService.saveOrUpdate(course);
@@ -89,14 +89,18 @@ public class CourseFacade {
         courseService.disableCourse(id);
     }
 
-    public FullDisplayCourseDto getById(Long id) {
+    public PreviewFullCourseDto getById(Long id) {
         Course course = courseService.findById(id);
         return courseConverter.entityToFullDisplayCourseDto(course);
     }
 
-    public List<DisplayCourseDto> getAll() {
+    public List<PreviewCourseDto> getAll(String name) {
+        List<Course> usersCourses = userService.getStudent(name).getEnrolledCourses()
+                .stream()
+                .map(EnrolledCourse::getCourse)
+                .collect(Collectors.toList());
         List<Course> courses = courseService.getAll();
-        return courseConverter.courseListToDisplayCourseDtoList(courses);
+        return courseConverter.courseListToDisplayCourseDtoList(courses, usersCourses);
     }
 
     @Transactional
@@ -139,15 +143,16 @@ public class CourseFacade {
     }
 
     @Transactional
-    public Long createQuiz(Long id, QuizDto quizDto) {
+    public Long createQuiz(Long id, QuizDto quizDto, String username) {
+        Instructor instructor = userService.getInstructor(username);
         if (courseService.hasQuiz(id)) {
             throw new AppException("The course already has an associated quiz", HttpStatus.BAD_REQUEST);
         }
         Course course = courseService.findById(id);
         Quiz quiz = quizConverter.quizDtoToEntity(quizDto);
         course.setQuiz(quiz);
-        quiz.setCourse(course);
-        courseService.saveOrUpdate(course);
+        instructor.addQuiz(quiz);
+        quizService.saveOrUpdate(quiz);
         return quiz.getId();
     }
 
@@ -155,11 +160,22 @@ public class CourseFacade {
     public void enrollToCourse(Long id, String username) {
         Course course = courseService.findById(id);
         Student student = userService.getStudent(username);
-        if (course.getEnrolledStudents().contains(student)) {
+        if (course.containsStudent(student)) {
             throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(), HttpStatus.BAD_REQUEST);
         }
         course.enrollStudent(student, courseToEnrolledCourse(course, student));
         userService.saveStudent(student);
+    }
+
+    @Transactional
+    public void deleteCourseCover(Long id) {
+        try {
+            String courseFolderName = courseService.getCourseFolderName(id);
+            String coverImage = courseService.getCourseCoverById(id).getCoverImageName();
+            fileService.deleteFile(courseFolderName, coverImage);
+        } catch (IOException ioException) {
+            throw new AppException("An error occurred while deleting the cover image of the course with id " + id, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private EnrolledCourse courseToEnrolledCourse(Course course, Student student) {

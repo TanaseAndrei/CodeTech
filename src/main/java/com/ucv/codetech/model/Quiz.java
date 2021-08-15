@@ -26,6 +26,9 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    private Instructor instructor;
+
     @PreRemove
     public void deleteQuiz() {
         this.course.setQuiz(null);

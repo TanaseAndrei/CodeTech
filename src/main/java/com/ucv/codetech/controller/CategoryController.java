@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,8 +24,9 @@ public class CategoryController implements CategoryApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryFacade.create(categoryDto);
+    public URI createCategory(@RequestBody CategoryDto categoryDto) {
+        Long categoryId = categoryFacade.create(categoryDto);
+        return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(categoryId).toUri();
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")

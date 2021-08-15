@@ -9,9 +9,9 @@ import com.ucv.codetech.controller.swagger.TokenApi;
 import com.ucv.codetech.facade.UserFacade;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Role;
+import com.ucv.codetech.service.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.token.Token;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class TokenController implements TokenApi {
 
     private final UserFacade userFacade;
+    private final JwtService jwtService;
 
     @GetMapping(path = "/refresh")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,13 +52,8 @@ public class TokenController implements TokenApi {
                 String username = decodedJWT.getSubject();
                 AppUser appUser = userFacade.getAppUser(username);
                 Role role = appUser.getRole();
-                String accessToken = JWT.create()
-                        .withSubject(appUser.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)).withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", Stream.of(role).map(Role::name).collect(Collectors.toList()))
-                        .sign(algorithm);
                 Map<String, String> headerTokens = new HashMap<>();
-                headerTokens.put("access_token", accessToken);
+                headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList(role.name()), algorithm));
                 headerTokens.put("refresh_token", refreshToken);
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), headerTokens); //tokens will be in a nice json format

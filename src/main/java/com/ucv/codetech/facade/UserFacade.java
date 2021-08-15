@@ -4,15 +4,13 @@ import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
-import com.ucv.codetech.controller.model.output.StudentCertificationDisplayDto;
-import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
-import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
-import com.ucv.codetech.facade.converter.AppUserConverter;
-import com.ucv.codetech.facade.converter.CertificationConverter;
-import com.ucv.codetech.facade.converter.EnrolledCourseConverter;
+import com.ucv.codetech.controller.model.output.*;
+import com.ucv.codetech.facade.converter.*;
 import com.ucv.codetech.model.*;
+import com.ucv.codetech.service.CourseService;
 import com.ucv.codetech.service.EnrolledCourseService;
 import com.ucv.codetech.service.LectureWrapperService;
+import com.ucv.codetech.service.QuizService;
 import com.ucv.codetech.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +29,11 @@ public class UserFacade {
     private final PasswordEncoder passwordEncoder;
     private final AppUserConverter appUserConverter;
     private final LectureWrapperService lectureWrapperService;
+    private final CourseService courseService;
     private final EnrolledCourseConverter enrolledCourseConverter;
+    private final CourseConverter courseConverter;
+    private final QuizService quizService;
+    private final QuizConverter quizConverter;
 
     @Transactional
     public Long registerStudent(StudentDto studentDto) {
@@ -56,14 +58,12 @@ public class UserFacade {
     }
 
     public StudentFullCourseDisplayDto getEnrolledCourse(String username, Long id) {
-        EnrolledCourse enrolledCourse = enrolledCourseService.findById(id, username);
-        return enrolledCourseConverter.entityToStudentFullCourseDisplayDto(enrolledCourse);
+        return enrolledCourseConverter.entityToStudentFullCourseDisplayDto(enrolledCourseService.findById(id, username));
     }
 
-    public List<StudentCourseDisplayDto> getEnrolledCourses(String username) {
+    public List<StudentPreviewCourseDisplayDto> getEnrolledCourses(String username) {
         Student student = userService.getStudent(username);
-        List<EnrolledCourse> enrolledCourses = student.getEnrolledCourses();
-        return enrolledCourseConverter.entitiesToStudentCourseDisplayDtos(enrolledCourses);
+        return enrolledCourseConverter.entitiesToStudentCourseDisplayDtos(student.getEnrolledCourses());
     }
 
     @Transactional
@@ -78,6 +78,21 @@ public class UserFacade {
         return certificationConverter.entitiesToStudentCertificationDisplayDtos(student.getCertifications());
     }
 
+    public List<InstructorPreviewCourseDisplayDto> getInstructorsCourses(String username) {
+        Instructor instructor = userService.getInstructor(username);
+        return enrolledCourseConverter.entitiesToInstructorCourseDisplayDtos(instructor.getCourses());
+    }
+
+    public InstructorFullCourseDisplayDto getInstructorCourse(String username, Long courseId) {
+        Course course = courseService.findByIdAndUsername(courseId, username);
+        return courseConverter.entityToInstructorFullCourseDisplayDto(course);
+    }
+
+    public List<InstructorPreviewQuizDto> getQuizzes(String name) {
+        List<Quiz> quizzes = quizService.findAllByInstructorName(name);
+        return quizConverter.entitiesToInstructorPreviewQuizDto(quizzes);
+    }
+
     private void validateUserName(String username) {
         if (userService.userExistsByName(username)) {
             throw new AppException("The user with the name " + username + " already exists", HttpStatus.BAD_REQUEST);
@@ -89,4 +104,5 @@ public class UserFacade {
             throw new AppException("The user with the email " + email + " already exists", HttpStatus.BAD_REQUEST);
         }
     }
+
 }

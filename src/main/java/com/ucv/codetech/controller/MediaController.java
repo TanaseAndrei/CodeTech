@@ -21,6 +21,8 @@ public class MediaController implements MediaApi {
 
     private final MediaFacade mediaFacade;
 
+    //TODO maybe upload here the file and return the link to the resource and get rid of the ones in lecture controller
+
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(path = "/{folderName}/file/{filename}")
     public ResponseEntity<Resource> getFileAsResource(@PathVariable("folderName") String folderName,

@@ -27,6 +27,7 @@ public class CommentConverter {
 
     public DisplayCommentDto entityToDto(Comment comment) {
         DisplayCommentDto displayCommentDto = new DisplayCommentDto();
+        displayCommentDto.setId(comment.getId());
         displayCommentDto.setUsername(comment.getStudent().getUsername());
         displayCommentDto.setDescription(comment.getDescription());
         displayCommentDto.setTimeStamp(comment.getTimeStamp().toString());

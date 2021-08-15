@@ -1,12 +1,14 @@
 package com.ucv.codetech.controller.model.output;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 @Setter
 @Getter
-public class StudentCourseDisplayDto extends RepresentationModel<StudentCourseDisplayDto> {
+@EqualsAndHashCode(callSuper = true)
+public class StudentPreviewCourseDisplayDto extends RepresentationModel<StudentPreviewCourseDisplayDto> {
 
     private Long enrolledCourseId;
 

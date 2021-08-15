@@ -1,8 +1,10 @@
 package com.ucv.codetech.facade.converter;
 
-import com.ucv.codetech.controller.model.output.StudentCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.InstructorPreviewCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.StudentPreviewCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.StudentFullCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.StudentFullLectureWrapperDisplayDto;
+import com.ucv.codetech.model.Course;
 import com.ucv.codetech.model.EnrolledCourse;
 import com.ucv.codetech.model.LectureWrapper;
 import org.springframework.stereotype.Component;
@@ -13,22 +15,22 @@ import java.util.stream.Collectors;
 @Component
 public class EnrolledCourseConverter {
 
-    public List<StudentCourseDisplayDto> entitiesToStudentCourseDisplayDtos(List<EnrolledCourse> enrolledCourses) {
+    public List<StudentPreviewCourseDisplayDto> entitiesToStudentCourseDisplayDtos(List<EnrolledCourse> enrolledCourses) {
         return enrolledCourses
                 .stream()
                 .map(this::entityToStudentCourseDisplayDto)
                 .collect(Collectors.toList());
     }
 
-    public StudentCourseDisplayDto entityToStudentCourseDisplayDto(EnrolledCourse enrolledCourse) {
-        StudentCourseDisplayDto studentCourseDisplayDto = new StudentCourseDisplayDto();
-        studentCourseDisplayDto.setEnrolledCourseId(enrolledCourse.getId());
-        studentCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
-        studentCourseDisplayDto.setName(enrolledCourse.getCourse().getName());
-        studentCourseDisplayDto.setNumberOfCompletedLectures(enrolledCourse.getNumberOfCompletedLectures());
-        studentCourseDisplayDto.setNumberOfLectures(enrolledCourse.getNumberOfLectures());
-        studentCourseDisplayDto.setCoverImageName(enrolledCourse.getCourse().getCoverImageName());
-        return studentCourseDisplayDto;
+    public StudentPreviewCourseDisplayDto entityToStudentCourseDisplayDto(EnrolledCourse enrolledCourse) {
+        StudentPreviewCourseDisplayDto studentPreviewCourseDisplayDto = new StudentPreviewCourseDisplayDto();
+        studentPreviewCourseDisplayDto.setEnrolledCourseId(enrolledCourse.getId());
+        studentPreviewCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
+        studentPreviewCourseDisplayDto.setName(enrolledCourse.getCourse().getName());
+        studentPreviewCourseDisplayDto.setNumberOfCompletedLectures(enrolledCourse.getNumberOfCompletedLectures());
+        studentPreviewCourseDisplayDto.setNumberOfLectures(enrolledCourse.getNumberOfLectures());
+        studentPreviewCourseDisplayDto.setCoverImageName(enrolledCourse.getCourse().getCoverImageName());
+        return studentPreviewCourseDisplayDto;
     }
 
     public StudentFullCourseDisplayDto entityToStudentFullCourseDisplayDto(EnrolledCourse enrolledCourse) {
@@ -42,6 +44,24 @@ public class EnrolledCourseConverter {
         studentFullCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
         studentFullCourseDisplayDto.setLectureWrapperDisplayDtos(lectureWrappersToStudentFullLectureWrapperDisplayDtos(enrolledCourse.getLectureWrappers()));
         return studentFullCourseDisplayDto;
+    }
+
+    public List<InstructorPreviewCourseDisplayDto> entitiesToInstructorCourseDisplayDtos(List<Course> courses) {
+        return courses
+                .stream()
+                .map(this::entityToInstructorCourseDisplayDto)
+                .collect(Collectors.toList());
+    }
+
+    public InstructorPreviewCourseDisplayDto entityToInstructorCourseDisplayDto(Course course) {
+        InstructorPreviewCourseDisplayDto instructorPreviewCourseDisplayDto = new InstructorPreviewCourseDisplayDto();
+        instructorPreviewCourseDisplayDto.setCourseId(course.getId());
+        instructorPreviewCourseDisplayDto.setName(course.getName());
+        instructorPreviewCourseDisplayDto.setCoverImage(course.getCoverImageName());
+        instructorPreviewCourseDisplayDto.setNumberOfLectures(course.getNumberOfLectures());
+        instructorPreviewCourseDisplayDto.setNumberOfComments(course.getNumberOfComments());
+        instructorPreviewCourseDisplayDto.setNumberOfEnrolledStudents(course.getNrOfEnrolledStudents());
+        return instructorPreviewCourseDisplayDto;
     }
 
     private List<StudentFullLectureWrapperDisplayDto> lectureWrappersToStudentFullLectureWrapperDisplayDtos(List<LectureWrapper> lectureWrappers) {

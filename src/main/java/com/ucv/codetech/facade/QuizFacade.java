@@ -12,9 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Facade
 @AllArgsConstructor
 public class QuizFacade {
@@ -32,8 +29,14 @@ public class QuizFacade {
         return question.getId();
     }
 
-    public DisplayQuizDto getQuiz(Long id) {
+    public DisplayQuizDto getQuiz(Long id, String username) {
         Quiz quiz = quizService.findById(id);
+        Student student = userService.getStudent(username);
+        Course course = quiz.getCourse();
+        if(student.containsCertificationForCourse(course)) {
+            throw new AppException("The student " + username + " cannot obtain certification for course " + course.getName()
+                    + " because he already has a certification for it", HttpStatus.BAD_REQUEST);
+        }
         return quizConverter.entityToDisplayQuizDto(quiz);
     }
 
@@ -46,11 +49,11 @@ public class QuizFacade {
     public Long completeQuiz(Long id, String name) {
         Student student = userService.getStudent(name);
         Course course = quizService.findById(id).getCourse();
-        if(!course.containsStudent(student)) {
+        if (!course.containsStudent(student)) { //to obtain a certification, a student must enroll in a course first
             throw new AppException("The student " + name + " cannot obtain certification for course " + course.getName()
                     + " because he is not enrolled in this course", HttpStatus.BAD_REQUEST);
         }
-        if(student.containsCertificationForCourse(course)) {
+        if (student.containsCertificationForCourse(course)) {
             throw new AppException("The student " + name + " cannot obtain certification for course " + course.getName()
                     + " because he already has a certification for it", HttpStatus.BAD_REQUEST);
         }

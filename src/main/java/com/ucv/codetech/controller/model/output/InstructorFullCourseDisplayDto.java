@@ -1,21 +1,19 @@
 package com.ucv.codetech.controller.model.output;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
 @Getter
-@EqualsAndHashCode(callSuper = false)
-public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseDto> {
+@EqualsAndHashCode(callSuper = true)
+public class InstructorFullCourseDisplayDto extends RepresentationModel<InstructorFullCourseDisplayDto> {
 
-    private String name;
-
-    private String instructorName;
+    private Long courseId;
 
     private String description;
 
@@ -25,11 +23,7 @@ public class FullDisplayCourseDto extends RepresentationModel<FullDisplayCourseD
 
     private List<DisplayCommentDto> comments;
 
-    @JsonIgnore
     private String coverImageName;
 
-    @JsonIgnore
-    private Long quizId;
-
-    private List<DisplayLectureDto> displayLectureDtos;
+    private List<InstructorFullLectureDisplayDto> fullLectureDisplayDtos = new ArrayList<>();
 }

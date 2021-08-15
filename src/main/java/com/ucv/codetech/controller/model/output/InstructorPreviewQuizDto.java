@@ -7,10 +7,10 @@ import org.springframework.hateoas.RepresentationModel;
 
 @Setter
 @Getter
-@EqualsAndHashCode(callSuper = false)
-public class DisplayLectureDto extends RepresentationModel<DisplayLectureDto> {
+@EqualsAndHashCode(callSuper = true)
+public class InstructorPreviewQuizDto extends RepresentationModel<InstructorPreviewQuizDto> {
 
-    private Long id;
+    private Long quizId;
 
-    private String name;
+    private String quizName;
 }

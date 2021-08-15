@@ -6,6 +6,7 @@ import com.ucv.codetech.controller.model.input.QuizDto;
 import com.ucv.codetech.controller.model.output.DisplayAnswerDto;
 import com.ucv.codetech.controller.model.output.DisplayQuestionDto;
 import com.ucv.codetech.controller.model.output.DisplayQuizDto;
+import com.ucv.codetech.controller.model.output.InstructorPreviewQuizDto;
 import com.ucv.codetech.model.Answer;
 import com.ucv.codetech.model.Question;
 import com.ucv.codetech.model.Quiz;
@@ -43,6 +44,20 @@ public class QuizConverter {
         answer.setCorrectAnswer(answerDto.isCorrectAnswer());
         answer.setDescription(answerDto.getAnswer());
         return answer;
+    }
+
+    public List<InstructorPreviewQuizDto> entitiesToInstructorPreviewQuizDto(List<Quiz> quizzes) {
+        return quizzes
+                .stream()
+                .map(this::entityToInstructorPreviewQuizDto)
+                .collect(Collectors.toList());
+    }
+
+    private InstructorPreviewQuizDto entityToInstructorPreviewQuizDto(Quiz quiz) {
+        InstructorPreviewQuizDto instructorPreviewQuizDto = new InstructorPreviewQuizDto();
+        instructorPreviewQuizDto.setQuizId(quiz.getId());
+        instructorPreviewQuizDto.setQuizName(quiz.getCourse().getName());
+        return instructorPreviewQuizDto;
     }
 
     private List<Question> questionDtosToEntities(List<QuestionDto> questions) {

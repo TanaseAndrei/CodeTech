@@ -1,6 +1,5 @@
 package com.ucv.codetech.controller.model.output;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +25,6 @@ public class StudentFullCourseDisplayDto extends RepresentationModel<StudentFull
 
     private boolean isCourseCompleted;
 
-    @JsonIgnore
     private String coverImageName;
 
     List<StudentFullLectureWrapperDisplayDto> lectureWrapperDisplayDtos = new ArrayList<>();

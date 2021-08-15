@@ -4,9 +4,8 @@ import com.ucv.codetech.controller.model.input.CommentDto;
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.input.LectureDto;
 import com.ucv.codetech.controller.model.input.QuizDto;
-import com.ucv.codetech.controller.model.output.DisplayCourseDto;
-import com.ucv.codetech.controller.model.output.DisplayLectureDto;
-import com.ucv.codetech.controller.model.output.FullDisplayCourseDto;
+import com.ucv.codetech.controller.model.output.PreviewCourseDto;
+import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
 import com.ucv.codetech.controller.swagger.CourseApi;
 import com.ucv.codetech.facade.CourseFacade;
 import lombok.AllArgsConstructor;
@@ -37,7 +36,21 @@ public class CourseController implements CourseApi {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCourse(@Valid @RequestBody CourseDto courseDto, Principal principal) {
-        return courseFacade.createCourse(courseDto, principal);
+        return courseFacade.createCourse(courseDto, principal.getName());
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
+        courseFacade.addCourseCover(multipartFile, id);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @DeleteMapping(path = "/{id}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCourseCover(@PathVariable("id") Long id) {
+        courseFacade.deleteCourseCover(id);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
@@ -57,15 +70,8 @@ public class CourseController implements CourseApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/quiz", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Long createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
-        return courseFacade.createQuiz(id, quizDto);
-    }
-
-    @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PostMapping(path = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void uploadCourseCover(@RequestParam("file") MultipartFile multipartFile, @PathVariable Long id) {
-        courseFacade.addCourseCover(multipartFile, id);
+    public Long createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto, Principal principal) {
+        return courseFacade.createQuiz(id, quizDto, principal.getName());
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
@@ -92,23 +98,21 @@ public class CourseController implements CourseApi {
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public FullDisplayCourseDto getCourse(@PathVariable("id") Long id) {
-        FullDisplayCourseDto fullDisplayCourseDto = courseFacade.getById(id);
-        addHateoasFullCourseCoverImage(fullDisplayCourseDto);
-        addHateoasLectures(fullDisplayCourseDto);
-        addHateoasQuiz(fullDisplayCourseDto);
-        return fullDisplayCourseDto;
+    public PreviewFullCourseDto getCourse(@PathVariable("id") Long id) {
+        PreviewFullCourseDto previewFullCourseDto = courseFacade.getById(id);
+        addHateoasFullCourseCoverImage(previewFullCourseDto);
+        return previewFullCourseDto;
     }
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<DisplayCourseDto> getAllCourses() {
-        List<DisplayCourseDto> displayCourseDtos = courseFacade.getAll();
-        for (DisplayCourseDto displayCourseDto : displayCourseDtos) {
-            addHateoasCourseSelfRel(displayCourseDto);
-            addHateoasDisplayCourse(displayCourseDto);
+    public List<PreviewCourseDto> getAllCourses(Principal principal) {
+        List<PreviewCourseDto> previewCourseDtos = courseFacade.getAll(principal.getName());
+        for (PreviewCourseDto previewCourseDto : previewCourseDtos) {
+            addHateoasCourseSelfRel(previewCourseDto);
+            addHateoasDisplayCourse(previewCourseDto);
         }
-        return displayCourseDtos;
+        return previewCourseDtos;
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
@@ -118,43 +122,20 @@ public class CourseController implements CourseApi {
         courseFacade.deleteCourse(id);
     }
 
-    private void addHateoasDisplayCourse(DisplayCourseDto displayCourseDto) {
-        if (displayCourseDto.getCoverImageName() != null) {
-            displayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(displayCourseDto.getName(), displayCourseDto.getCoverImageName())).withRel("src"));
+    private void addHateoasCourseSelfRel(PreviewCourseDto previewCourseDto) {
+        previewCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(previewCourseDto.getId())).withSelfRel());
+    }
+
+    private void addHateoasDisplayCourse(PreviewCourseDto previewCourseDto) {
+        if (previewCourseDto.getCoverImageName() != null) {
+            previewCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(previewCourseDto.getName(), previewCourseDto.getCoverImageName())).withRel("preview"));
         }
     }
 
-    private void addHateoasCourseSelfRel(DisplayCourseDto displayCourseDto) {
-        displayCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(displayCourseDto.getId())).withSelfRel());
-    }
-
-    private void addHateoasQuiz(FullDisplayCourseDto fullDisplayCourseDto) {
-        if (fullDisplayCourseDto.getQuizId() != null) {
-            fullDisplayCourseDto.add(linkTo(methodOn(QuizController.class).getQuiz(fullDisplayCourseDto.getQuizId())).withRel(LinkRelation.of("quiz")));
-        }
-    }
-
-    private void addHateoasLectures(FullDisplayCourseDto fullDisplayCourseDto) {
-        for (DisplayLectureDto displayLectureDto : fullDisplayCourseDto.getDisplayLectureDtos()) {
-            addHateoasFile(displayLectureDto);
-            addHateoasVideo(displayLectureDto);
-        }
-    }
-
-    private void addHateoasFile(DisplayLectureDto displayLectureDto) {
-        for (String lectureFileName : displayLectureDto.getLectureFileNames()) {
-            displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), lectureFileName)).withRel(LinkRelation.of("file")));
-        }
-    }
-
-    private void addHateoasVideo(DisplayLectureDto displayLectureDto) {
-        displayLectureDto.add(linkTo(methodOn(LectureController.class).downloadFile(displayLectureDto.getId(), displayLectureDto.getLectureVideoName())).withRel(LinkRelation.of("video")));
-    }
-
-    private void addHateoasFullCourseCoverImage(FullDisplayCourseDto fullDisplayCourseDto) {
-        if (fullDisplayCourseDto.getCoverImageName() != null) {
-            fullDisplayCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(fullDisplayCourseDto.getName(),
-                    fullDisplayCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover")));
+    private void addHateoasFullCourseCoverImage(PreviewFullCourseDto previewFullCourseDto) {
+        if (previewFullCourseDto.getCoverImageName() != null) {
+            previewFullCourseDto.add(linkTo(methodOn(MediaController.class).getFileAsResource(previewFullCourseDto.getName(),
+                    previewFullCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover-image")));
         }
     }
 }
