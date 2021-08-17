@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-
 @RestController
 @RequestMapping("/answers")
 @AllArgsConstructor
@@ -23,7 +21,7 @@ public class AnswerController implements AnswerApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto, Principal principal) {
+    public void update(@PathVariable("id") Long id, @RequestBody UpdateAnswerDto updateAnswerDto) {
         answerFacade.update(id, updateAnswerDto);
     }
 

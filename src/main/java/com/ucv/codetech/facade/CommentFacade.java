@@ -25,7 +25,7 @@ public class CommentFacade {
 
     @Transactional
     public void delete(Long id) {
-        commentService.delete(id);
+        commentService.deleteById(id);
     }
 
     public void upVote(Long id) {

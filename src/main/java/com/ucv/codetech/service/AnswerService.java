@@ -22,7 +22,7 @@ public class AnswerService {
                 .orElseThrow(() -> new AppException("The answer with id " + id + " does not exist", HttpStatus.NOT_FOUND));
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         if(!answerRepositoryGateway.existsById(id)) {
             throw new AppException("The answer with id " + id + " does not exist", HttpStatus.NOT_FOUND);
         }

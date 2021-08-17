@@ -17,7 +17,7 @@ public class CategoryConverter {
         return category;
     }
 
-    public List<CategoryDto> categoriesToCategoryDtos(List<Category> categories) {
+    public List<CategoryDto> entitiesToCategoryDtos(List<Category> categories) {
         return categories
                 .stream()
                 .map(this::entityToDto)
@@ -31,7 +31,7 @@ public class CategoryConverter {
         return categoryDto;
     }
 
-    public Category updateDtoToEntity(UpdateCategoryDto updateCategoryDto) {
+    public Category dtoToEntity(UpdateCategoryDto updateCategoryDto) {
         Category category = new Category();
         category.setName(updateCategoryDto.getName());
         return category;

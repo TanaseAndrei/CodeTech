@@ -23,7 +23,7 @@ public class AnswerFacade {
 
     @Transactional
     public void delete(Long id) {
-        answerService.delete(id);
+        answerService.deleteById(id);
     }
 
     public boolean isCorrect(Long id) {

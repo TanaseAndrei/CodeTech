@@ -2,6 +2,7 @@ package com.ucv.codetech.security;
 
 import com.ucv.codetech.security.filter.CustomAuthenticationFilter;
 import com.ucv.codetech.security.filter.CustomAuthorizationFilter;
+import com.ucv.codetech.service.JwtService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService());
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
                 .antMatchers("/login", "/signup/**", "/token/**").permitAll()

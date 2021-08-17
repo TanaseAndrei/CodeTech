@@ -25,22 +25,22 @@ public class CategoryFacade {
         return categoryService.saveOrUpdate(category).getId();
     }
 
-    public CategoryDto findById(Long id) {
+    public CategoryDto find(Long id) {
         Category category = categoryService.findById(id);
         return categoryConverter.entityToDto(category);
     }
 
     public List<CategoryDto> findAll() {
         List<Category> categories = categoryService.findAll();
-        return categoryConverter.categoriesToCategoryDtos(categories);
+        return categoryConverter.entitiesToCategoryDtos(categories);
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         categoryService.deleteById(id);
     }
 
     public void edit(Long id, UpdateCategoryDto updateCategory) {
-        Category category = categoryConverter.updateDtoToEntity(updateCategory);
+        Category category = categoryConverter.dtoToEntity(updateCategory);
         category.setId(id);
         categoryService.edit(category);
     }

@@ -1,4 +1,4 @@
-package com.ucv.codetech.service.file;
+package com.ucv.codetech.service;
 
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;

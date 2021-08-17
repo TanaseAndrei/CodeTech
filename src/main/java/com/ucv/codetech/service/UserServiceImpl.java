@@ -1,13 +1,13 @@
-package com.ucv.codetech.service.user;
+package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;
 import com.ucv.codetech.model.Role;
 import com.ucv.codetech.model.Student;
-import com.ucv.codetech.repository.AppUserRepository;
-import com.ucv.codetech.repository.InstructorRepository;
-import com.ucv.codetech.repository.StudentRepository;
+import com.ucv.codetech.repository.AppUserRepositoryGateway;
+import com.ucv.codetech.repository.InstructorRepositoryGateway;
+import com.ucv.codetech.repository.StudentRepositoryGateway;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,51 +26,51 @@ import java.util.Collections;
 @Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final AppUserRepository appUserRepository;
-    private final StudentRepository studentRepository;
-    private final InstructorRepository instructorRepository;
+    private final AppUserRepositoryGateway appUserRepositoryGateway;
+    private final StudentRepositoryGateway studentRepositoryGateway;
+    private final InstructorRepositoryGateway instructorRepositoryGateway;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser appUser = appUserRepository.findByUsername(username)
+        AppUser appUser = appUserRepositoryGateway.findByUsername(username)
                 .orElseThrow(() -> new AppException("The user with name " + username + " does not exist", HttpStatus.NOT_FOUND));
         return new org.springframework.security.core.userdetails.User(appUser.getUsername(), appUser.getPassword(), getAppUserAuthority(appUser.getRole()));
     }
 
     @Override
     public AppUser getAppUser(String name) {
-        return appUserRepository.findByUsername(name)
+        return appUserRepositoryGateway.findByUsername(name)
                 .orElseThrow(() -> new AppException("The user with the name " + name + " does not exist", HttpStatus.NOT_FOUND));
     }
 
     @Override
     public Instructor saveInstructor(Instructor instructor) {
-        return instructorRepository.save(instructor);
+        return instructorRepositoryGateway.save(instructor);
     }
 
     @Override
     public Instructor getInstructor(String name) {
-        return instructorRepository.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
+        return instructorRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
     }
 
     @Override
     public Student saveStudent(Student student) {
-        return studentRepository.save(student);
+        return studentRepositoryGateway.save(student);
     }
 
     @Override
     public Student getStudent(String name) {
-        return studentRepository.findByUsername(name).orElseThrow(() -> new AppException("The student with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
+        return studentRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The student with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
     }
 
     @Override
     public boolean userExistsByName(String name) {
-        return appUserRepository.existsByUsername(name);
+        return appUserRepositoryGateway.existsByUsername(name);
     }
 
     @Override
     public boolean userExistsByEmail(String email) {
-        return appUserRepository.existsByEmail(email);
+        return appUserRepositoryGateway.existsByEmail(email);
     }
 
     private Collection<? extends GrantedAuthority> getAppUserAuthority(Role role) {

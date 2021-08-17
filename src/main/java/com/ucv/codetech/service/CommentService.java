@@ -28,7 +28,7 @@ public class CommentService {
         commentRepositoryGateway.saveOrUpdate(comment);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         if(!commentRepositoryGateway.existsById(id)) {
             throw new AppException("The comment with the id " + id + " does not exist", HttpStatus.NOT_FOUND);
         }

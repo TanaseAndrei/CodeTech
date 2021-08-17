@@ -1,7 +1,6 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.service.file.FileService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;

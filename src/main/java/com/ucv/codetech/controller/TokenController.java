@@ -1,9 +1,5 @@
 package com.ucv.codetech.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ucv.codetech.controller.swagger.TokenApi;
 import com.ucv.codetech.facade.UserFacade;
@@ -21,13 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -42,30 +34,18 @@ public class TokenController implements TokenApi {
     @GetMapping(path = "/refresh")
     @ResponseStatus(HttpStatus.CREATED)
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String refreshToken = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = jwtVerifier.verify(refreshToken);
-                String username = decodedJWT.getSubject();
-                AppUser appUser = userFacade.getAppUser(username);
-                Role role = appUser.getRole();
-                Map<String, String> headerTokens = new HashMap<>();
-                headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList(role.name()), algorithm));
-                headerTokens.put("refresh_token", refreshToken);
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), headerTokens); //tokens will be in a nice json format
-            } catch (Exception exception) {
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error); //tokens will be in a nice json format
-            }
-        } else {
-            throw new RuntimeException("Refresh token is missing");
+        try {
+            String username = jwtService.getSubject(request);
+            AppUser appUser = userFacade.getAppUser(username);
+            Role role = appUser.getRole();
+            Map<String, String> headerTokens = new HashMap<>();
+            headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList(role.name()), jwtService.getAlgorithm()));
+            headerTokens.put("refresh_token", jwtService.getToken(request));
+            response.setContentType(APPLICATION_JSON_VALUE);
+            new ObjectMapper().writeValue(response.getOutputStream(), headerTokens); //tokens will be in a nice json format
+        } catch (Exception exception) {
+            response.setStatus(FORBIDDEN.value());
+            jwtService.handleException(response, exception);
         }
     }
 }

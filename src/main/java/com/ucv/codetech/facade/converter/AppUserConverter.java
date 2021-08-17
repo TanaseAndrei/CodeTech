@@ -21,8 +21,8 @@ public class AppUserConverter {
     public Instructor dtoToEntity(InstructorDto instructorDto) {
         Instructor instructor = new Instructor();
         instructor.setEmail(instructorDto.getEmail());
-        instructor.setUsername(instructorDto.getUsername());
         instructor.setRole(Role.getByName(instructorDto.getRoleDto().name()));
+        instructor.setUsername(instructorDto.getUsername());
         return instructor;
     }
 }

@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/signup")
+@RequestMapping("/register")
 @AllArgsConstructor
-public class SignupController implements SignupApi {
+public class RegisterController implements SignupApi {
 
     private final UserFacade userFacade;
 

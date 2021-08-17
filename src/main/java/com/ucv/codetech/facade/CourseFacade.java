@@ -1,10 +1,7 @@
 package com.ucv.codetech.facade;
 
 import com.ucv.codetech.controller.exception.AppException;
-import com.ucv.codetech.controller.model.input.CommentDto;
-import com.ucv.codetech.controller.model.input.CourseDto;
-import com.ucv.codetech.controller.model.input.LectureDto;
-import com.ucv.codetech.controller.model.input.QuizDto;
+import com.ucv.codetech.controller.model.input.*;
 import com.ucv.codetech.controller.model.output.PreviewCourseDto;
 import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
 import com.ucv.codetech.facade.converter.CommentConverter;
@@ -13,8 +10,8 @@ import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.*;
-import com.ucv.codetech.service.file.FileService;
-import com.ucv.codetech.service.user.UserService;
+import com.ucv.codetech.service.FileService;
+import com.ucv.codetech.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +27,9 @@ import static com.ucv.codetech.StartupComponent.Facade;
 @AllArgsConstructor
 public class CourseFacade {
 
+    private final CourseService courseService;
     private final LectureService lectureService;
     private final CommentService commentService;
-    private final CourseService courseService;
     private final CategoryService categoryService;
     private final FileService fileService;
     private final CourseConverter courseConverter;
@@ -126,7 +123,7 @@ public class CourseFacade {
     public void deleteCourse(Long id) {
         try {
             String courseFolderName = courseService.getCourseFolderName(id);
-            List<String> filesToDelete = courseService.delete(id);
+            List<String> filesToDelete = courseService.deleteById(id);
             fileService.deleteCourseFilesData(filesToDelete, courseFolderName);
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -139,6 +136,7 @@ public class CourseFacade {
         Course course = courseService.findById(id);
         Comment comment = commentConverter.dtoToEntity(commentDto);
         comment.setComment(student, course);
+        courseService.saveOrUpdate(course);
         return commentService.saveOrUpdate(comment);
     }
 
@@ -165,6 +163,7 @@ public class CourseFacade {
         }
         course.enrollStudent(student, courseToEnrolledCourse(course, student));
         userService.saveStudent(student);
+        courseService.saveOrUpdate(course);
     }
 
     @Transactional
@@ -176,6 +175,24 @@ public class CourseFacade {
         } catch (IOException ioException) {
             throw new AppException("An error occurred while deleting the cover image of the course with id " + id, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Transactional
+    public void updateCourse(Long courseId, UpdateCourseDto updateCourseDto) {
+        Course course = courseService.findById(courseId);
+        course.setAvailable(updateCourseDto.isAvailable());
+        course.setDescription(updateCourseDto.getDescription());
+        course.setDifficulty(Difficulty.getByName(updateCourseDto.getDifficultyDto().name()));
+        if(!course.getName().equals(updateCourseDto.getName())) {
+            String oldFolderName = course.getFolderName();
+            course.setName(updateCourseDto.getName());
+            course.setFolderName(updateCourseDto.getName());
+            boolean success = fileService.renameFile(oldFolderName, updateCourseDto.getName());
+            if(!success) {
+                throw new AppException("Course folder could not have been updated to a new name", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        courseService.saveOrUpdate(course);
     }
 
     private EnrolledCourse courseToEnrolledCourse(Course course, Student student) {

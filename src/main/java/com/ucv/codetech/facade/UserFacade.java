@@ -11,7 +11,7 @@ import com.ucv.codetech.service.CourseService;
 import com.ucv.codetech.service.EnrolledCourseService;
 import com.ucv.codetech.service.LectureWrapperService;
 import com.ucv.codetech.service.QuizService;
-import com.ucv.codetech.service.user.UserService;
+import com.ucv.codetech.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +30,6 @@ public class UserFacade {
     private final AppUserConverter appUserConverter;
     private final LectureWrapperService lectureWrapperService;
     private final CourseService courseService;
-    private final EnrolledCourseConverter enrolledCourseConverter;
     private final CourseConverter courseConverter;
     private final QuizService quizService;
     private final QuizConverter quizConverter;
@@ -58,12 +57,12 @@ public class UserFacade {
     }
 
     public StudentFullCourseDisplayDto getEnrolledCourse(String username, Long id) {
-        return enrolledCourseConverter.entityToStudentFullCourseDisplayDto(enrolledCourseService.findById(id, username));
+        return courseConverter.entityToStudentFullCourseDisplayDto(enrolledCourseService.findById(id, username));
     }
 
     public List<StudentPreviewCourseDisplayDto> getEnrolledCourses(String username) {
         Student student = userService.getStudent(username);
-        return enrolledCourseConverter.entitiesToStudentCourseDisplayDtos(student.getEnrolledCourses());
+        return courseConverter.entitiesToStudentCourseDisplayDtos(student.getEnrolledCourses());
     }
 
     @Transactional
@@ -80,7 +79,7 @@ public class UserFacade {
 
     public List<InstructorPreviewCourseDisplayDto> getInstructorsCourses(String username) {
         Instructor instructor = userService.getInstructor(username);
-        return enrolledCourseConverter.entitiesToInstructorCourseDisplayDtos(instructor.getCourses());
+        return courseConverter.entitiesToInstructorCourseDisplayDtos(instructor.getCourses());
     }
 
     public InstructorFullCourseDisplayDto getInstructorCourse(String username, Long courseId) {
@@ -104,5 +103,4 @@ public class UserFacade {
             throw new AppException("The user with the email " + email + " already exists", HttpStatus.BAD_REQUEST);
         }
     }
-
 }

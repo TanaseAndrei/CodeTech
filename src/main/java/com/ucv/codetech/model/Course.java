@@ -61,7 +61,7 @@ public class Course {
     @Column(name = "number_of_lectures")
     private int numberOfLectures;
 
-    @Column(name = "nuber_of_comments")
+    @Column(name = "number_of_comments")
     private int numberOfComments;
 
     @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)

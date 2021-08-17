@@ -1,4 +1,4 @@
-package com.ucv.codetech.service.user;
+package com.ucv.codetech.service;
 
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;

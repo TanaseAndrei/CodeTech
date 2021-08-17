@@ -7,7 +7,7 @@ import com.ucv.codetech.controller.model.output.DisplayQuizDto;
 import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.QuizService;
-import com.ucv.codetech.service.user.UserService;
+import com.ucv.codetech.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +34,8 @@ public class QuizFacade {
         Student student = userService.getStudent(username);
         Course course = quiz.getCourse();
         if(student.containsCertificationForCourse(course)) {
-            throw new AppException("The student " + username + " cannot obtain certification for course " + course.getName()
-                    + " because he already has a certification for it", HttpStatus.BAD_REQUEST);
+            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
+                    + " because he finished it", HttpStatus.BAD_REQUEST);
         }
         return quizConverter.entityToDisplayQuizDto(quiz);
     }

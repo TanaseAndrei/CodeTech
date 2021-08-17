@@ -24,9 +24,8 @@ public class CategoryController implements CategoryApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public URI createCategory(@RequestBody CategoryDto categoryDto) {
-        Long categoryId = categoryFacade.create(categoryDto);
-        return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(categoryId).toUri();
+    public Long createCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryFacade.create(categoryDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
@@ -45,13 +44,13 @@ public class CategoryController implements CategoryApi {
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CategoryDto getCategory(@PathVariable Long id) {
-        return categoryFacade.findById(id);
+        return categoryFacade.find(id);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
-        categoryFacade.deleteById(id);
+        categoryFacade.delete(id);
     }
 }

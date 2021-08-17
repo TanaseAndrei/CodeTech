@@ -1,4 +1,4 @@
-package com.ucv.codetech.service.file;
+package com.ucv.codetech.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +38,12 @@ public class FileService {
         String savedFilePath = applicationBaseFolder + SLASH + folder + SLASH + newFilename;
         Files.write(Paths.get(savedFilePath), fileBytes);
         return newFilename;
+    }
+
+    public boolean renameFile(String folder, String newName) {
+        File targetFolder = new File(applicationBaseFolder + SLASH + folder);
+        File newFolder = new File(applicationBaseFolder + SLASH + newName);
+        return targetFolder.renameTo(newFolder);
     }
 
     public void deleteFiles(List<String> fileNames, String folder) throws IOException {

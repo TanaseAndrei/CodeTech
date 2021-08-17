@@ -64,7 +64,7 @@ public class CourseService {
     }
 
     @Transactional
-    public List<String> delete(Long id) {
+    public List<String> deleteById(Long id) {
         Course course = courseRepositoryGateway.findById(id)
                 .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         List<String> videoNames = lectureRepositoryGateway.getLectureVideos(id);
