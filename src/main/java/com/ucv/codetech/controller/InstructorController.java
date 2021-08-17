@@ -43,7 +43,13 @@ public class InstructorController {
 
     @GetMapping(path = "/{username}/courses/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public InstructorFullCourseDisplayDto getCourse(@PathVariable("username") String username, @PathVariable("id") Long courseId) {
-        return userFacade.getInstructorCourse(username, courseId);
+        InstructorFullCourseDisplayDto instructorCourse = userFacade.getInstructorCourse(username, courseId);
+        addHateoasForInstructorFullCourseDisplayDto(instructorCourse);
+        return instructorCourse;
+    }
+
+    private void addHateoasForInstructorFullCourseDisplayDto(InstructorFullCourseDisplayDto instructorCourse) {
+        instructorCourse.add(linkTo(methodOn(MediaController.class).getFile(instructorCourse.getName(), instructorCourse.getCoverImageName())).withRel(LinkRelation.of("cover-image")));
     }
 
     private void addHateoasForInstructorPreviewQuizDto(List<InstructorPreviewQuizDto> quizzes) {

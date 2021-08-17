@@ -69,6 +69,7 @@ public class CourseConverter {
     public InstructorFullCourseDisplayDto entityToInstructorFullCourseDisplayDto(Course course) {
         InstructorFullCourseDisplayDto instructorFullCourseDisplayDto = new InstructorFullCourseDisplayDto();
         instructorFullCourseDisplayDto.setCourseId(course.getId());
+        instructorFullCourseDisplayDto.setName(course.getName());
         instructorFullCourseDisplayDto.setDescription(course.getDescription());
         instructorFullCourseDisplayDto.setEnrolledStudents(course.getNrOfEnrolledStudents());
         instructorFullCourseDisplayDto.setNumberOfLectures(course.getNumberOfLectures());

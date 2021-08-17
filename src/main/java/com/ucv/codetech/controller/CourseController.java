@@ -125,6 +125,13 @@ public class CourseController implements CourseApi {
         return previewCourseDtos;
     }
 
+    @PreAuthorize("hasRole('STUDENT')")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PreviewCourseDto> searchCourseByName(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
+        //TODO search course with limit
+        return null;
+    }
+
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
