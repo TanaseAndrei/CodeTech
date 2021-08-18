@@ -2,15 +2,13 @@ package com.ucv.codetech.facade.converter;
 
 import com.ucv.codetech.controller.model.input.CourseDto;
 import com.ucv.codetech.controller.model.output.*;
-import com.ucv.codetech.model.Course;
-import com.ucv.codetech.model.Difficulty;
-import com.ucv.codetech.model.EnrolledCourse;
-import com.ucv.codetech.model.LectureWrapper;
+import com.ucv.codetech.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,25 +28,27 @@ public class CourseConverter {
         return course;
     }
 
-    public List<PreviewCourseDto> courseListToDisplayCourseDtoList(List<Course> allCourses, List<Course> usersCourses) {
+    public List<PreviewCourseDto> courseListToDisplayCourseDtoList(List<Course> allCourses, Student student) {
         return allCourses
                 .stream()
-                .map(course -> entityToDisplayCourseDto(course, usersCourses))
+                .map(course -> entityToDisplayCourseDto(course, student))
                 .collect(Collectors.toList());
     }
 
-    public PreviewCourseDto entityToDisplayCourseDto(Course course, List<Course> usersCourses) {
+    public PreviewCourseDto entityToDisplayCourseDto(Course course, Student student) {
         PreviewCourseDto previewCourseDto = new PreviewCourseDto();
         previewCourseDto.setCoverImageName(course.getCoverImageName());
-        previewCourseDto.setId(course.getId());
+        previewCourseDto.setCourseId(course.getId());
         previewCourseDto.setNumberOfLectures(course.getNumberOfLectures());
         previewCourseDto.setNumberOfComments(course.getNumberOfComments());
         previewCourseDto.setName(course.getName());
         previewCourseDto.setInstructorName(course.getInstructor().getUsername());
         previewCourseDto.setEnrolledStudents(course.getNrOfEnrolledStudents());
         previewCourseDto.setDifficulty(course.getDifficulty().toString());
-        if(usersCourses.contains(course)) {
+        if(student.containsCourse(course)) {
             previewCourseDto.setAlreadyEnrolled(true);
+            Optional<Long> enrolledCourseIdFromCourse = student.getEnrolledCourseIdFromCourse(course);
+            enrolledCourseIdFromCourse.ifPresent(previewCourseDto::setEnrolledCourseId);
         }
         return previewCourseDto;
     }
@@ -106,6 +106,7 @@ public class CourseConverter {
         studentFullCourseDisplayDto.setNumberOfCompletedLectures(enrolledCourse.getNumberOfCompletedLectures());
         studentFullCourseDisplayDto.setNumberOfLectures(enrolledCourse.getNumberOfLectures());
         studentFullCourseDisplayDto.setCourseCompleted(enrolledCourse.isCourseCompleted());
+        studentFullCourseDisplayDto.setDisplayCommentDtos(commentConverter.entitiesToDisplayCommentDtos(enrolledCourse.getCourse().getComments()));
         studentFullCourseDisplayDto.setLectureWrapperDisplayDtos(lectureWrappersToStudentFullLectureWrapperDisplayDtos(enrolledCourse.getLectureWrappers()));
         return studentFullCourseDisplayDto;
     }

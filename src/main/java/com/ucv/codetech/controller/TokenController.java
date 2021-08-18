@@ -39,7 +39,7 @@ public class TokenController implements TokenApi {
             AppUser appUser = userFacade.getAppUser(username);
             Role role = appUser.getRole();
             Map<String, String> headerTokens = new HashMap<>();
-            headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList(role.name()), jwtService.getAlgorithm()));
+            headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList("ROLE_" + role.name()), jwtService.getAlgorithm()));
             headerTokens.put("refresh_token", jwtService.getToken(request));
             response.setContentType(APPLICATION_JSON_VALUE);
             new ObjectMapper().writeValue(response.getOutputStream(), headerTokens); //tokens will be in a nice json format

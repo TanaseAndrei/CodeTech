@@ -95,7 +95,7 @@ public class CourseService {
 
     public boolean containsCourseCover(Long id) {
         String coverImageName = findById(id).getCoverImageName();
-        return StringUtils.isEmpty(coverImageName);
+        return !StringUtils.isEmpty(coverImageName);
     }
 
     private List<String> collectAllLectureFiles(List<Lecture> lectures) {

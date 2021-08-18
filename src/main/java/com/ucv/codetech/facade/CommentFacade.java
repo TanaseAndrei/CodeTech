@@ -2,6 +2,8 @@ package com.ucv.codetech.facade;
 
 import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.model.input.UpdateCommentDto;
+import com.ucv.codetech.controller.model.output.DisplayCommentDto;
+import com.ucv.codetech.facade.converter.CommentConverter;
 import com.ucv.codetech.model.Comment;
 import com.ucv.codetech.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -12,10 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentFacade {
 
     private final CommentService commentService;
+    private final CommentConverter commentConverter;
 
-    //TODO return dto
-    public Comment getCommentById(Long id) {
-        return commentService.findById(id);
+    public DisplayCommentDto getCommentById(Long id) {
+        Comment comment = commentService.findById(id);
+        return commentConverter.entityToDto(comment);
     }
 
     @Transactional

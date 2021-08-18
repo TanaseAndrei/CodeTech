@@ -47,6 +47,24 @@ public class Student extends AppUser {
         return optionalCertification.isPresent();
     }
 
+    public boolean containsCourse(Course course) {
+        for (EnrolledCourse enrolledCourse : enrolledCourses) {
+            if(enrolledCourse.getCourse().equals(course)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Optional<Long> getEnrolledCourseIdFromCourse(Course course) {
+        for (EnrolledCourse enrolledCourse : enrolledCourses) {
+            if (enrolledCourse.getCourse().equals(course)) {
+                return Optional.of(enrolledCourse.getId());
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

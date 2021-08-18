@@ -35,7 +35,6 @@ public class CourseController implements CourseApi {
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCourse(@Valid @RequestBody CourseDto courseDto) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        log.info("Current user is: " + currentLoggedUser);
         return courseFacade.createCourse(courseDto, currentLoggedUser);
     }
 
@@ -125,12 +124,12 @@ public class CourseController implements CourseApi {
         return previewCourseDtos;
     }
 
-    @PreAuthorize("hasRole('STUDENT')")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PreviewCourseDto> searchCourseByName(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
-        //TODO search course with limit
-        return null;
-    }
+//    @PreAuthorize("hasRole('STUDENT')")
+//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//    public List<PreviewCourseDto> searchCourseByName(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
+//        //TODO search course with limit
+//        return null;
+//    }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
@@ -140,7 +139,11 @@ public class CourseController implements CourseApi {
     }
 
     private void addHateoasCourseSelfRel(PreviewCourseDto previewCourseDto) {
-        previewCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(previewCourseDto.getId())).withSelfRel());
+        if (previewCourseDto.getEnrolledCourseId() != null) {
+            previewCourseDto.add(linkTo(methodOn(StudentController.class).getCourse(previewCourseDto.getEnrolledCourseId())).withRel(LinkRelation.of("enrolled-course")));
+        } else {
+            previewCourseDto.add(linkTo(methodOn(CourseController.class).getCourse(previewCourseDto.getCourseId())).withSelfRel());
+        }
     }
 
     private void addHateoasDisplayCourse(PreviewCourseDto previewCourseDto) {

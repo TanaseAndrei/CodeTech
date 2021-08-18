@@ -92,12 +92,9 @@ public class CourseFacade {
     }
 
     public List<PreviewCourseDto> getAll(String name) {
-        List<Course> usersCourses = userService.getStudent(name).getEnrolledCourses()
-                .stream()
-                .map(EnrolledCourse::getCourse)
-                .collect(Collectors.toList());
+        Student student = userService.getStudent(name);
         List<Course> courses = courseService.getAll();
-        return courseConverter.courseListToDisplayCourseDtoList(courses, usersCourses);
+        return courseConverter.courseListToDisplayCourseDtoList(courses, student);
     }
 
     @Transactional
@@ -157,6 +154,9 @@ public class CourseFacade {
     @Transactional
     public void enrollToCourse(Long id, String username) {
         Course course = courseService.findById(id);
+        if(!course.isAvailable()) {
+            throw new AppException("You can't enroll into this course because is not available", HttpStatus.BAD_REQUEST);
+        }
         Student student = userService.getStudent(username);
         if (course.containsStudent(student)) {
             throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(), HttpStatus.BAD_REQUEST);

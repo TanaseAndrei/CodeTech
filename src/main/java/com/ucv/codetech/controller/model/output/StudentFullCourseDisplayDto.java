@@ -27,5 +27,7 @@ public class StudentFullCourseDisplayDto extends RepresentationModel<StudentFull
 
     private String coverImageName;
 
+    private List<DisplayCommentDto> displayCommentDtos = new ArrayList<>();
+
     List<StudentFullLectureWrapperDisplayDto> lectureWrapperDisplayDtos = new ArrayList<>();
 }

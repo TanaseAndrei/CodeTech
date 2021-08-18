@@ -96,6 +96,7 @@ public class Course {
     }
 
     public void enrollStudent(Student student, EnrolledCourse enrolledCourse) {
+        nrOfEnrolledStudents++;
         student.addEnrolledCourse(enrolledCourse);
         this.enrolledStudents.add(student);
         this.enrolledCourses.add(enrolledCourse);

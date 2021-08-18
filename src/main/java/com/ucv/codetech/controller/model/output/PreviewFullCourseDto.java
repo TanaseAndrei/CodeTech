@@ -1,5 +1,6 @@
 package com.ucv.codetech.controller.model.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

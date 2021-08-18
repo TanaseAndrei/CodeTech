@@ -37,7 +37,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService());
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
-                .antMatchers("/login", "/signup/**", "/token/**").permitAll()
+                .antMatchers("/login", "/register/**", "/token/**").permitAll()
                 .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**",
                         "/media/**", "/questions/**", "/quiz/**", "/users/**").authenticated()
                 .anyRequest().authenticated()

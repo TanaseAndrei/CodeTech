@@ -29,7 +29,7 @@ public class QuizController implements QuizApi {
        return quizFacade.addQuestion(id, questionDto);
     }
 
-    @PreAuthorize("hasRole('STUDENT, INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('STUDENT, INSTRUCTOR')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public DisplayQuizDto getQuiz(@PathVariable("id") Long id) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();

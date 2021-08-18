@@ -92,6 +92,12 @@ public class UserFacade {
         return quizConverter.entitiesToInstructorPreviewQuizDto(quizzes);
     }
 
+    public boolean courseContainsStudent(Long id, String username) {
+        Course course = courseService.findById(id);
+        Student student = userService.getStudent(username);
+        return course.containsStudent(student);
+    }
+
     private void validateUserName(String username) {
         if (userService.userExistsByName(username)) {
             throw new AppException("The user with the name " + username + " already exists", HttpStatus.BAD_REQUEST);
