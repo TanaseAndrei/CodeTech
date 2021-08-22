@@ -6,6 +6,7 @@ import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
 import com.ucv.codetech.controller.swagger.CourseApi;
 import com.ucv.codetech.facade.AuthenticationFacade;
 import com.ucv.codetech.facade.CourseFacade;
+import com.ucv.codetech.service.UrlService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.LinkRelation;
@@ -29,6 +30,7 @@ public class CourseController implements CourseApi {
 
     private final CourseFacade courseFacade;
     private final AuthenticationFacade authenticationFacade;
+    private final UrlService urlService;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -148,14 +150,13 @@ public class CourseController implements CourseApi {
 
     private void addHateoasDisplayCourse(PreviewCourseDto previewCourseDto) {
         if (previewCourseDto.getCoverImageName() != null) {
-            previewCourseDto.add(linkTo(methodOn(MediaController.class).getFile(previewCourseDto.getName(), previewCourseDto.getCoverImageName())).withRel("preview"));
+            previewCourseDto.add(urlService.getLinkForGettingMedia(previewCourseDto.getName(), previewCourseDto.getCoverImageName(), "cover-image"));
         }
     }
 
     private void addHateoasFullCourseCoverImage(PreviewFullCourseDto previewFullCourseDto) {
         if (previewFullCourseDto.getCoverImageName() != null) {
-            previewFullCourseDto.add(linkTo(methodOn(MediaController.class).getFile(previewFullCourseDto.getName(),
-                    previewFullCourseDto.getCoverImageName())).withRel(LinkRelation.of("cover-image")));
+            previewFullCourseDto.add(urlService.getLinkForGettingMedia(previewFullCourseDto.getName(), previewFullCourseDto.getCoverImageName(), "cover-image"));
         }
     }
 }

@@ -64,14 +64,8 @@ public class CourseService {
     }
 
     @Transactional
-    public List<String> deleteById(Long id) {
-        Course course = courseRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
-        List<String> videoNames = lectureRepositoryGateway.getLectureVideos(id);
-        List<Lecture> lectures = lectureRepositoryGateway.getLecturesByCourseId(course.getId());
-        List<String> lectureFiles = collectAllLectureFiles(lectures);
+    public void deleteById(Long id) {
         courseRepositoryGateway.deleteById(id);
-        return collectAllFilesToDelete(course.getCoverImageName(), videoNames, lectureFiles);
     }
 
     public boolean courseExistsByName(String name) {
@@ -80,7 +74,7 @@ public class CourseService {
 
     public String getCourseFolderName(Long id) {
         return courseRepositoryGateway.getCourseFolderName(id)
-                .orElseThrow(() -> new AppException("The course does not have an associated folder!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The course does not exit or does not have an associated folder!", HttpStatus.NOT_FOUND));
     }
 
     public boolean hasQuiz(Long id) {
@@ -88,21 +82,8 @@ public class CourseService {
         return course.getQuiz() != null;
     }
 
-    public CourseCoverImage getCourseCoverById(Long id) {
-        return courseRepositoryGateway.getCourseCoverById(id)
-                .orElseThrow(() -> new AppException("The course with id " + id + " does not contain a cover", HttpStatus.NOT_FOUND));
-    }
-
     public boolean containsCourseCover(Long id) {
         String coverImageName = findById(id).getCoverImageName();
         return !StringUtils.isEmpty(coverImageName);
-    }
-
-    private List<String> collectAllLectureFiles(List<Lecture> lectures) {
-        return lectures.stream().map(Lecture::getLectureFileNames).flatMap(List::stream).collect(Collectors.toList());
-    }
-
-    private List<String> collectAllFilesToDelete(String coverImageName, List<String> videoNames, List<String> lectureFiles) {
-        return Stream.of(Collections.singletonList(coverImageName), lectureFiles, videoNames).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

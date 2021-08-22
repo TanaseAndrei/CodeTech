@@ -10,8 +10,6 @@ import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
-    Optional<Lecture> findByIdAndCourseId(Long lectureId, Long courseId);
-
     @Query("SELECT lecture.lectureVideoName FROM Lecture lecture WHERE lecture.course.id = :courseId")
     List<String> getLectureVideoNames(@Param("courseId")Long courseId);
 

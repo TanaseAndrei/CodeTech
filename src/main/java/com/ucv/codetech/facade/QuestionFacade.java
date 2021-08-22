@@ -8,10 +8,12 @@ import com.ucv.codetech.model.Answer;
 import com.ucv.codetech.model.Question;
 import com.ucv.codetech.service.QuestionService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @AllArgsConstructor
+@Slf4j
 public class QuestionFacade {
 
     private final QuizConverter quizConverter;
@@ -23,6 +25,7 @@ public class QuestionFacade {
         Answer answer = quizConverter.answerDtoToEntity(answerDto);
         question.addAnswer(answer);
         questionService.saveOrUpdate(question);
+        log.info("Added new answer to question {}", id);
         return answer.getId();
     }
 
@@ -32,10 +35,12 @@ public class QuestionFacade {
         question.setQuestionContent(updateQuestionDto.getQuestion());
         question.setMultipleAnswers(updateQuestionDto.isMultipleAnswers());
         questionService.saveOrUpdate(question);
+        log.info("Updated the question {}", id);
     }
 
     @Transactional
     public void delete(Long id) {
         questionService.delete(id);
+        log.info("Deleted the question {}", id);
     }
 }

@@ -32,6 +32,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        log.info("User {} attempts to authenticate", username);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
@@ -39,6 +40,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         User user = (User) authentication.getPrincipal();
+        log.info("User {} authenticated with success", user.getUsername());
         Algorithm algorithm = jwtService.getAlgorithm();
         Map<String, String> headerTokens = jwtService.createSecurityTokens(request, user, algorithm);
         response.setContentType(APPLICATION_JSON_VALUE);
@@ -47,7 +49,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        log.info("User {} couldn't authenticate", request.getParameter("username"));
         response.setStatus(UNAUTHORIZED.value());
         jwtService.handleException(response, failed);
     }
 }
+

@@ -10,28 +10,31 @@ import com.ucv.codetech.facade.converter.LectureConverter;
 import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.*;
-import com.ucv.codetech.service.FileService;
-import com.ucv.codetech.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriTemplate;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ucv.codetech.StartupComponent.Facade;
+import static com.ucv.codetech.service.UrlService.MEDIA_FOLDER_NAME_PATH_VARIABLE_URL;
 
 @Facade
 @AllArgsConstructor
+@Slf4j
 public class CourseFacade {
 
     private final CourseService courseService;
     private final LectureService lectureService;
     private final CommentService commentService;
     private final CategoryService categoryService;
-    private final FileService fileService;
     private final CourseConverter courseConverter;
     private final LectureConverter lectureConverter;
     private final QuizConverter quizConverter;
@@ -41,106 +44,127 @@ public class CourseFacade {
 
     @Transactional
     public Long createCourse(CourseDto courseDto, String username) {
-        try {
-            if (courseService.courseExistsByName(courseDto.getName())) {
-                throw new AppException("The course already exists with this name!",
-                        HttpStatus.BAD_REQUEST);
-            }
-            Instructor instructor = userService.getInstructor(username);
-            Category category = categoryService.findById(courseDto.getCategoryId());
-            Course course = courseConverter.dtoToEntity(courseDto);
-            instructor.addCourse(course);
-            course.setInstructor(instructor);
-            course.setCategory(category);
-            String folderName = fileService.createCourseFolder(courseDto.getName());
-            course.setFolderName(folderName);
-            userService.saveInstructor(instructor);
-            return courseService.saveOrUpdate(course).getId();
-        } catch (IOException ioException) {
-            throw new AppException("Error occurred while creating the course's folder", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.info("Instructor {} is creating a new course", username);
+        if (courseService.courseExistsByName(courseDto.getName())) {
+            log.warn("Course with name {} already exists", courseDto.getName());
+            throw new AppException("The course already exists with this name!",
+                    HttpStatus.BAD_REQUEST);
         }
+        Instructor instructor = userService.getInstructor(username);
+        Category category = categoryService.findById(courseDto.getCategoryId());
+        Course course = courseConverter.dtoToEntity(courseDto);
+        instructor.addCourse(course);
+        course.setInstructor(instructor);
+        course.setCategory(category);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(UrlService.MEDIA_FOLDER_URL).expand(),
+                new HttpEntity<>(courseDto.getName(), headers), String.class);
+        course.setFolderName(response.getBody());
+        userService.saveInstructor(instructor);
+        log.info("Course with name {} was created", courseDto.getName());
+        return courseService.saveOrUpdate(course).getId();
     }
 
     @Transactional
     public void addCourseCover(MultipartFile cover, Long id) {
+        log.info("Adding a cover for course with id {}", id);
         if (courseService.containsCourseCover(id)) {
+            log.warn("The course with id {} already has a cover", id);
             throw new AppException("The course with id " + id + " already has a cover", HttpStatus.BAD_REQUEST);
         }
         Course course = courseService.findById(id);
-        try {
-            String filename = fileService.moveFile(cover, course.getFolderName());
-            course.setCoverImageName(filename);
-            courseService.saveOrUpdate(course);
-        } catch (IOException ioException) {
-            throw new AppException("Error occurred while adding the course cover", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", cover.getResource());
+        ResponseEntity<String> response =
+                restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(course.getFolderName()),
+                        new HttpEntity<>(body, headers), String.class);
+        String filename = response.getBody();
+        course.setCoverImageName(filename);
+        courseService.saveOrUpdate(course);
     }
 
     @Transactional
     public void enableCourse(Long id) {
         courseService.enableCourse(id);
+        log.info("Enabled course with id {}", id);
     }
 
     @Transactional
     public void disableCourse(Long id) {
         courseService.disableCourse(id);
+        log.info("Disabled course with id {}", id);
     }
 
     public PreviewFullCourseDto getById(Long id) {
+        log.info("Getting full preview for course with id {}", id);
         Course course = courseService.findById(id);
         return courseConverter.entityToFullDisplayCourseDto(course);
     }
 
-    public List<PreviewCourseDto> getAll(String name) {
-        Student student = userService.getStudent(name);
+    public List<PreviewCourseDto> getAll(String username) {
+        log.info("Getting the preview courses for the student {}", username);
+        Student student = userService.getStudent(username);
         List<Course> courses = courseService.getAll();
         return courseConverter.courseListToDisplayCourseDtoList(courses, student);
     }
 
     @Transactional
     public Long createLecture(Long courseId, LectureDto lectureDto) {
-        try {
-            if (lectureService.lectureExistsInCourse(lectureDto.getName(), courseId)) {
-                throw new AppException("A lecture with the name " + lectureDto.getName() + " already exists in the course", HttpStatus.BAD_REQUEST);
-            }
-            Course course = courseService.findById(courseId);
-            String lectureVideoName = fileService.moveFile(lectureDto.getLectureVideo(), course.getFolderName());
-            Lecture lecture = lectureConverter.dtoToEntity(lectureDto);
-            lecture.setLectureVideoName(lectureVideoName);
-            course.addLecture(lecture);
-            courseService.saveOrUpdate(course);
-            return lecture.getId();
-        } catch (IOException ioException) {
-            throw new AppException("Something went wrong while creating the video to the course with id: " + courseId,
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        log.info("Creating new lecture for course with id {}", courseId);
+        if (lectureService.lectureExistsInCourse(lectureDto.getName(), courseId)) {
+            log.warn("A lecture with name {} already exists in the current course", lectureDto.getName());
+            throw new AppException("A lecture with the name " + lectureDto.getName() + " already exists in the course",
+                    HttpStatus.BAD_REQUEST);
         }
+        Course course = courseService.findById(courseId);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", lectureDto.getLectureVideo().getResource());
+        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(course.getFolderName()),
+                new HttpEntity<>(body, headers), String.class);
+        Lecture lecture = lectureConverter.dtoToEntity(lectureDto);
+        lecture.setLectureVideoName(response.getBody());
+        course.addLecture(lecture);
+        courseService.saveOrUpdate(course);
+        log.info("Created new lecture for course with id {}", courseId);
+        return lecture.getId();
     }
 
     @Transactional
     public void deleteCourse(Long id) {
-        try {
-            String courseFolderName = courseService.getCourseFolderName(id);
-            List<String> filesToDelete = courseService.deleteById(id);
-            fileService.deleteCourseFilesData(filesToDelete, courseFolderName);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+        String courseFolderName = courseService.getCourseFolderName(id);
+        courseService.deleteById(id);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        restTemplate.exchange(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL).expand(courseFolderName), HttpMethod.DELETE, new HttpEntity<>(headers), void.class);
+        log.info("Deleted course with id {}", id);
     }
 
     @Transactional
-    public Long addComment(Long id, CommentDto commentDto, String name) {
-        Student student = userService.getStudent(name);
+    public Long addComment(Long id, CommentDto commentDto, String username) {
+        Student student = userService.getStudent(username);
         Course course = courseService.findById(id);
         Comment comment = commentConverter.dtoToEntity(commentDto);
         comment.setComment(student, course);
         courseService.saveOrUpdate(course);
+        log.info("Student {} added a comment to the course {}", username, id);
         return commentService.saveOrUpdate(comment);
     }
 
     @Transactional
     public Long createQuiz(Long id, QuizDto quizDto, String username) {
+        log.info("Creating a new quiz for course {}", id);
         Instructor instructor = userService.getInstructor(username);
         if (courseService.hasQuiz(id)) {
+            log.warn("A quiz already exists for course with id {}", id);
             throw new AppException("The course already has an associated quiz", HttpStatus.BAD_REQUEST);
         }
         Course course = courseService.findById(id);
@@ -148,47 +172,62 @@ public class CourseFacade {
         course.setQuiz(quiz);
         instructor.addQuiz(quiz);
         quizService.saveOrUpdate(quiz);
+        log.info("Created the quiz for course with id {}", id);
         return quiz.getId();
     }
 
     @Transactional
     public void enrollToCourse(Long id, String username) {
+        log.info("Student {} is enrolling to course with id {}", username, id);
         Course course = courseService.findById(id);
-        if(!course.isAvailable()) {
+        if (!course.isAvailable()) {
+            log.warn("The course {} is not available", id);
             throw new AppException("You can't enroll into this course because is not available", HttpStatus.BAD_REQUEST);
         }
         Student student = userService.getStudent(username);
         if (course.containsStudent(student)) {
-            throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(), HttpStatus.BAD_REQUEST);
+            log.warn("Student {} is already enrolled in course {}", username, id);
+            throw new AppException("Student " + username + " is already enrolled in the course " + course.getName(),
+                    HttpStatus.BAD_REQUEST);
         }
         course.enrollStudent(student, courseToEnrolledCourse(course, student));
         userService.saveStudent(student);
         courseService.saveOrUpdate(course);
+        log.info("Student {} enrolled in the course {}", username, id);
     }
 
     @Transactional
     public void deleteCourseCover(Long id) {
-        try {
-            String courseFolderName = courseService.getCourseFolderName(id);
-            String coverImage = courseService.getCourseCoverById(id).getCoverImageName();
-            fileService.deleteFile(courseFolderName, coverImage);
-        } catch (IOException ioException) {
-            throw new AppException("An error occurred while deleting the cover image of the course with id " + id, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String courseFolderName = courseService.getCourseFolderName(id);
+        Course course = courseService.findById(id);
+        String coverImage = course.getCoverImageName();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.delete(new UriTemplate(UrlService.MEDIA_FOLDER_FILE_PATH_VARIABLE_URL).expand(courseFolderName, coverImage));
+        course.setCoverImageName(null);
+        courseService.saveOrUpdate(course);
+        log.info("Delete cover of course {}", id);
     }
 
     @Transactional
     public void updateCourse(Long courseId, UpdateCourseDto updateCourseDto) {
+        log.info("Updating course {}", courseId);
         Course course = courseService.findById(courseId);
         course.setAvailable(updateCourseDto.isAvailable());
         course.setDescription(updateCourseDto.getDescription());
         course.setDifficulty(Difficulty.getByName(updateCourseDto.getDifficultyDto().name()));
-        if(!course.getName().equals(updateCourseDto.getName())) {
+        if (!course.getName().equals(updateCourseDto.getName())) {
+            log.info("Updating the folder of the course {} in the file system", courseId);
             String oldFolderName = course.getFolderName();
             course.setName(updateCourseDto.getName());
             course.setFolderName(updateCourseDto.getName());
-            boolean success = fileService.renameFile(oldFolderName, updateCourseDto.getName());
-            if(!success) {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            ResponseEntity<Boolean> response = restTemplate.exchange(new UriTemplate(UrlService.MEDIA_FOLDER_PATH_VARIABLE_RENAME_URL).expand(oldFolderName),
+                    HttpMethod.PUT, new HttpEntity<>(updateCourseDto.getName(), headers), Boolean.class);
+            Boolean success = response.getBody();
+            if (success == null || !success) {
+                log.error("Couldn't update the folder of the course {}", courseId);
                 throw new AppException("Course folder could not have been updated to a new name", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

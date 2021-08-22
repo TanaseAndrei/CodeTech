@@ -4,97 +4,78 @@ import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.Lecture;
 import com.ucv.codetech.service.LectureService;
-import com.ucv.codetech.service.FileService;
-import com.ucv.codetech.service.ZipService;
+import com.ucv.codetech.service.UrlService;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriTemplate;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ucv.codetech.service.UrlService.MEDIA_FOLDER_NAME_PATH_VARIABLE_URL;
+
 @Facade
 @AllArgsConstructor
+@Slf4j
 public class LectureFacade {
 
     private final LectureService lectureService;
-    private final FileService fileService;
-    private final ZipService zipService;
 
     @Transactional
     public void delete(Long id) {
-        try {
-            List<String> filesToDelete = new ArrayList<>(lectureService.getLectureFiles(id));
-            filesToDelete.add(lectureService.getLectureVideo(id));
-            String folder = lectureService.getAssociatedCourseFolder(id);
-            fileService.deleteFiles(filesToDelete, folder);
-            lectureService.deleteLecture(id);
-        } catch (IOException ioException) {
-            throw new AppException("An error occurred while trying to delete the files from a lecture", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<String> filesToDelete = new ArrayList<>(lectureService.getLectureFiles(id));
+        filesToDelete.add(lectureService.getLectureVideo(id));
+        String folder = lectureService.getAssociatedCourseFolder(id);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.exchange(new UriTemplate(UrlService.MEDIA_FOLDER_PATH_VARIABLE_URL).expand(folder),
+                HttpMethod.DELETE, new HttpEntity<>(filesToDelete), void.class);
+        lectureService.deleteLecture(id);
+        log.info("Deleted lecture with id {}", id);
     }
 
     @Transactional
     public void uploadFiles(Long id, MultipartFile[] multipartFiles) {
-        try {
-            Lecture lecture = lectureService.findById(id);
-            String folder = lectureService.getAssociatedCourseFolder(id);
-            lecture.setLectureFileNames(getLectureFileNames(multipartFiles, folder));
-        } catch (IOException ioException) {
-            throw new AppException("Error occurred while trying to move the lecture files", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Transactional
-    public Resource zipFiles(Long lectureId) {
-        try {
-            String folder = lectureService.getAssociatedCourseFolder(lectureId);
-            List<String> lectureFilesNames = lectureService.getLectureFiles(lectureId);
-            String zipPath = zipService.zipFiles(lectureFilesNames, folder);
-            return new UrlResource(Paths.get(zipPath).toUri());
-        } catch (IOException ioException) {
-            throw new AppException("There was a problem while zipping the files", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Transactional
-    public Resource downloadFile(Long lectureId, String fileName) {
-        try {
-            String folder = lectureService.getAssociatedCourseFolder(lectureId);
-            if (!lectureService.fileExistsInLecture(fileName, lectureId)) {
-                throw new AppException("The file does not exist in the lecture", HttpStatus.NOT_FOUND);
-            }
-            return fileService.getFileAsResource(folder, fileName);
-        } catch (IOException ioException) {
-            throw new AppException("There was a problem while downloading the file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Lecture lecture = lectureService.findById(id);
+        String folder = lectureService.getAssociatedCourseFolder(id);
+        lecture.setLectureFileNames(sendFilesToFolder(multipartFiles, folder));
+        lectureService.saveOrUpdate(lecture);
+        log.info("Uploading files to lecture {}", id);
     }
 
     @Transactional
     public void deleteFile(Long lectureId, String fileName) {
-        try {
-            String folder = lectureService.getAssociatedCourseFolder(lectureId);
-            Lecture lecture = lectureService.findById(lectureId);
-            if (!lecture.containsLectureFile(fileName)) {
-                throw new AppException("The file doesn't exist in the lecture", HttpStatus.NOT_FOUND);
-            }
-            fileService.deleteFile(fileName, folder);
-            lecture.deleteLectureFile(fileName);
-            lectureService.saveOrUpdate(lecture);
-        } catch (IOException ioException) {
-            throw new AppException("Error occurred while deleting the lecture file", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.info("Deleting the file {} from the lecture {}", fileName, lectureId);
+        String folder = lectureService.getAssociatedCourseFolder(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
+        if (!lecture.containsLectureFile(fileName)) {
+            log.warn("The file {} does not exist in the lecture", fileName);
+            throw new AppException("The file doesn't exist in the lecture", HttpStatus.NOT_FOUND);
         }
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.delete(new UriTemplate(UrlService.MEDIA_FOLDER_FILE_PATH_VARIABLE_URL).expand(folder, fileName));
+        lecture.deleteLectureFile(fileName);
+        lectureService.saveOrUpdate(lecture);
+        log.info("Deleted the file {} from the lecture {}", fileName, lectureId);
+
     }
 
-    private List<String> getLectureFileNames(MultipartFile[] multipartFiles, String courseFolder) throws IOException {
+    private List<String> sendFilesToFolder(MultipartFile[] multipartFiles, String courseFolder) {
         List<String> fileNames = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         for (MultipartFile multipartFile : multipartFiles) {
-            fileNames.add(fileService.moveFile(multipartFile, courseFolder));
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", multipartFile.getResource());
+            ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(courseFolder),
+                    new HttpEntity<>(body, headers), String.class);
+            fileNames.add(response.getBody());
         }
         return fileNames;
     }

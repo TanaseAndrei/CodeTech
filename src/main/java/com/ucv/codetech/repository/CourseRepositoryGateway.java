@@ -41,8 +41,4 @@ public class CourseRepositoryGateway {
     public Optional<Course> findByIdAndUsername(Long id, String username) {
         return courseRepository.findByIdAndInstructorUsername(id, username);
     }
-
-    public Optional<CourseCoverImage> getCourseCoverById(Long id) {
-        return courseRepository.getCourseCoverById(id);
-    }
 }

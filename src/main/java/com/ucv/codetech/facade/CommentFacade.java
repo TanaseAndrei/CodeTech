@@ -7,35 +7,43 @@ import com.ucv.codetech.facade.converter.CommentConverter;
 import com.ucv.codetech.model.Comment;
 import com.ucv.codetech.service.CommentService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 @Facade
 @AllArgsConstructor
+@Slf4j
 public class CommentFacade {
 
     private final CommentService commentService;
     private final CommentConverter commentConverter;
 
     public DisplayCommentDto getCommentById(Long id) {
+        log.info("Searching comment with id {}", id);
         Comment comment = commentService.findById(id);
+        log.info("Found comment with id {}", id);
         return commentConverter.entityToDto(comment);
     }
 
     @Transactional
     public void update(Long id, UpdateCommentDto updateComment) {
         commentService.edit(id, updateComment.getDescription());
+        log.info("Updated comment with id {}", id);
     }
 
     @Transactional
     public void delete(Long id) {
         commentService.deleteById(id);
+        log.info("Deleted comment with id {}", id);
     }
 
     public void upVote(Long id) {
         commentService.upVote(id);
+        log.info("Upvoting comment with id {}", id);
     }
 
     public void downVote(Long id) {
         commentService.downVote(id);
+        log.info("Downvoting comment with id {}", id);
     }
 }
