@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,15 @@ public class JwtService {
 
     private static final String BEARER = "Bearer ";
 
+    @Value("${application.jwt.access-token-time}")
+    private Long accessTokenTime;
+
+    @Value("${application.jwt.refresh-token-time}")
+    private Long refreshTokenTime;
+
+    @Value("${application.jwt.secret}")
+    private String secretToken;
+
     public Map<String, String> createSecurityTokens(HttpServletRequest httpServletRequest, User user, Algorithm algorithm) {
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", createAccessToken(httpServletRequest, user.getUsername(), getAuthorities(user), algorithm));
@@ -37,7 +47,7 @@ public class JwtService {
     public String createAccessToken(HttpServletRequest httpServletRequest, String username, List<String> authorities, Algorithm algorithm) {
         return JWT.create()
                 .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000)).withIssuer(httpServletRequest.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenTime)).withIssuer(httpServletRequest.getRequestURL().toString())
                 .withClaim("roles", authorities)
                 .sign(algorithm);
     }
@@ -45,7 +55,7 @@ public class JwtService {
     public String createRefreshToken(HttpServletRequest httpServletRequest, String username, Algorithm algorithm) {
         return JWT.create()
                 .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 60 * 1000)).withIssuer(httpServletRequest.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenTime)).withIssuer(httpServletRequest.getRequestURL().toString())
                 .sign(algorithm);
     }
 
@@ -65,7 +75,7 @@ public class JwtService {
     }
 
     public Algorithm getAlgorithm() {
-        return Algorithm.HMAC256("secret".getBytes());
+        return Algorithm.HMAC256(secretToken.getBytes());
     }
 
     public String getToken(HttpServletRequest request) {
@@ -77,7 +87,7 @@ public class JwtService {
         Map<String, String> error = new HashMap<>();
         error.put("error_message", exception.getMessage());
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), error); //tokens will be in a nice json format
+        new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
 
     private void checkAuthorizationHeader(String header) {

@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser appUser = appUserRepositoryGateway.findByUsername(username)
-                .orElseThrow(() -> new AppException("The user with name " + username + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The user with the name " + username + " does not exist", HttpStatus.NOT_FOUND));
         return new org.springframework.security.core.userdetails.User(appUser.getUsername(), appUser.getPassword(), getAppUserAuthority(appUser.getRole()));
     }
 
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Instructor getInstructor(String name) {
-        return instructorRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
+        return instructorRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " does not exit", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Student getStudent(String name) {
-        return studentRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The student with the name " + name + " has not been found", HttpStatus.NOT_FOUND));
+        return studentRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The student with the name " + name + " does not exist", HttpStatus.NOT_FOUND));
     }
 
     @Override

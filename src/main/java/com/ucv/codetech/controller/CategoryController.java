@@ -2,6 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
+import com.ucv.codetech.controller.model.output.DisplayCategoryDto;
 import com.ucv.codetech.controller.swagger.CategoryApi;
 import com.ucv.codetech.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
@@ -9,9 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,26 +24,26 @@ public class CategoryController implements CategoryApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createCategory(@RequestBody CategoryDto categoryDto) {
+    public Long createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         return categoryFacade.create(categoryDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void editCategory(@PathVariable("id") Long id, @RequestBody UpdateCategoryDto updateCategory) {
+    public void editCategory(@PathVariable("id") Long id, @Valid @RequestBody UpdateCategoryDto updateCategory) {
         categoryFacade.edit(id, updateCategory);
     }
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CategoryDto> getAllCategories() {
+    public List<DisplayCategoryDto> getAllCategories() {
         return categoryFacade.findAll();
     }
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CategoryDto getCategory(@PathVariable Long id) {
+    public DisplayCategoryDto getCategory(@PathVariable Long id) {
         return categoryFacade.find(id);
     }
 

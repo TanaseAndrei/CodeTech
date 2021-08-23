@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/comments")
 @AllArgsConstructor
@@ -26,7 +28,7 @@ public class CommentController implements CommentApi {
     @PreAuthorize("hasRole('STUDENT')")
     @PatchMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void edit(@PathVariable("id") Long id, @RequestBody UpdateCommentDto updateComment) {
+    public void edit(@PathVariable("id") Long id, @Valid @RequestBody UpdateCommentDto updateComment) {
         commentFacade.update(id, updateComment);
     }
 

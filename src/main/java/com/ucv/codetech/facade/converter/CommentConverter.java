@@ -30,7 +30,7 @@ public class CommentConverter {
         displayCommentDto.setId(comment.getId());
         displayCommentDto.setUsername(comment.getStudent().getUsername());
         displayCommentDto.setDescription(comment.getDescription());
-        displayCommentDto.setTimeStamp(comment.getTimeStamp().toString());
+        displayCommentDto.setTimeStamp(comment.getCommentDate().toString());
         displayCommentDto.setDownVotes(comment.getDownVotes());
         displayCommentDto.setUpVotes(comment.getUpVotes());
         return displayCommentDto;

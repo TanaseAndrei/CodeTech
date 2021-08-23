@@ -1,7 +1,6 @@
 package com.ucv.codetech.repository;
 
 import com.ucv.codetech.model.Course;
-import com.ucv.codetech.model.projection.CourseCoverImage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

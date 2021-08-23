@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/questions")
 @AllArgsConstructor
@@ -20,14 +22,14 @@ public class QuestionController implements QuestionApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/add-answer", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long addAnswer(@PathVariable("id") Long id, @RequestBody AnswerDto answerDto) {
+    public Long addAnswer(@PathVariable("id") Long id, @Valid @RequestBody AnswerDto answerDto) {
         return questionFacade.addAnswer(id, answerDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateQuestion(@PathVariable("id") Long id, @RequestBody UpdateQuestionDto updateQuestionDto) {
+    public void updateQuestion(@PathVariable("id") Long id, @Valid @RequestBody UpdateQuestionDto updateQuestionDto) {
         questionFacade.update(id, updateQuestionDto);
     }
 

@@ -9,10 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/quiz")
@@ -25,8 +24,8 @@ public class QuizController implements QuizApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/add-question", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Long addQuestion(@PathVariable("id") Long id, @RequestBody QuestionDto questionDto) {
-       return quizFacade.addQuestion(id, questionDto);
+    public Long addQuestion(@PathVariable("id") Long id, @Valid @RequestBody QuestionDto questionDto) {
+        return quizFacade.addQuestion(id, questionDto);
     }
 
     @PreAuthorize("hasAnyRole('STUDENT, INSTRUCTOR')")

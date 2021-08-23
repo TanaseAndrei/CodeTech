@@ -2,10 +2,7 @@ package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.Course;
-import com.ucv.codetech.model.Lecture;
-import com.ucv.codetech.model.projection.CourseCoverImage;
 import com.ucv.codetech.repository.CourseRepositoryGateway;
-import com.ucv.codetech.repository.LectureRepositoryGateway;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,11 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +20,6 @@ public class CourseService {
     private static final String THE_SELECTED_COURSE_DOES_NOT_EXIST = "The selected course does not exist!";
 
     private final CourseRepositoryGateway courseRepositoryGateway;
-    private final LectureRepositoryGateway lectureRepositoryGateway;
 
     public Course saveOrUpdate(Course course) {
         return courseRepositoryGateway.saveOrUpdate(course);
@@ -55,7 +47,7 @@ public class CourseService {
     public Course findByIdAndUsername(Long id, String username) {
         return courseRepositoryGateway.findByIdAndUsername(id, username)
                 .orElseThrow(() -> new AppException("The course with id " + id
-                        + " does not exist in the portfolio of instructor " + username, HttpStatus.NOT_FOUND));
+                        + " does not exist in the portfolio of the instructor " + username, HttpStatus.NOT_FOUND));
     }
 
     //TODO paginatation and filtering
@@ -74,7 +66,8 @@ public class CourseService {
 
     public String getCourseFolderName(Long id) {
         return courseRepositoryGateway.getCourseFolderName(id)
-                .orElseThrow(() -> new AppException("The course does not exit or does not have an associated folder!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The course with the id " + id + " does not exit or does not have" +
+                        " an associated folder!", HttpStatus.NOT_FOUND));
     }
 
     public boolean hasQuiz(Long id) {

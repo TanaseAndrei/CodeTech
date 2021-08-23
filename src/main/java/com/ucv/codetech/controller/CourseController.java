@@ -43,7 +43,7 @@ public class CourseController implements CourseApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCourse(@PathVariable("id") Long id, @RequestBody UpdateCourseDto updateCourseDto) {
+    public void updateCourse(@PathVariable("id") Long id, @Valid @RequestBody UpdateCourseDto updateCourseDto) {
         courseFacade.updateCourse(id, updateCourseDto);
     }
 
@@ -72,14 +72,14 @@ public class CourseController implements CourseApi {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/lectures", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Long uploadLecture(@PathVariable("id") Long courseId, @ModelAttribute LectureDto lectureDto) {
+    public Long uploadLecture(@PathVariable("id") Long courseId, @Valid @ModelAttribute LectureDto lectureDto) {
         return courseFacade.createLecture(courseId, lectureDto);
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(path = "/{id}/quiz", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Long createQuiz(@PathVariable("id") Long id, @RequestBody QuizDto quizDto) {
+    public Long createQuiz(@PathVariable("id") Long id, @Valid @RequestBody QuizDto quizDto) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
         return courseFacade.createQuiz(id, quizDto, currentLoggedUser);
     }

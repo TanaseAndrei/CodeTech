@@ -19,7 +19,7 @@ public class EnrolledCourseService {
 
     public EnrolledCourse findById(Long id, String username) {
         return enrolledCourseRepositoryGateway.findByIdAndUsername(id, username)
-                .orElseThrow(() -> new AppException("The enrolled course with id " + id
-                        + " does not exist in user's enrolled courses of student " + username, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The enrolled course with the id " + id
+                        + " does not exist in the student's enrolled courses" + username, HttpStatus.NOT_FOUND));
     }
 }

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/register")
 @AllArgsConstructor
@@ -17,13 +19,13 @@ public class RegisterController implements SignupApi {
 
     @PostMapping(path = "/student")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long registerStudent(@RequestBody StudentDto studentDto) {
+    public Long registerStudent(@Valid @RequestBody StudentDto studentDto) {
         return userFacade.registerStudent(studentDto);
     }
 
     @PostMapping(path = "/instructor")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long registerInstructor(@RequestBody InstructorDto instructorDto) {
+    public Long registerInstructor(@Valid @RequestBody InstructorDto instructorDto) {
         return userFacade.registerInstructor(instructorDto);
     }
 }

@@ -5,13 +5,13 @@ import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
 import com.ucv.codetech.controller.model.output.*;
-import com.ucv.codetech.facade.converter.*;
+import com.ucv.codetech.facade.converter.AppUserConverter;
+import com.ucv.codetech.facade.converter.CertificationConverter;
+import com.ucv.codetech.facade.converter.CourseConverter;
+import com.ucv.codetech.facade.converter.QuizConverter;
 import com.ucv.codetech.model.*;
-import com.ucv.codetech.service.CourseService;
-import com.ucv.codetech.service.EnrolledCourseService;
-import com.ucv.codetech.service.LectureWrapperService;
-import com.ucv.codetech.service.QuizService;
-import com.ucv.codetech.service.UserService;
+import com.ucv.codetech.service.*;
+import com.ucv.codetech.service.model.RegisterEmail;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +26,7 @@ import java.util.List;
 public class UserFacade {
 
     private final UserService userService;
+    private final EmailRestClientService emailRestClientService;
     private final CertificationConverter certificationConverter;
     private final EnrolledCourseService enrolledCourseService;
     private final PasswordEncoder passwordEncoder;
@@ -42,6 +43,8 @@ public class UserFacade {
         validate(studentDto.getUsername(), studentDto.getEmail());
         Student student = appUserConverter.dtoToEntity(studentDto);
         student.setPassword(passwordEncoder.encode(studentDto.getPassword()));
+        emailRestClientService.sendEmail(new RegisterEmail(studentDto.getUsername(), studentDto.getEmail(),
+                Role.getByName(studentDto.getRoleDto().name())));
         log.info("Registered the student with name {}", studentDto.getUsername());
         return userService.saveStudent(student).getId();
     }
@@ -52,6 +55,8 @@ public class UserFacade {
         validate(instructorDto.getUsername(), instructorDto.getEmail());
         Instructor instructor = appUserConverter.dtoToEntity(instructorDto);
         instructor.setPassword(passwordEncoder.encode(instructorDto.getPassword()));
+        emailRestClientService.sendEmail(new RegisterEmail(instructorDto.getUsername(), instructorDto.getEmail(),
+                Role.getByName(instructorDto.getRoleDto().name())));
         log.info("Registered the instructor with name {}", instructorDto.getUsername());
         return userService.saveInstructor(instructor).getId();
     }

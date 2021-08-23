@@ -19,7 +19,7 @@ public class CategoryService {
 
     public Category saveOrUpdate(Category category) {
         if(categoryRepositoryGateway.existsByName(category.getName())) {
-            throw new AppException("The category " + category.getName() + " already exists", HttpStatus.BAD_REQUEST);
+            throw new AppException("The category with the name " + category.getName() + " already exists", HttpStatus.BAD_REQUEST);
         }
         return categoryRepositoryGateway.saveOrUpdate(category);
     }
@@ -30,12 +30,12 @@ public class CategoryService {
 
     public Category findById(Long id) {
         return categoryRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The specified category doesn't exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The category with the id " + id + " does not exist", HttpStatus.NOT_FOUND));
     }
 
     public void deleteById(Long id) {
         if(!categoryRepositoryGateway.existsById(id)) {
-            throw new AppException("The category with id " + id + " doesn't exist", HttpStatus.BAD_REQUEST);
+            throw new AppException("The category with the id " + id + " does not exist", HttpStatus.BAD_REQUEST);
         }
         categoryRepositoryGateway.delete(id);
     }

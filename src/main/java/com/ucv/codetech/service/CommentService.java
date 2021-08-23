@@ -19,7 +19,7 @@ public class CommentService {
 
     public Comment findById(Long id) {
         return commentRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The comment with id " + id + " has not been found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException("The comment with the id " + id + " does not exit", HttpStatus.NOT_FOUND));
     }
 
     public void edit(Long id, String description) {

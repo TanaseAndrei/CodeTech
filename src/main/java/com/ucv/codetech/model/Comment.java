@@ -27,8 +27,8 @@ public class Comment {
     @Column(name = "comment")
     private String description;
 
-    @Column(name = "time_stamp")
-    private LocalDateTime timeStamp;
+    @Column(name = "comment_date")
+    private LocalDateTime commentDate;
 
     @Column(name = "last_time_updated")
     private LocalDateTime lastTimeUpdated;
@@ -41,7 +41,7 @@ public class Comment {
 
     @PrePersist
     public void setTimeStamp() {
-        this.timeStamp = LocalDateTime.now();
+        this.commentDate = LocalDateTime.now();
         this.upVotes = 0;
         this.downVotes = 0;
     }

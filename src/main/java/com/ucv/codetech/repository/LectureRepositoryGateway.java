@@ -17,14 +17,6 @@ public class LectureRepositoryGateway {
         return lectureRepository.save(lecture);
     }
 
-    public List<String> getLectureVideos(Long courseId) {
-        return lectureRepository.getLectureVideoNames(courseId);
-    }
-
-    public List<Lecture> getLecturesByCourseId(Long courseId) {
-        return lectureRepository.getLecturesByCourseId(courseId);
-    }
-
     public void deleteById(Long id) {
         lectureRepository.deleteById(id);
     }

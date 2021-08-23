@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,7 +37,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
                 .antMatchers("/login", "/register/**", "/token/**").permitAll()
-                .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**",
+                .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**", //TODO sa verific daca sunt toate pathurile puse
                         "/media/**", "/questions/**", "/quiz/**", "/users/**").authenticated()
                 .anyRequest().authenticated()
                 .and()

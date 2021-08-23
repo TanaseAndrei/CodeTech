@@ -16,12 +16,35 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  #multipart configuration
   servlet:
     multipart:
-      max-file-size: 2000MB
-      max-request-size: 2100MB
+      max-file-size: 3500MB
+      max-request-size: 4000MB
+  #mail configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: st0neheart741998@gmail.com
+    password: jreiflwsxcaqsxzw
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 #application configuration
 application:
   base-folder: E:\\Programming\\CodeTechOutput
   version: @project.version@
+  jwt:
+    access-token-time: 3600000
+    refresh-token-time: 7200000
+    secret: secret
+
+#service dependency configuration
+service:
+  mail:
+    register:
+      url: http://localhost:8010/mail/register

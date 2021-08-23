@@ -2,6 +2,7 @@ package com.ucv.codetech.facade;
 
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
+import com.ucv.codetech.controller.model.output.DisplayCategoryDto;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.service.CategoryService;
 import com.ucv.codetech.facade.converter.CategoryConverter;
@@ -28,17 +29,17 @@ public class CategoryFacade {
         return categoryService.saveOrUpdate(category).getId();
     }
 
-    public CategoryDto find(Long id) {
+    public DisplayCategoryDto find(Long id) {
         log.info("Searching category with id {}", id);
         Category category = categoryService.findById(id);
         log.info("Found category with name {}", category.getName());
-        return categoryConverter.entityToDto(category);
+        return categoryConverter.entityToDisplayCategoryDto(category);
     }
 
-    public List<CategoryDto> findAll() {
+    public List<DisplayCategoryDto> findAll() {
         log.info("Retrieving all categories");
         List<Category> categories = categoryService.findAll();
-        return categoryConverter.entitiesToCategoryDtos(categories);
+        return categoryConverter.entitiesToDisplayCategoryDtos(categories);
     }
 
     public void delete(Long id) {
