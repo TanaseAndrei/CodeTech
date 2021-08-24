@@ -18,7 +18,7 @@ public class CommentFacade {
     private final CommentService commentService;
     private final CommentConverter commentConverter;
 
-    public DisplayCommentDto getCommentById(Long id) {
+    public DisplayCommentDto find(Long id) {
         log.info("Searching comment with id {}", id);
         Comment comment = commentService.findById(id);
         log.info("Found comment with id {}", id);
@@ -27,23 +27,27 @@ public class CommentFacade {
 
     @Transactional
     public void update(Long id, UpdateCommentDto updateComment) {
+        log.info("Updating the comment with the id {}", id);
         commentService.edit(id, updateComment.getDescription());
         log.info("Updated comment with id {}", id);
     }
 
     @Transactional
     public void delete(Long id) {
+        log.info("Deleting the comment with the id {}", id);
         commentService.deleteById(id);
         log.info("Deleted comment with id {}", id);
     }
 
     public void upVote(Long id) {
+        log.info("Voting the comment with id {}", id);
         commentService.upVote(id);
-        log.info("Upvoting comment with id {}", id);
+        log.info("Voted the comment with id {}", id);
     }
 
     public void downVote(Long id) {
+        log.info("Downvoting the comment with the id {}", id);
         commentService.downVote(id);
-        log.info("Downvoting comment with id {}", id);
+        log.info("Downvoted the comment with the id {}", id);
     }
 }

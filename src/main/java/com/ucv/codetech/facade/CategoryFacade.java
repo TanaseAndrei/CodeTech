@@ -25,7 +25,9 @@ public class CategoryFacade {
     public Long create(CategoryDto categoryDto) {
         log.info("Creating new category with name {}", categoryDto.getName());
         Category category = categoryConverter.dtoToEntity(categoryDto);
-        return categoryService.saveOrUpdate(category).getId();
+        Long id = categoryService.saveOrUpdate(category).getId();
+        log.info("Created a new category with the name {}", categoryDto.getName());
+        return id;
     }
 
     public DisplayCategoryDto find(Long id) {
@@ -42,14 +44,16 @@ public class CategoryFacade {
     }
 
     public void delete(Long id) {
+        log.info("Deleting the category with the id {}", id);
         categoryService.deleteById(id);
-        log.info("Delete category with id {}", id);
+        log.info("Deleted the category with the id {}", id);
     }
 
-    public void edit(Long id, UpdateCategoryDto updateCategory) {
+    public void update(Long id, UpdateCategoryDto updateCategory) {
+        log.info("Updating the category with the id {}", id);
         Category category = categoryConverter.dtoToEntity(updateCategory);
         category.setId(id);
         categoryService.edit(category);
-        log.info("Edited category with id {}", id);
+        log.info("Updated category with id {}", id);
     }
 }

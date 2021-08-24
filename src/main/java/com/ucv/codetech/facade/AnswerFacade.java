@@ -18,17 +18,19 @@ public class AnswerFacade {
 
     @Transactional
     public void update(Long id, UpdateAnswerDto updateAnswerDto) {
+        log.info("Updating answer with the id {}", id);
         Answer answer = answerService.findById(id);
         answer.setCorrectAnswer(updateAnswerDto.isCorrectAnswer());
         answer.setDescription(updateAnswerDto.getDescription());
         answerService.saveOrUpdate(answer);
-        log.info("Updated answer with id {}", id);
+        log.info("Updated answer with the id {}", id);
     }
 
     @Transactional
     public void delete(Long id) {
+        log.info("Deleting answer with the id {}", id);
         answerService.deleteById(id);
-        log.info("Deleted answer with id {}", id);
+        log.info("Deleted answer with the id {}", id);
     }
 
     public boolean isCorrect(Long id) {

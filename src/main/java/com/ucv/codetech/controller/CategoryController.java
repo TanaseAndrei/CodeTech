@@ -32,7 +32,7 @@ public class CategoryController implements CategoryApi {
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void editCategory(@PathVariable("id") Long id, @Valid @RequestBody UpdateCategoryDto updateCategory) {
-        categoryFacade.edit(id, updateCategory);
+        categoryFacade.update(id, updateCategory);
     }
 
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
