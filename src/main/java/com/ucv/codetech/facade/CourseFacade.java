@@ -1,5 +1,6 @@
 package com.ucv.codetech.facade;
 
+import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.*;
 import com.ucv.codetech.controller.model.output.PreviewCourseDto;
@@ -12,19 +13,12 @@ import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.ucv.codetech.StartupComponent.Facade;
-import static com.ucv.codetech.service.UrlService.MEDIA_FOLDER_NAME_PATH_VARIABLE_URL;
 
 @Facade
 @AllArgsConstructor
@@ -41,6 +35,7 @@ public class CourseFacade {
     private final CommentConverter commentConverter;
     private final UserService userService;
     private final QuizService quizService;
+    private final MediaRestClientService mediaRestClientService;
 
     @Transactional
     public Long createCourse(CourseDto courseDto, String username) {
@@ -56,12 +51,8 @@ public class CourseFacade {
         instructor.addCourse(course);
         course.setInstructor(instructor);
         course.setCategory(category);
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(UrlService.MEDIA_FOLDER_URL).expand(),
-                new HttpEntity<>(courseDto.getName(), headers), String.class);
-        course.setFolderName(response.getBody());
+        String folder = mediaRestClientService.createFolder(courseDto.getName());
+        course.setFolderName(folder);
         userService.saveInstructor(instructor);
         log.info("Course with name {} was created", courseDto.getName());
         return courseService.saveOrUpdate(course).getId();
@@ -75,15 +66,7 @@ public class CourseFacade {
             throw new AppException("The course with id " + id + " already has a cover", HttpStatus.BAD_REQUEST);
         }
         Course course = courseService.findById(id);
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", cover.getResource());
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(course.getFolderName()),
-                        new HttpEntity<>(body, headers), String.class);
-        String filename = response.getBody();
+        String filename = mediaRestClientService.addFileToFolder(course.getFolderName(), cover);
         course.setCoverImageName(filename);
         courseService.saveOrUpdate(course);
     }
@@ -122,15 +105,9 @@ public class CourseFacade {
                     HttpStatus.BAD_REQUEST);
         }
         Course course = courseService.findById(courseId);
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", lectureDto.getLectureVideo().getResource());
-        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(course.getFolderName()),
-                new HttpEntity<>(body, headers), String.class);
+        String videoName = mediaRestClientService.addFileToFolder(course.getFolderName(), lectureDto.getLectureVideo());
         Lecture lecture = lectureConverter.dtoToEntity(lectureDto);
-        lecture.setLectureVideoName(response.getBody());
+        lecture.setLectureVideoName(videoName);
         course.addLecture(lecture);
         courseService.saveOrUpdate(course);
         log.info("Created new lecture for course with id {}", courseId);
@@ -141,10 +118,7 @@ public class CourseFacade {
     public void deleteCourse(Long id) {
         String courseFolderName = courseService.getCourseFolderName(id);
         courseService.deleteById(id);
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        restTemplate.exchange(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL).expand(courseFolderName), HttpMethod.DELETE, new HttpEntity<>(headers), void.class);
+        mediaRestClientService.deleteFolder(courseFolderName);
         log.info("Deleted course with id {}", id);
     }
 
@@ -201,8 +175,7 @@ public class CourseFacade {
         String courseFolderName = courseService.getCourseFolderName(id);
         Course course = courseService.findById(id);
         String coverImage = course.getCoverImageName();
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(new UriTemplate(UrlService.MEDIA_FOLDER_FILE_PATH_VARIABLE_URL).expand(courseFolderName, coverImage));
+        mediaRestClientService.deleteFile(courseFolderName, coverImage);
         course.setCoverImageName(null);
         courseService.saveOrUpdate(course);
         log.info("Delete cover of course {}", id);
@@ -220,16 +193,7 @@ public class CourseFacade {
             String oldFolderName = course.getFolderName();
             course.setName(updateCourseDto.getName());
             course.setFolderName(updateCourseDto.getName());
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity<Boolean> response = restTemplate.exchange(new UriTemplate(UrlService.MEDIA_FOLDER_PATH_VARIABLE_RENAME_URL).expand(oldFolderName),
-                    HttpMethod.PUT, new HttpEntity<>(updateCourseDto.getName(), headers), Boolean.class);
-            Boolean success = response.getBody();
-            if (success == null || !success) {
-                log.error("Couldn't update the folder of the course {}", courseId);
-                throw new AppException("Course folder could not have been updated to a new name", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            mediaRestClientService.updateCourseFolder(oldFolderName, updateCourseDto.getName());
         }
         courseService.saveOrUpdate(course);
     }

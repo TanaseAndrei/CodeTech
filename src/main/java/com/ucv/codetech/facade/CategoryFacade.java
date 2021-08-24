@@ -1,18 +1,17 @@
 package com.ucv.codetech.facade;
 
+import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.model.input.CategoryDto;
 import com.ucv.codetech.controller.model.input.UpdateCategoryDto;
 import com.ucv.codetech.controller.model.output.DisplayCategoryDto;
+import com.ucv.codetech.facade.converter.CategoryConverter;
 import com.ucv.codetech.model.Category;
 import com.ucv.codetech.service.CategoryService;
-import com.ucv.codetech.facade.converter.CategoryConverter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static com.ucv.codetech.StartupComponent.Facade;
 
 @Facade
 @AllArgsConstructor

@@ -1,6 +1,6 @@
 package com.ucv.codetech.facade;
 
-import com.ucv.codetech.StartupComponent.Facade;
+import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.QuestionDto;
 import com.ucv.codetech.controller.model.output.DisplayQuizDto;
@@ -37,7 +37,7 @@ public class QuizFacade {
         Quiz quiz = quizService.findById(id);
         Student student = userService.getStudent(username);
         Course course = quiz.getCourse();
-        if(student.containsCertificationForCourse(course)) {
+        if (student.containsCertificationForCourse(course)) {
             log.warn("The student {} did not complete the course {} in order to take the quiz", username, course.getName());
             throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
                     + " because he finished it", HttpStatus.BAD_REQUEST);

@@ -11,12 +11,12 @@ import java.net.URI;
 @NoArgsConstructor
 public class UrlService {
 
-    public static final String ZIP_URL = "http://localhost:8081/media/{folder}/zip-files";
-    public static final String MEDIA_FOLDER_FILE_PATH_VARIABLE_URL = "http://localhost:8081/media/{folder}/{filename}";
-    public static final String MEDIA_FOLDER_URL = "http://localhost:8081/media/folder";
-    public static final String MEDIA_FOLDER_PATH_VARIABLE_URL = "http://localhost:8081/media/{folder}";
-    public static final String MEDIA_FOLDER_NAME_PATH_VARIABLE_URL = "http://localhost:8081/media/folder/{folder}";
-    public static final String MEDIA_FOLDER_PATH_VARIABLE_RENAME_URL = "http://localhost:8081/media/folder/{folderName}/rename";
+    public static final String ZIP_URL = "http://localhost:8011/media/{folder}/zip-files";
+    public static final String MEDIA_FOLDER_FILE_PATH_VARIABLE_URL = "http://localhost:8011/media/{folder}/{filename}";
+    public static final String MEDIA_FOLDER_URL = "http://localhost:8011/media/folder";
+    public static final String MEDIA_FOLDER_PATH_VARIABLE_URL = "http://localhost:8011/media/{folder}";
+    public static final String MEDIA_FOLDER_NAME_PATH_VARIABLE_URL = "http://localhost:8011/media/folder/{folder}";
+    public static final String MEDIA_FOLDER_PATH_VARIABLE_RENAME_URL = "http://localhost:8011/media/folder/{folderName}/rename";
 
     public Link getLinkForZippingFiles(String folderName) {
         URI uri = new UriTemplate(ZIP_URL).expand(folderName);

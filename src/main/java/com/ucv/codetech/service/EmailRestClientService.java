@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class EmailRestClientService {
 
     @Value("${service.mail.register.url}")

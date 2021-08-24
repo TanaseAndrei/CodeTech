@@ -1,12 +1,13 @@
 package com.ucv.codetech.facade;
 
-import com.ucv.codetech.StartupComponent.Facade;
 import com.ucv.codetech.controller.model.input.UpdateAnswerDto;
 import com.ucv.codetech.model.Answer;
 import com.ucv.codetech.service.AnswerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.ucv.codetech.CodeTechApplication.Facade;
 
 @Facade
 @AllArgsConstructor

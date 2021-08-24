@@ -1,5 +1,6 @@
 package com.ucv.codetech.security;
 
+import com.ucv.codetech.configuration.JwtConfiguration;
 import com.ucv.codetech.security.filter.CustomAuthenticationFilter;
 import com.ucv.codetech.security.filter.CustomAuthorizationFilter;
 import com.ucv.codetech.service.JwtService;
@@ -25,6 +26,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtConfiguration jwtConfiguration;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -33,7 +35,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService());
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService(jwtConfiguration));
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
                 .antMatchers("/login", "/register/**", "/token/**").permitAll()

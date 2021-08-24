@@ -5,8 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ucv.codetech.configuration.JwtConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -24,18 +25,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     private static final String BEARER = "Bearer ";
 
-    @Value("${application.jwt.access-token-time}")
-    private Long accessTokenTime;
-
-    @Value("${application.jwt.refresh-token-time}")
-    private Long refreshTokenTime;
-
-    @Value("${application.jwt.secret}")
-    private String secretToken;
+    private final JwtConfiguration jwtConfiguration;
 
     public Map<String, String> createSecurityTokens(HttpServletRequest httpServletRequest, User user, Algorithm algorithm) {
         Map<String, String> tokens = new HashMap<>();
@@ -47,7 +42,7 @@ public class JwtService {
     public String createAccessToken(HttpServletRequest httpServletRequest, String username, List<String> authorities, Algorithm algorithm) {
         return JWT.create()
                 .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenTime)).withIssuer(httpServletRequest.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfiguration.getAccessTokenTime())).withIssuer(httpServletRequest.getRequestURL().toString())
                 .withClaim("roles", authorities)
                 .sign(algorithm);
     }
@@ -55,7 +50,7 @@ public class JwtService {
     public String createRefreshToken(HttpServletRequest httpServletRequest, String username, Algorithm algorithm) {
         return JWT.create()
                 .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenTime)).withIssuer(httpServletRequest.getRequestURL().toString())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfiguration.getRefreshTokenTime())).withIssuer(httpServletRequest.getRequestURL().toString())
                 .sign(algorithm);
     }
 
@@ -75,7 +70,7 @@ public class JwtService {
     }
 
     public Algorithm getAlgorithm() {
-        return Algorithm.HMAC256(secretToken.getBytes());
+        return Algorithm.HMAC256(jwtConfiguration.getSecret().getBytes());
     }
 
     public String getToken(HttpServletRequest request) {

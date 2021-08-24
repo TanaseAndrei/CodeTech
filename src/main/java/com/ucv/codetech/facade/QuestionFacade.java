@@ -1,6 +1,6 @@
 package com.ucv.codetech.facade;
 
-import com.ucv.codetech.StartupComponent.Facade;
+import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.model.input.AnswerDto;
 import com.ucv.codetech.controller.model.input.UpdateQuestionDto;
 import com.ucv.codetech.facade.converter.QuizConverter;
