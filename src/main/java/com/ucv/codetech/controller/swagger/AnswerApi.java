@@ -1,6 +1,17 @@
 package com.ucv.codetech.controller.swagger;
 
-//TODO The whole package will represent the swagger documentation of the endpoints. The documentation will start to be written
-// when the application will be finished and I'll begin to write the bachelor's documentation.
+import com.ucv.codetech.controller.model.input.UpdateAnswerDto;
+import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
+
+@Api(value = "The answer API")
 public interface AnswerApi {
+
+    void update(Long id, @Valid @RequestBody UpdateAnswerDto updateAnswerDto);
+
+    void delete(Long id);
+
+    boolean isCorrect(Long id);
 }

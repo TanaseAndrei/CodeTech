@@ -2,7 +2,7 @@ package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.input.InstructorDto;
 import com.ucv.codetech.controller.model.input.StudentDto;
-import com.ucv.codetech.controller.swagger.SignupApi;
+import com.ucv.codetech.controller.swagger.RegisterApi;
 import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/register")
 @AllArgsConstructor
-public class RegisterController implements SignupApi {
+public class RegisterController implements RegisterApi {
 
     private final UserFacade userFacade;
 

@@ -3,6 +3,7 @@ package com.ucv.codetech.controller;
 import com.ucv.codetech.controller.model.output.InstructorFullCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.InstructorPreviewCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.InstructorPreviewQuizDto;
+import com.ucv.codetech.controller.swagger.InstructorApi;
 import com.ucv.codetech.service.UrlService;
 import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/instructor/me")
 @PreAuthorize("hasRole('INSTRUCTOR')")
 @AllArgsConstructor
-public class InstructorController {
+public class InstructorController implements InstructorApi {
 
     private final UserFacade userFacade;
     private final UrlService urlService;

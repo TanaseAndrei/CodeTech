@@ -3,14 +3,10 @@ package com.ucv.codetech.controller;
 import com.ucv.codetech.controller.swagger.LectureApi;
 import com.ucv.codetech.facade.LectureFacade;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @RestController
 @RequestMapping("/lectures")
