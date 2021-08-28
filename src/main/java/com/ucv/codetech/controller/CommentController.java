@@ -19,11 +19,11 @@ public class CommentController implements CommentApi {
 
     private final CommentFacade commentFacade;
 
-    @PreAuthorize("hasAnyRole('STUDENT, INSTRUCTOR')")
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DisplayCommentDto getComment(@PathVariable("id") Long id) {
-        return commentFacade.find(id);
-    }
+//    @PreAuthorize("hasAnyRole('STUDENT, INSTRUCTOR')")
+//    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public DisplayCommentDto getComment(@PathVariable("id") Long id) {
+//        return commentFacade.find(id);
+//    }
 
     @PreAuthorize("hasRole('STUDENT')")
     @PatchMapping(path = "/{id}")

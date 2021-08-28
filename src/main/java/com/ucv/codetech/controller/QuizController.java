@@ -22,7 +22,7 @@ public class QuizController implements QuizApi {
     private final AuthenticationFacade authenticationFacade;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PostMapping(path = "/{id}/add-question", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{id}/add-question", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long addQuestion(@PathVariable("id") Long id, @Valid @RequestBody QuestionDto questionDto) {
         return quizFacade.addQuestion(id, questionDto);
@@ -43,7 +43,7 @@ public class QuizController implements QuizApi {
     }
 
     @PreAuthorize("hasRole('STUDENT')")
-    @PostMapping(path = "/{id}/complete")
+    @PostMapping(path = "/{id}/complete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Long completeQuiz(@PathVariable("id") Long id) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
         return quizFacade.completeQuiz(id, currentLoggedUser);

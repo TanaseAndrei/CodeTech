@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CourseController implements CourseApi {
     private final UrlService urlService;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCourse(@Valid @RequestBody CourseDto courseDto) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();

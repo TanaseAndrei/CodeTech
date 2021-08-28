@@ -39,7 +39,6 @@ public class CourseConverter {
         PreviewCourseDto previewCourseDto = new PreviewCourseDto();
         previewCourseDto.setCoverImageName(course.getCoverImageName());
         previewCourseDto.setCourseId(course.getId());
-        previewCourseDto.setNumberOfLectures(course.getNumberOfLectures());
         previewCourseDto.setNumberOfComments(course.getNumberOfComments());
         previewCourseDto.setName(course.getName());
         previewCourseDto.setInstructorName(course.getInstructor().getUsername());

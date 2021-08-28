@@ -26,8 +26,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @AllArgsConstructor
 public class StudentController implements StudentApi {
 
-    private final UserFacade userFacade;
     private final AuthenticationFacade authenticationFacade;
+    private final UserFacade userFacade;
     private final UrlService urlService;
 
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)

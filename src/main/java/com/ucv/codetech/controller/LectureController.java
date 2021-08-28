@@ -4,6 +4,7 @@ import com.ucv.codetech.controller.swagger.LectureApi;
 import com.ucv.codetech.facade.LectureFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ public class LectureController implements LectureApi {
     private final LectureFacade lectureFacade;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PatchMapping("/{id}/files")
+    @PatchMapping(value = "/{id}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadLectureFiles(@PathVariable("id") Long lectureId, @RequestParam("files") MultipartFile[] multipartFiles) {
         lectureFacade.uploadFiles(lectureId, multipartFiles);

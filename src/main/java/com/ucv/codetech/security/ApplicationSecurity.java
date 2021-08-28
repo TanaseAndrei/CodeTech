@@ -38,8 +38,8 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService(jwtConfiguration));
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
-                .antMatchers("/login", "/register/**", "/token/**").permitAll()
-                .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**", //TODO sa verific daca sunt toate pathurile puse
+                .antMatchers("/login", "/register/**").permitAll()
+                .antMatchers("/token/**", "/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**",
                         "/media/**", "/questions/**", "/quiz/**", "/users/**").authenticated()
                 .anyRequest().authenticated()
                 .and()

@@ -32,7 +32,7 @@ public class TokenController implements TokenApi {
     private final JwtService jwtService;
 
     @GetMapping(path = "/refresh")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String username = jwtService.getSubject(request);

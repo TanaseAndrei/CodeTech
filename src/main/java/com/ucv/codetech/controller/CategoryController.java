@@ -22,7 +22,7 @@ public class CategoryController implements CategoryApi {
     private final CategoryFacade categoryFacade;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         return categoryFacade.create(categoryDto);
@@ -41,11 +41,12 @@ public class CategoryController implements CategoryApi {
         return categoryFacade.findAll();
     }
 
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DisplayCategoryDto getCategory(@PathVariable Long id) {
-        return categoryFacade.find(id);
-    }
+    // TODO keep it?
+//    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
+//    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public DisplayCategoryDto getCategory(@PathVariable Long id) {
+//        return categoryFacade.find(id);
+//    }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
