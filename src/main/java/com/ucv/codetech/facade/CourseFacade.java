@@ -127,7 +127,7 @@ public class CourseFacade {
         Student student = userService.getStudent(username);
         Course course = courseService.findById(id);
         Comment comment = commentConverter.dtoToEntity(commentDto);
-        comment.setComment(student, course);
+        comment.addComment(student, course);
         courseService.saveOrUpdate(course);
         log.info("Student {} added a comment to the course {}", username, id);
         return commentService.saveOrUpdate(comment);

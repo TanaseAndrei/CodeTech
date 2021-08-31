@@ -59,7 +59,7 @@ public class Comment {
         downVotes--;
     }
 
-    public void setComment(Student student, Course course) {
+    public void addComment(Student student, Course course) {
         this.course = course;
         this.student = student;
         student.addComment(this);

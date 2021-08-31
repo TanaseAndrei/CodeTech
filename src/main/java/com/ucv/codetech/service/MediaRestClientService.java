@@ -33,7 +33,7 @@ public class MediaRestClientService {
 
     @Async
     public void deleteFolder(String folder) {
-        restTemplate.exchange(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL).expand(folder),
+        restTemplate.exchange(new UriTemplate("http://localhost:8011/media/folder/{folder}").expand(folder),
                 HttpMethod.DELETE, new HttpEntity<>(getApplicationJsonHeader()), void.class);
     }
 
