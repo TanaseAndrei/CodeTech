@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface LectureRepository extends JpaRepository<Lecture, Long> {
+interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     @Query("SELECT lecture.lectureVideoName FROM Lecture lecture WHERE lecture.course.id = :courseId")
     List<String> getLectureVideoNames(@Param("courseId")Long courseId);

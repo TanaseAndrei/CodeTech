@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
+interface CourseRepository extends JpaRepository<Course, Long> {
 
     void deleteById(Long id);
 
