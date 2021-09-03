@@ -18,13 +18,6 @@ public class CommentFacade {
     private final CommentService commentService;
     private final CommentConverter commentConverter;
 
-    public DisplayCommentDto find(Long id) {
-        log.info("Searching comment with id {}", id);
-        Comment comment = commentService.findById(id);
-        log.info("Found comment with id {}", id);
-        return commentConverter.entityToDto(comment);
-    }
-
     @Transactional
     public void update(Long id, UpdateCommentDto updateComment) {
         log.info("Updating the comment with the id {}", id);

@@ -50,7 +50,6 @@ public class CourseService {
                         + " does not exist in the portfolio of the instructor " + username, HttpStatus.NOT_FOUND));
     }
 
-    //TODO paginatation and filtering
     public List<Course> getAll() {
         return courseRepositoryGateway.findAll();
     }

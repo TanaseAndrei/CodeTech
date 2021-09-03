@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Api(value = "The comment API")
 public interface CommentApi {
-//
-//    DisplayCommentDto getComment(Long id);
 
     @ApiOperation(value = "Edit a comment", httpMethod = "PATCH")
     @ApiResponses(value = {
