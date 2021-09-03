@@ -41,13 +41,6 @@ public class CategoryController implements CategoryApi {
         return categoryFacade.findAll();
     }
 
-    // TODO keep it?
-//    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
-//    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public DisplayCategoryDto getCategory(@PathVariable Long id) {
-//        return categoryFacade.find(id);
-//    }
-
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

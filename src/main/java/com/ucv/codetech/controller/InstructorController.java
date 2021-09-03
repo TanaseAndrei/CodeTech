@@ -8,6 +8,7 @@ import com.ucv.codetech.facade.AuthenticationFacade;
 import com.ucv.codetech.facade.UserFacade;
 import com.ucv.codetech.service.UrlService;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -68,7 +69,9 @@ public class InstructorController implements InstructorApi {
     private void addHateoasForInstructorCourses(List<InstructorPreviewCourseDisplayDto> instructorsCourses) {
         for (InstructorPreviewCourseDisplayDto instructorsCourse : instructorsCourses) {
             instructorsCourse.add(linkTo(methodOn(CourseController.class).getCourse(instructorsCourse.getCourseId())).withRel(LinkRelation.of("instructor-course")));
-            instructorsCourse.add(urlService.getLinkForGettingMedia(instructorsCourse.getName(), instructorsCourse.getCoverImage(), "cover-image"));
+            if(StringUtils.isNotEmpty(instructorsCourse.getCoverImage())) {
+                instructorsCourse.add(urlService.getLinkForGettingMedia(instructorsCourse.getName(), instructorsCourse.getCoverImage(), "cover-image"));
+            }
         }
     }
 }

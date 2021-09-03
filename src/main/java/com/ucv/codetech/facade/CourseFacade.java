@@ -99,12 +99,12 @@ public class CourseFacade {
     @Transactional
     public Long createLecture(Long courseId, LectureDto lectureDto) {
         log.info("Creating new lecture for course with id {}", courseId);
+        Course course = courseService.findById(courseId);
         if (lectureService.lectureExistsInCourse(lectureDto.getName(), courseId)) {
             log.warn("A lecture with name {} already exists in the current course", lectureDto.getName());
             throw new AppException("A lecture with the name " + lectureDto.getName() + " already exists in the course",
                     HttpStatus.BAD_REQUEST);
         }
-        Course course = courseService.findById(courseId);
         String videoName = mediaRestClientService.addFileToFolder(course.getFolderName(), lectureDto.getLectureVideo());
         Lecture lecture = lectureConverter.dtoToEntity(lectureDto);
         lecture.setLectureVideoName(videoName);

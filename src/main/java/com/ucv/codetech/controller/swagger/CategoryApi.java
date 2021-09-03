@@ -37,13 +37,6 @@ public interface CategoryApi {
     })
     List<DisplayCategoryDto> getAllCategories();
 
-//    @ApiOperation(value = "Get all categories", httpMethod = "GET", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 201, message = "Successfully updated a category"),
-//            @ApiResponse(code = 403, message = "The user must be logged in")
-//    })
-//    DisplayCategoryDto getCategory(@Schema(description = "The id of the comment", example = "1") Long id);
-
     @ApiOperation(value = "Delete a category", httpMethod = "DELETE")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully updated a category"),

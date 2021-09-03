@@ -17,8 +17,8 @@ public class LectureController implements LectureApi {
     private final LectureFacade lectureFacade;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PatchMapping(value = "/{id}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping(value = "/{id}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public void uploadLectureFiles(@PathVariable("id") Long lectureId, @RequestParam("files") MultipartFile[] multipartFiles) {
         lectureFacade.uploadFiles(lectureId, multipartFiles);
     }
