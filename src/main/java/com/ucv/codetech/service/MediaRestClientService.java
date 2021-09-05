@@ -1,6 +1,8 @@
 package com.ucv.codetech.service;
 
 import com.ucv.codetech.controller.exception.AppException;
+import com.ucv.codetech.service.configuration.MediaUrlConfiguration;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
@@ -13,38 +15,34 @@ import org.springframework.web.util.UriTemplate;
 
 import java.util.List;
 
-import static com.ucv.codetech.service.UrlService.MEDIA_FOLDER_NAME_PATH_VARIABLE_URL;
-
 @Service
+@AllArgsConstructor
 @Slf4j
 public class MediaRestClientService {
 
     private final RestTemplate restTemplate;
-
-    public MediaRestClientService() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final MediaUrlConfiguration mediaUrlConfiguration;
 
     public String createFolder(String name) {
         ResponseEntity<String> response =
-                restTemplate.postForEntity(new UriTemplate(UrlService.MEDIA_FOLDER_URL).expand(), new HttpEntity<>(name, getApplicationJsonHeader()), String.class);
+                restTemplate.postForEntity(new UriTemplate(mediaUrlConfiguration.getFolderUrl()).expand(), new HttpEntity<>(name, getApplicationJsonHeader()), String.class);
         return response.getBody();
     }
 
     @Async
     public void deleteFolder(String folder) {
-        restTemplate.exchange(new UriTemplate("http://localhost:8011/media/folder/{folder}").expand(folder),
+        restTemplate.exchange(new UriTemplate(mediaUrlConfiguration.getFolderPathVariableUrl()).expand(folder),
                 HttpMethod.DELETE, new HttpEntity<>(getApplicationJsonHeader()), void.class);
     }
 
     @Async
     public void deleteFile(String folder, String fileName) {
-        restTemplate.delete(new UriTemplate(UrlService.MEDIA_FOLDER_FILE_PATH_VARIABLE_URL).expand(folder, fileName));
+        restTemplate.delete(new UriTemplate(mediaUrlConfiguration.getFilePathVariableUrl()).expand(folder, fileName));
     }
 
     @Async
     public void updateCourseFolder(String oldFolderName, String newFolderName) {
-        ResponseEntity<Boolean> response = restTemplate.exchange(new UriTemplate(UrlService.MEDIA_FOLDER_PATH_VARIABLE_RENAME_URL).expand(oldFolderName),
+        ResponseEntity<Boolean> response = restTemplate.exchange(new UriTemplate(mediaUrlConfiguration.getFolderPathVariableUrl()).expand(oldFolderName),
                 HttpMethod.PUT, new HttpEntity<>(newFolderName, getApplicationJsonHeader()), Boolean.class);
         Boolean success = response.getBody();
         if (success == null || !success) {
@@ -55,14 +53,14 @@ public class MediaRestClientService {
 
     @Async
     public void deleteFiles(String folder, List<String> fileNames) {
-        restTemplate.exchange(new UriTemplate(UrlService.MEDIA_FOLDER_PATH_VARIABLE_URL).expand(folder),
+        restTemplate.exchange(new UriTemplate(mediaUrlConfiguration.getFolderPathVariableUrl()).expand(folder),
                 HttpMethod.DELETE, new HttpEntity<>(fileNames), void.class);
     }
 
     public String addFileToFolder(String folder, MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", file.getResource());
-        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(MEDIA_FOLDER_NAME_PATH_VARIABLE_URL + "/file").expand(folder),
+        ResponseEntity<String> response = restTemplate.postForEntity(new UriTemplate(mediaUrlConfiguration.getUploadFileUrl()).expand(folder),
                 new HttpEntity<>(body, getMultipartFormDataHeader()), String.class);
         return response.getBody();
     }

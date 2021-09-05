@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private static final List<String> freeUrls = Arrays.asList("/register/student", "/register/instructor", "/auth/login", "/token/refresh");
+    private static final List<String> freeUrls = Arrays.asList("/users", "/auth/login", "/token/refresh");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -6,7 +6,7 @@ import com.ucv.codetech.controller.model.output.InstructorPreviewQuizDto;
 import com.ucv.codetech.controller.swagger.InstructorApi;
 import com.ucv.codetech.facade.AuthenticationFacade;
 import com.ucv.codetech.facade.UserFacade;
-import com.ucv.codetech.service.UrlService;
+import com.ucv.codetech.service.MediaUrlService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.LinkRelation;
@@ -30,7 +30,7 @@ public class InstructorController implements InstructorApi {
 
     private final AuthenticationFacade authenticationFacade;
     private final UserFacade userFacade;
-    private final UrlService urlService;
+    private final MediaUrlService mediaUrlService;
 
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InstructorPreviewCourseDisplayDto> getCourses() {
@@ -57,7 +57,7 @@ public class InstructorController implements InstructorApi {
     }
 
     private void addHateoasForInstructorFullCourseDisplayDto(InstructorFullCourseDisplayDto instructorCourse) {
-        instructorCourse.add(urlService.getLinkForGettingMedia(instructorCourse.getName(), instructorCourse.getCoverImageName(), "cover-image"));
+        instructorCourse.add(mediaUrlService.getLinkForGettingMedia(instructorCourse.getName(), instructorCourse.getCoverImageName(), "cover-image"));
     }
 
     private void addHateoasForInstructorPreviewQuizDto(List<InstructorPreviewQuizDto> quizzes) {
@@ -70,7 +70,7 @@ public class InstructorController implements InstructorApi {
         for (InstructorPreviewCourseDisplayDto instructorsCourse : instructorsCourses) {
             instructorsCourse.add(linkTo(methodOn(CourseController.class).getCourse(instructorsCourse.getCourseId())).withRel(LinkRelation.of("instructor-course")));
             if(StringUtils.isNotEmpty(instructorsCourse.getCoverImage())) {
-                instructorsCourse.add(urlService.getLinkForGettingMedia(instructorsCourse.getName(), instructorsCourse.getCoverImage(), "cover-image"));
+                instructorsCourse.add(mediaUrlService.getLinkForGettingMedia(instructorsCourse.getName(), instructorsCourse.getCoverImage(), "cover-image"));
             }
         }
     }

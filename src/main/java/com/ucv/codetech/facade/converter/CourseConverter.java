@@ -41,7 +41,6 @@ public class CourseConverter {
         previewCourseDto.setCourseId(course.getId());
         previewCourseDto.setNumberOfComments(course.getNumberOfComments());
         previewCourseDto.setName(course.getName());
-        previewCourseDto.setInstructorName(course.getInstructor().getUsername());
         previewCourseDto.setEnrolledStudents(course.getNrOfEnrolledStudents());
         previewCourseDto.setDifficulty(course.getDifficulty().toString());
         if(student.containsCourse(course)) {

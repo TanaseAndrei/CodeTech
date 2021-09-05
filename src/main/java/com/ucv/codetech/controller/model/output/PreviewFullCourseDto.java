@@ -1,5 +1,6 @@
 package com.ucv.codetech.controller.model.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(description = "The course dto used to display a full course object for a student")
 public class PreviewFullCourseDto extends RepresentationModel<PreviewFullCourseDto> {
+
+    @JsonIgnore
+    private Long courseId;
 
     @ApiModelProperty(value = "The name of the course", example = "Java 101")
     private String name;

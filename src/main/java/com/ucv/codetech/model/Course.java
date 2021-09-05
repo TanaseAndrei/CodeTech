@@ -88,13 +88,6 @@ public class Course {
         this.available = false;
     }
 
-    @PreUpdate
-    private void update() {
-        this.numberOfLectures = lectures.size();
-        this.numberOfComments = comments.size();
-        this.nrOfEnrolledStudents = enrolledStudents.size();
-    }
-
     public void enrollStudent(Student student, EnrolledCourse enrolledCourse) {
         nrOfEnrolledStudents++;
         student.addEnrolledCourse(enrolledCourse);
@@ -117,6 +110,11 @@ public class Course {
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
         quiz.setCourse(this);
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
+        instructor.addCourse(this);
     }
 
     public boolean containsStudent(Student student) {

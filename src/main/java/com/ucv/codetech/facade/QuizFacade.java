@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Facade
 @AllArgsConstructor
 @Slf4j
@@ -37,6 +40,19 @@ public class QuizFacade {
         Quiz quiz = quizService.findById(id);
         Student student = userService.getStudent(username);
         Course course = quiz.getCourse();
+        Optional<EnrolledCourse> enrolledCourse = courseExistsInStudentCourses(student.getEnrolledCourses(), course.getId());
+        if(!enrolledCourse.isPresent()) {
+            log.warn("The student {} cannot take the quiz because he is not enrolle din the course {}", username, course.getName());
+            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
+                    + " becase he is not enrolled in the course", HttpStatus.BAD_REQUEST);
+        }
+
+        if(!enrolledCourse.get().isCourseCompleted()) {
+           log.warn("The student {} cannot take the quiz because he did not finish the course {}", username, course.getName());
+            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
+                    + " because he did not finish it", HttpStatus.BAD_REQUEST);
+        }
+
         if (student.containsCertificationForCourse(course)) {
             log.warn("The student {} did not complete the course {} in order to take the quiz", username, course.getName());
             throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
@@ -72,5 +88,12 @@ public class QuizFacade {
         userService.saveStudent(student);
         log.info("Added certification to student {}", username);
         return certification.getId();
+    }
+
+    private Optional<EnrolledCourse> courseExistsInStudentCourses(List<EnrolledCourse> enrolledCourses, Long id) {
+        return enrolledCourses
+                .stream()
+                .filter(enrolledCourse -> id.equals(enrolledCourse.getCourse().getId()))
+                .findFirst();
     }
 }

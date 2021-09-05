@@ -6,7 +6,7 @@ import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
 import com.ucv.codetech.controller.swagger.CourseApi;
 import com.ucv.codetech.facade.AuthenticationFacade;
 import com.ucv.codetech.facade.CourseFacade;
-import com.ucv.codetech.service.UrlService;
+import com.ucv.codetech.service.MediaUrlService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.LinkRelation;
@@ -30,7 +30,7 @@ public class CourseController implements CourseApi {
 
     private final CourseFacade courseFacade;
     private final AuthenticationFacade authenticationFacade;
-    private final UrlService urlService;
+    private final MediaUrlService mediaUrlService;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -111,7 +111,12 @@ public class CourseController implements CourseApi {
     public PreviewFullCourseDto getCourse(@PathVariable("id") Long id) {
         PreviewFullCourseDto previewFullCourseDto = courseFacade.getById(id);
         addHateoasFullCourseCoverImage(previewFullCourseDto);
+        addHateoasFullCourseEnrollStudent(previewFullCourseDto);
         return previewFullCourseDto;
+    }
+
+    private void addHateoasFullCourseEnrollStudent(PreviewFullCourseDto previewFullCourseDto) {
+//        previewFullCourseDto.add(linkTo(methodOn(CourseController.class).enrollToCourse(previewFullCourseDto.getCourseId())).withRel("enroll")));
     }
 
     @PreAuthorize("hasRole('STUDENT')")
@@ -143,13 +148,13 @@ public class CourseController implements CourseApi {
 
     private void addHateoasDisplayCourse(PreviewCourseDto previewCourseDto) {
         if (previewCourseDto.getCoverImageName() != null) {
-            previewCourseDto.add(urlService.getLinkForGettingMedia(previewCourseDto.getName(), previewCourseDto.getCoverImageName(), "cover-image"));
+            previewCourseDto.add(mediaUrlService.getLinkForGettingMedia(previewCourseDto.getName(), previewCourseDto.getCoverImageName(), "cover-image"));
         }
     }
 
     private void addHateoasFullCourseCoverImage(PreviewFullCourseDto previewFullCourseDto) {
         if (previewFullCourseDto.getCoverImageName() != null) {
-            previewFullCourseDto.add(urlService.getLinkForGettingMedia(previewFullCourseDto.getName(), previewFullCourseDto.getCoverImageName(), "cover-image"));
+            previewFullCourseDto.add(mediaUrlService.getLinkForGettingMedia(previewFullCourseDto.getName(), previewFullCourseDto.getCoverImageName(), "cover-image"));
         }
     }
 }

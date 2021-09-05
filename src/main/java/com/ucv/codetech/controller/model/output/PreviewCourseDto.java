@@ -24,9 +24,6 @@ public class PreviewCourseDto extends RepresentationModel<PreviewCourseDto> {
     @ApiModelProperty(value = "The name of the course", example = "Java 101")
     private String name;
 
-    @ApiModelProperty(value = "The name of the instructor", example = "Andrei T.")
-    private String instructorName;
-
     @ApiModelProperty(value = "The number of enrolled student", example = "1500")
     private int enrolledStudents;
 

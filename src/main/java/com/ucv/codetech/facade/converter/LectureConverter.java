@@ -23,7 +23,6 @@ public class LectureConverter {
 
     public DisplayLectureDto entityToDisplayLectureDto(Lecture lecture) {
         DisplayLectureDto displayLectureDto = new DisplayLectureDto();
-        displayLectureDto.setId(lecture.getId());
         displayLectureDto.setName(lecture.getName());
         return displayLectureDto;
     }

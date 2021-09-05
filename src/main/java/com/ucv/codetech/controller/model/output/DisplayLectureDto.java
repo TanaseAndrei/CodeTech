@@ -13,9 +13,6 @@ import org.springframework.hateoas.RepresentationModel;
 @ApiModel(description = "The lecture object used to display a lecture")
 public class DisplayLectureDto extends RepresentationModel<DisplayLectureDto> {
 
-    @ApiModelProperty(value = "The id of the lecture", example = "12")
-    private Long id;
-
     @ApiModelProperty(value = "The name of the lecture", example = "Polymorphism")
     private String name;
 }

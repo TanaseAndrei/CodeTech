@@ -48,12 +48,10 @@ public class CourseFacade {
         Instructor instructor = userService.getInstructor(username);
         Category category = categoryService.findById(courseDto.getCategoryId());
         Course course = courseConverter.dtoToEntity(courseDto);
-        instructor.addCourse(course);
-        course.setInstructor(instructor);
         course.setCategory(category);
         String folder = mediaRestClientService.createFolder(courseDto.getName());
         course.setFolderName(folder);
-        userService.saveInstructor(instructor);
+        course.setInstructor(instructor);
         log.info("Course with name {} was created", courseDto.getName());
         return courseService.saveOrUpdate(course).getId();
     }
@@ -86,6 +84,9 @@ public class CourseFacade {
     public PreviewFullCourseDto getById(Long id) {
         log.info("Getting full preview for course with id {}", id);
         Course course = courseService.findById(id);
+        if(!course.isAvailable()) {
+            throw new AppException("The course with id " + id + " is not available.", HttpStatus.BAD_REQUEST);
+        }
         return courseConverter.entityToFullDisplayCourseDto(course);
     }
 

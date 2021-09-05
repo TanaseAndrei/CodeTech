@@ -38,14 +38,14 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService(jwtConfiguration));
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
-                .antMatchers("/login", "/register/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html",
+                .antMatchers("/login", "/users/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html",
                         "/webjars/**","/swagger-resources/configuration/ui").permitAll()
-                .antMatchers("/token/**", "/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**",
-                        "/media/**", "/questions/**", "/quiz/**", "/users/**", "/instructor/me/**", "/student/me/**").authenticated()
+                .antMatchers("/token/**", "/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**"
+                        , "/questions/**", "/quiz/**", "/instructor/me/**", "/student/me/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(customAuthenticationFilter) //used to return a jwt when logging in
-                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class) //used to intercept a request, taking its jwt and validating
+                .addFilter(customAuthenticationFilter)
+                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable();

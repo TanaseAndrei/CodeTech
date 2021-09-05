@@ -42,7 +42,7 @@ public class TokenController implements TokenApi {
             headerTokens.put("access_token", jwtService.createAccessToken(request, appUser.getUsername(), Collections.singletonList("ROLE_" + role.name()), jwtService.getAlgorithm()));
             headerTokens.put("refresh_token", jwtService.getToken(request));
             response.setContentType(APPLICATION_JSON_VALUE);
-            new ObjectMapper().writeValue(response.getOutputStream(), headerTokens); //tokens will be in a nice json format
+            new ObjectMapper().writeValue(response.getOutputStream(), headerTokens);
         } catch (Exception exception) {
             response.setStatus(FORBIDDEN.value());
             jwtService.handleException(response, exception);
