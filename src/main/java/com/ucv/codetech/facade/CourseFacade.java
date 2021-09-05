@@ -3,12 +3,8 @@ package com.ucv.codetech.facade;
 import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.*;
-import com.ucv.codetech.controller.model.output.PreviewCourseDto;
-import com.ucv.codetech.controller.model.output.PreviewFullCourseDto;
-import com.ucv.codetech.facade.converter.CommentConverter;
-import com.ucv.codetech.facade.converter.CourseConverter;
-import com.ucv.codetech.facade.converter.LectureConverter;
-import com.ucv.codetech.facade.converter.QuizConverter;
+import com.ucv.codetech.controller.model.output.*;
+import com.ucv.codetech.facade.converter.*;
 import com.ucv.codetech.model.*;
 import com.ucv.codetech.service.*;
 import lombok.AllArgsConstructor;
@@ -35,6 +31,8 @@ public class CourseFacade {
     private final CommentConverter commentConverter;
     private final UserService userService;
     private final QuizService quizService;
+    private final CertificationConverter certificationConverter;
+    private final EnrolledCourseService enrolledCourseService;
     private final MediaRestClientService mediaRestClientService;
 
     @Transactional
@@ -199,6 +197,17 @@ public class CourseFacade {
         courseService.saveOrUpdate(course);
     }
 
+    public StudentFullCourseDisplayDto getEnrolledCourse(String username, Long id) {
+        log.info("Getting full enrolled course {} of student {}", id, username);
+        return courseConverter.entityToStudentFullCourseDisplayDto(enrolledCourseService.findById(id, username));
+    }
+
+    public List<StudentPreviewCourseDisplayDto> getEnrolledCourses(String username) {
+        log.info("Getting the preview courses of student {}", username);
+        Student student = userService.getStudent(username);
+        return courseConverter.entitiesToStudentCourseDisplayDtos(student.getEnrolledCourses());
+    }
+
     private EnrolledCourse courseToEnrolledCourse(Course course, Student student) {
         EnrolledCourse enrolledCourse = new EnrolledCourse();
         enrolledCourse.setCourse(course);
@@ -207,6 +216,30 @@ public class CourseFacade {
         lectureWrappers.forEach(enrolledCourse::addLectureWrapper);
         enrolledCourse.setLectureWrappers(lectureWrappers);
         return enrolledCourse;
+    }
+
+    public List<StudentCertificationDisplayDto> getCertifications(String username) {
+        log.info("Getting the certifications of student {}", username);
+        Student student = userService.getStudent(username);
+        return certificationConverter.entitiesToStudentCertificationDisplayDtos(student.getCertifications());
+    }
+
+    public List<InstructorPreviewCourseDisplayDto> getInstructorsCourses(String username) {
+        log.info("Getting the preview courses of instructor {}", username);
+        Instructor instructor = userService.getInstructor(username);
+        return courseConverter.entitiesToInstructorCourseDisplayDtos(instructor.getCourses());
+    }
+
+    public InstructorFullCourseDisplayDto getInstructorCourse(String username, Long courseId) {
+        log.info("Getting the course {} of the instructor {}", courseId, username);
+        Course course = courseService.findByIdAndUsername(courseId, username);
+        return courseConverter.entityToInstructorFullCourseDisplayDto(course);
+    }
+
+    public List<InstructorPreviewQuizDto> getQuizzes(String username) {
+        log.info("Getting all quizzes of the instructor {}", username);
+        List<Quiz> quizzes = quizService.findAllByInstructorName(username);
+        return quizConverter.entitiesToInstructorPreviewQuizDto(quizzes);
     }
 
     private List<LectureWrapper> lecturesToLectureWrappers(List<Lecture> lectures) {

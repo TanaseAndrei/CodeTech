@@ -6,8 +6,9 @@ import com.ucv.codetech.controller.model.output.StudentFullLectureWrapperDisplay
 import com.ucv.codetech.controller.model.output.StudentPreviewCourseDisplayDto;
 import com.ucv.codetech.controller.swagger.StudentApi;
 import com.ucv.codetech.facade.AuthenticationFacade;
+import com.ucv.codetech.facade.CourseFacade;
+import com.ucv.codetech.facade.LectureFacade;
 import com.ucv.codetech.service.MediaUrlService;
-import com.ucv.codetech.facade.UserFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class StudentController implements StudentApi {
 
     private final AuthenticationFacade authenticationFacade;
-    private final UserFacade userFacade;
+    private final LectureFacade lectureFacade;
+    private final CourseFacade courseFacade;
     private final MediaUrlService mediaUrlService;
 
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<StudentPreviewCourseDisplayDto> getCourses() {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        List<StudentPreviewCourseDisplayDto> enrolledCourses = userFacade.getEnrolledCourses(currentLoggedUser);
+        List<StudentPreviewCourseDisplayDto> enrolledCourses = courseFacade.getEnrolledCourses(currentLoggedUser);
         addHateoasForEnrolledCourses(enrolledCourses);
         return enrolledCourses;
     }
@@ -41,7 +43,7 @@ public class StudentController implements StudentApi {
     @GetMapping(path = "/certifications", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<StudentCertificationDisplayDto> getCertifications() {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        List<StudentCertificationDisplayDto> certifications = userFacade.getCertifications(currentLoggedUser);
+        List<StudentCertificationDisplayDto> certifications = courseFacade.getCertifications(currentLoggedUser);
         addHateoasForCertifications(certifications);
         return certifications;
     }
@@ -49,13 +51,13 @@ public class StudentController implements StudentApi {
     @PatchMapping(path = "/lecture/{id}/complete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void completeLecture(@PathVariable("id") Long id) {
-        userFacade.completeLecture(id);
+        lectureFacade.completeLecture(id);
     }
 
     @GetMapping(path = "/courses/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public StudentFullCourseDisplayDto getCourse(@PathVariable("id") Long id) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        StudentFullCourseDisplayDto enrolledCourse = userFacade.getEnrolledCourse(currentLoggedUser, id);
+        StudentFullCourseDisplayDto enrolledCourse = courseFacade.getEnrolledCourse(currentLoggedUser, id);
         enrolledCourse.add(mediaUrlService.getLinkForGettingMedia(enrolledCourse.getName(), enrolledCourse.getCoverImageName(), "cover-image"));
         addHateoasForLectures(enrolledCourse.getLectureWrapperDisplayDtos(), enrolledCourse.getName());
         return enrolledCourse;

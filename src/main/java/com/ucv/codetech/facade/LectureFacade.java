@@ -3,7 +3,9 @@ package com.ucv.codetech.facade;
 import com.ucv.codetech.CodeTechApplication.Facade;
 import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.model.Lecture;
+import com.ucv.codetech.model.LectureWrapper;
 import com.ucv.codetech.service.LectureService;
+import com.ucv.codetech.service.LectureWrapperService;
 import com.ucv.codetech.service.MediaRestClientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ public class LectureFacade {
 
     private final MediaRestClientService mediaRestClientService;
     private final LectureService lectureService;
+    private final LectureWrapperService lectureWrapperService;
 
     @Transactional
     public void delete(Long id) {
@@ -55,6 +58,14 @@ public class LectureFacade {
         lectureService.saveOrUpdate(lecture);
         log.info("Deleted the file {} from the lecture {}", fileName, lectureId);
 
+    }
+
+    @Transactional
+    public void completeLecture(Long id) {
+        LectureWrapper lectureWrapper = lectureWrapperService.findById(id);
+        lectureWrapper.completeLecture();
+        lectureWrapperService.saveOrUpdate(lectureWrapper);
+        log.info("Completed the lecture with id {}", id);
     }
 
     private List<String> sendFilesToFolder(MultipartFile[] multipartFiles, String courseFolder) {
