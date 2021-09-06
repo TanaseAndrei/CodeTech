@@ -5,7 +5,7 @@ import com.ucv.codetech.controller.model.output.InstructorPreviewCourseDisplayDt
 import com.ucv.codetech.controller.model.output.InstructorPreviewQuizDto;
 import com.ucv.codetech.controller.swagger.InstructorApi;
 import com.ucv.codetech.facade.AuthenticationFacade;
-import com.ucv.codetech.facade.UserFacade;
+import com.ucv.codetech.facade.CourseFacade;
 import com.ucv.codetech.service.MediaUrlService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +29,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class InstructorController implements InstructorApi {
 
     private final AuthenticationFacade authenticationFacade;
-    private final UserFacade userFacade;
+    private final CourseFacade courseFacade;
     private final MediaUrlService mediaUrlService;
 
     @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InstructorPreviewCourseDisplayDto> getCourses() {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        List<InstructorPreviewCourseDisplayDto> instructorsCourses = userFacade.getInstructorsCourses(currentLoggedUser);
+        List<InstructorPreviewCourseDisplayDto> instructorsCourses = courseFacade.getInstructorsCourses(currentLoggedUser);
         addHateoasForInstructorCourses(instructorsCourses);
         return instructorsCourses;
     }
@@ -43,7 +43,7 @@ public class InstructorController implements InstructorApi {
     @GetMapping(path = "/quizzes", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InstructorPreviewQuizDto> getQuiz() {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        List<InstructorPreviewQuizDto> quizzes = userFacade.getQuizzes(currentLoggedUser);
+        List<InstructorPreviewQuizDto> quizzes = courseFacade.getQuizzes(currentLoggedUser);
         addHateoasForInstructorPreviewQuizDto(quizzes);
         return quizzes;
     }
@@ -51,7 +51,7 @@ public class InstructorController implements InstructorApi {
     @GetMapping(path = "/courses/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public InstructorFullCourseDisplayDto getCourse(@PathVariable("id") Long courseId) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
-        InstructorFullCourseDisplayDto instructorCourse = userFacade.getInstructorCourse(currentLoggedUser, courseId);
+        InstructorFullCourseDisplayDto instructorCourse = courseFacade.getInstructorCourse(currentLoggedUser, courseId);
         addHateoasForInstructorFullCourseDisplayDto(instructorCourse);
         return instructorCourse;
     }
