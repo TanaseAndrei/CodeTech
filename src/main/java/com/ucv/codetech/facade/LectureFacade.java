@@ -63,7 +63,11 @@ public class LectureFacade {
 
     @Transactional
     public void completeLecture(Long id) {
+        log.info("Completing the lecture with id {}", id);
         LectureWrapper lectureWrapper = lectureWrapperService.findById(id);
+        if(lectureWrapper.isCompletedLecture()) {
+            throw new AppException(String.format("The lecture wrapper with the id %d is already completed", id), HttpStatus.BAD_REQUEST);
+        }
         lectureWrapper.completeLecture();
         lectureWrapperService.saveOrUpdate(lectureWrapper);
         log.info("Completed the lecture with id {}", id);
