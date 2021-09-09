@@ -23,18 +23,11 @@ public class CategoryFacade {
 
     @Transactional
     public Long create(CategoryDto categoryDto) {
-        log.info("Creating new category with name {}", categoryDto.getName());
+        log.info("Creating new category with the name {}", categoryDto.getName());
         Category category = categoryConverter.dtoToEntity(categoryDto);
         Long id = categoryService.saveOrUpdate(category).getId();
         log.info("Created a new category with the name {}", categoryDto.getName());
         return id;
-    }
-
-    public DisplayCategoryDto find(Long id) {
-        log.info("Searching category with id {}", id);
-        Category category = categoryService.findById(id);
-        log.info("Found category with name {}", category.getName());
-        return categoryConverter.entityToDisplayCategoryDto(category);
     }
 
     public List<DisplayCategoryDto> findAll() {

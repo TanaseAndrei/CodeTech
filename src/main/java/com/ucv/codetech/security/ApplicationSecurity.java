@@ -38,9 +38,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), new JwtService(jwtConfiguration));
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         http.authorizeRequests()
-                .antMatchers("/login", "/users/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html",
-                        "/webjars/**","/swagger-resources/configuration/ui").permitAll()
-                .antMatchers("/token/**", "/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**"
+                .antMatchers("/token/**", "/login", "/users/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources",
+                        "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui").permitAll()
+                .antMatchers("/answers/**", "/categories/**", "/comments/**", "/courses/**", "/lectures/**"
                         , "/questions/**", "/quiz/**", "/instructor/me/**", "/student/me/**").authenticated()
                 .anyRequest().authenticated()
                 .and()

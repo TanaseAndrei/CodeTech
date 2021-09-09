@@ -37,9 +37,9 @@ service:
     register-url: /register
   media:
     base-url: http://localhost:8011/media
-    folder-url: /folder
-    upload-file-url: /folder/{folder}/file
-    file-path-variable-url: /folder/{folder}/file/{filename}
-    zip-files-url: /folder/{folder}/zip-files
-    folder-path-variable-url: /folder/{folder}
+    folder-url: /folders
+    upload-file-url: /folders/{folder}/files
+    file-path-variable-url: /folders/{folder}/files/{filename}
+    zip-files-url: /folders/{folder}/zip
+    folder-path-variable-url: /folders/{folder}
 

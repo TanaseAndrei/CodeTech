@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-@ApiModel(description = "This represents the student dto used to register a student", parent = AppUserDto.class)
+@ApiModel(description = "The student dto used to register a student", parent = AppUserDto.class)
 public class InstructorDto extends AppUserDto {
 
     @NotNull(message = "The role should not be null")

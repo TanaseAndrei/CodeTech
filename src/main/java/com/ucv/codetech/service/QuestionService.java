@@ -19,12 +19,12 @@ public class QuestionService {
 
     public Question findById(Long id) {
         return questionRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The question with id " + id + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The question with id %d does not exist", id), HttpStatus.NOT_FOUND));
     }
 
     public void delete(Long id) {
         if(!questionRepositoryGateway.existsById(id)) {
-            throw new AppException("The question with id " + id + " does not exist", HttpStatus.NOT_FOUND);
+            throw new AppException(String.format("The question with id %d does not exist", id), HttpStatus.NOT_FOUND);
         }
         questionRepositoryGateway.deleteById(id);
     }

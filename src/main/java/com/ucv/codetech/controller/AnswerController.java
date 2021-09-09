@@ -35,7 +35,7 @@ public class AnswerController implements AnswerApi {
     }
 
     @PreAuthorize("hasRole('STUDENT')")
-    @GetMapping(path = "/{id}/is-correct", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id}/correct", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean isCorrect(@PathVariable("id") Long id) {
         return answerFacade.isCorrect(id);
     }

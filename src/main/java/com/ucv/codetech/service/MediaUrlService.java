@@ -2,7 +2,6 @@ package com.ucv.codetech.service;
 
 import com.ucv.codetech.service.configuration.MediaUrlConfiguration;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;

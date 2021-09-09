@@ -27,6 +27,7 @@ public class QuizFacade {
 
     @Transactional
     public Long addQuestion(Long id, QuestionDto questionDto) {
+        log.info("Adding question to quiz {}", id);
         Quiz quiz = quizService.findById(id);
         Question question = quizConverter.questionDtoToEntity(questionDto);
         quiz.addQuestion(question);
@@ -41,28 +42,33 @@ public class QuizFacade {
         Student student = userService.getStudent(username);
         Course course = quiz.getCourse();
         Optional<EnrolledCourse> enrolledCourse = courseExistsInStudentCourses(student.getEnrolledCourses(), course.getId());
+        validateGettingQuiz(username, student, course, enrolledCourse);
+        return quizConverter.entityToDisplayQuizDto(quiz);
+    }
+
+    private void validateGettingQuiz(String username, Student student, Course course, Optional<EnrolledCourse> enrolledCourse) {
         if(!enrolledCourse.isPresent()) {
-            log.warn("The student {} cannot take the quiz because he is not enrolle din the course {}", username, course.getName());
-            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
-                    + " becase he is not enrolled in the course", HttpStatus.BAD_REQUEST);
+            log.warn("The student {} cannot take the quiz because he is not enrolled din the course {}", username, course.getName());
+            throw new AppException(String.format("The student %s cannot take the quiz for course %s because he is not" +
+                    " enrolled in the course", username, course.getName()), HttpStatus.BAD_REQUEST);
         }
 
         if(!enrolledCourse.get().isCourseCompleted()) {
            log.warn("The student {} cannot take the quiz because he did not finish the course {}", username, course.getName());
-            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
-                    + " because he did not finish it", HttpStatus.BAD_REQUEST);
+            throw new AppException(String.format("The student %s cannot take the quiz for course %s because" +
+                    " he did not finish it", username, course.getName()), HttpStatus.BAD_REQUEST);
         }
 
         if (student.containsCertificationForCourse(course)) {
-            log.warn("The student {} did not complete the course {} in order to take the quiz", username, course.getName());
-            throw new AppException("The student " + username + " cannot take the quiz for course " + course.getName()
-                    + " because he finished it", HttpStatus.BAD_REQUEST);
+            log.warn("The student {} can't take the quiz of course {} because he already finished it", username, course.getName());
+            throw new AppException(String.format("The student %s cannot take the quiz for course %s because" +
+                    " he already finished it", username, course.getName()), HttpStatus.BAD_REQUEST);
         }
-        return quizConverter.entityToDisplayQuizDto(quiz);
     }
 
     @Transactional
     public void deleteQuiz(Long id) {
+        log.info("Deleting quiz with id {}", id);
         quizService.deleteQuiz(id);
         log.info("Deleted quiz with id {}", id);
     }
@@ -72,22 +78,26 @@ public class QuizFacade {
         log.info("Completing quiz of course {}", courseId);
         Student student = userService.getStudent(username);
         Course course = quizService.findById(courseId).getCourse();
-        if (!course.containsStudent(student)) {
-            log.warn("Cannot complete quiz because the student {} is not enrolled in course {}", username, courseId);
-            throw new AppException("The student " + username + " cannot obtain certification for course " + course.getName()
-                    + " because he is not enrolled in this course", HttpStatus.BAD_REQUEST);
-        }
-        if (student.containsCertificationForCourse(course)) {
-            log.warn("Student {} already has a certification for course {}", username, courseId);
-            throw new AppException("The student " + username + " cannot obtain certification for course " + course.getName()
-                    + " because he already has a certification for it", HttpStatus.BAD_REQUEST);
-        }
+        validateCompletingQuiz(courseId, username, student, course);
         Certification certification = new Certification();
         certification.setCourse(course);
         student.addCertification(certification);
         userService.saveStudent(student);
         log.info("Added certification to student {}", username);
         return certification.getId();
+    }
+
+    private void validateCompletingQuiz(Long courseId, String username, Student student, Course course) {
+        if (!course.containsStudent(student)) {
+            log.warn("Cannot complete quiz because the student {} is not enrolled in course {}", username, courseId);
+            throw new AppException(String.format("The student %s cannot obtain certification for course %s because he" +
+                    " is not enrolled in this course", username, course.getName()), HttpStatus.BAD_REQUEST);
+        }
+        if (student.containsCertificationForCourse(course)) {
+            log.warn("Student {} already has a certification for course {}", username, courseId);
+            throw new AppException(String.format("The student %s cannot obtain certification for course %s because he" +
+                    " already has a certification for it", username, course.getName()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Optional<EnrolledCourse> courseExistsInStudentCourses(List<EnrolledCourse> enrolledCourses, Long id) {

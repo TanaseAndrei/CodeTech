@@ -13,8 +13,8 @@ import org.springframework.hateoas.RepresentationModel;
 @ApiModel(description = "The quiz preview of an instructor")
 public class InstructorPreviewQuizDto extends RepresentationModel<InstructorPreviewQuizDto> {
 
-    @ApiModelProperty(value = "The id of thq quizz", example = "1")
-    private Long quizId;
+    @ApiModelProperty(value = "The id of the associated course", example = "1")
+    private Long courseId;
 
     @ApiModelProperty(value = "The name of the quizz", example = "Java 101")
     private String quizName;

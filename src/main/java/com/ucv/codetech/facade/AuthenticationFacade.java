@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class AuthenticationFacade {
 
     public Authentication getAuthentication() {
-        log.info("Retrieving current logged user");
         return SecurityContextHolder.getContext().getAuthentication();
     }
 }

@@ -10,8 +10,6 @@ import java.util.Optional;
 
 interface CourseRepository extends JpaRepository<Course, Long> {
 
-    void deleteById(Long id);
-
     @Query("SELECT course FROM Course course WHERE course.available = true")
     List<Course> findAll();
 

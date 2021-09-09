@@ -1,6 +1,7 @@
 package com.ucv.codetech.controller;
 
 import com.ucv.codetech.controller.model.output.InstructorFullCourseDisplayDto;
+import com.ucv.codetech.controller.model.output.InstructorFullLectureDisplayDto;
 import com.ucv.codetech.controller.model.output.InstructorPreviewCourseDisplayDto;
 import com.ucv.codetech.controller.model.output.InstructorPreviewQuizDto;
 import com.ucv.codetech.controller.swagger.InstructorApi;
@@ -57,18 +58,32 @@ public class InstructorController implements InstructorApi {
     }
 
     private void addHateoasForInstructorFullCourseDisplayDto(InstructorFullCourseDisplayDto instructorCourse) {
-        instructorCourse.add(mediaUrlService.getLinkForGettingMedia(instructorCourse.getName(), instructorCourse.getCoverImageName(), "cover-image"));
+        if(StringUtils.isNotEmpty(instructorCourse.getCoverImageName())) {
+            instructorCourse.add(mediaUrlService.getLinkForGettingMedia(instructorCourse.getName(), instructorCourse.getCoverImageName(), "cover-image"));
+        }
+        List<InstructorFullLectureDisplayDto> fullLectureDisplayDtos = instructorCourse.getFullLectureDisplayDtos();
+        for (InstructorFullLectureDisplayDto fullLectureDisplayDto : fullLectureDisplayDtos) {
+            if(StringUtils.isNotEmpty(fullLectureDisplayDto.getLectureVideoName())) {
+                fullLectureDisplayDto.add(mediaUrlService.getLinkForGettingMedia(instructorCourse.getName(), fullLectureDisplayDto.getLectureVideoName(), "lecture-video"));
+            }
+            List<String> lectureFileNames = fullLectureDisplayDto.getLectureFileNames();
+            for (String lectureFileName : lectureFileNames) {
+                if(StringUtils.isNotEmpty(lectureFileName)) {
+                    fullLectureDisplayDto.add(mediaUrlService.getLinkForGettingMedia(instructorCourse.getName(), lectureFileName, "lecture-file"));
+                }
+            }
+        }
     }
 
     private void addHateoasForInstructorPreviewQuizDto(List<InstructorPreviewQuizDto> quizzes) {
         for (InstructorPreviewQuizDto quiz : quizzes) {
-            quiz.add(linkTo(methodOn(QuizController.class).getQuiz(quiz.getQuizId())).withRel(LinkRelation.of("quiz")));
+            quiz.add(linkTo(methodOn(InstructorController.class).getCourse(quiz.getCourseId())).withRel(LinkRelation.of("course")));
         }
     }
 
     private void addHateoasForInstructorCourses(List<InstructorPreviewCourseDisplayDto> instructorsCourses) {
         for (InstructorPreviewCourseDisplayDto instructorsCourse : instructorsCourses) {
-            instructorsCourse.add(linkTo(methodOn(CourseController.class).getCourse(instructorsCourse.getCourseId())).withRel(LinkRelation.of("instructor-course")));
+            instructorsCourse.add(linkTo(methodOn(InstructorController.class).getCourse(instructorsCourse.getCourseId())).withRel(LinkRelation.of("instructor-course")));
             if(StringUtils.isNotEmpty(instructorsCourse.getCoverImage())) {
                 instructorsCourse.add(mediaUrlService.getLinkForGettingMedia(instructorsCourse.getName(), instructorsCourse.getCoverImage(), "cover-image"));
             }

@@ -25,8 +25,8 @@ public class CourseRepositoryGateway {
         return courseRepository.findAll();
     }
 
-    public void deleteById(Long id) {
-        courseRepository.deleteById(id);
+    public void deleteById(Course course) {
+        courseRepository.delete(course);
     }
 
     public Optional<String> getCourseFolderName(Long id) {

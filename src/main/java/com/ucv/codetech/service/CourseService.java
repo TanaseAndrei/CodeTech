@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class CourseService {
 
-    private static final String THE_SELECTED_COURSE_DOES_NOT_EXIST = "The selected course does not exist!";
+    private static final String COURSE_WITH_ID_DOES_NOT_EXIST = "The course with the id %d does not exist";
 
     private final CourseRepositoryGateway courseRepositoryGateway;
 
@@ -27,27 +27,27 @@ public class CourseService {
 
     public void enableCourse(Long id) {
         Course course = courseRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(COURSE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
         course.setAvailable(true);
         courseRepositoryGateway.saveOrUpdate(course);
     }
 
     public void disableCourse(Long id) {
         Course course = courseRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(COURSE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
         course.setAvailable(false);
         courseRepositoryGateway.saveOrUpdate(course);
     }
 
     public Course findById(Long id) {
         return courseRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException(THE_SELECTED_COURSE_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(COURSE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
     }
 
     public Course findByIdAndUsername(Long id, String username) {
         return courseRepositoryGateway.findByIdAndUsername(id, username)
-                .orElseThrow(() -> new AppException("The course with id " + id
-                        + " does not exist in the portfolio of the instructor " + username, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The course with id %d does not exist in the portfolio" +
+                        " of the instructor %s", id, username), HttpStatus.NOT_FOUND));
     }
 
     public List<Course> getAll() {
@@ -55,8 +55,8 @@ public class CourseService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        courseRepositoryGateway.deleteById(id);
+    public void deleteById(Course course) {
+        courseRepositoryGateway.deleteById(course);
     }
 
     public boolean courseExistsByName(String name) {
@@ -65,8 +65,8 @@ public class CourseService {
 
     public String getCourseFolderName(Long id) {
         return courseRepositoryGateway.getCourseFolderName(id)
-                .orElseThrow(() -> new AppException("The course with the id " + id + " does not exit or does not have" +
-                        " an associated folder!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The course with the id %d does not exit or does not" +
+                        " have an associated folder!", id), HttpStatus.NOT_FOUND));
     }
 
     public boolean hasQuiz(Long id) {

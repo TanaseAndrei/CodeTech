@@ -116,7 +116,9 @@ public class CourseFacade {
     @Transactional
     public void deleteCourse(Long id) {
         String courseFolderName = courseService.getCourseFolderName(id);
-        courseService.deleteById(id);
+        Course byId = courseService.findById(id);
+
+        courseService.deleteById(byId);
         mediaRestClientService.deleteFolder(courseFolderName);
         log.info("Deleted course with id {}", id);
     }

@@ -32,6 +32,9 @@ public class Lecture {
     @ElementCollection(targetClass = String.class)
     private List<String> lectureFileNames = new ArrayList<>();
 
+    @OneToMany(mappedBy = "lecture", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<LectureWrapper> lectureWrappers = new ArrayList<>();
+
     @Column(name = "lecture_video_name")
     private String lectureVideoName;
 

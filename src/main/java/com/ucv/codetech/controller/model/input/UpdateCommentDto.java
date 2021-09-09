@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Setter
 @Getter
-@ApiModel(value = "The comment dto used to create a comment")
+@ApiModel(description = "The comment dto used to create a comment")
 public class UpdateCommentDto {
 
     @NotEmpty(message = "You should provide an updated comment")

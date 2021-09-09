@@ -55,7 +55,7 @@ public class QuizConverter {
 
     private InstructorPreviewQuizDto entityToInstructorPreviewQuizDto(Quiz quiz) {
         InstructorPreviewQuizDto instructorPreviewQuizDto = new InstructorPreviewQuizDto();
-        instructorPreviewQuizDto.setQuizId(quiz.getId());
+        instructorPreviewQuizDto.setCourseId(quiz.getId());
         instructorPreviewQuizDto.setQuizName(quiz.getCourse().getName());
         return instructorPreviewQuizDto;
     }

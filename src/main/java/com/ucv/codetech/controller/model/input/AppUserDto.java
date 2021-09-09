@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-@ApiModel(value = "This represents the base class of the user/instructor")
+@ApiModel(description = "This represents the base class of the user and instructor")
 public class AppUserDto {
 
     @NotEmpty(message = "Username should not be empty")

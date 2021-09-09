@@ -19,6 +19,6 @@ public class LectureWrapperService {
 
     public LectureWrapper findById(Long id) {
         return lectureWrapperRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The lecture wrapper with id " + id + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The lecture wrapper with id %d does not exist", id), HttpStatus.NOT_FOUND));
     }
 }

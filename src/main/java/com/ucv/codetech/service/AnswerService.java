@@ -19,12 +19,12 @@ public class AnswerService {
 
     public Answer findById(Long id) {
         return answerRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The answer with the id " + id + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The answer with the id %d does not exist", id), HttpStatus.NOT_FOUND));
     }
 
     public void deleteById(Long id) {
         if(!answerRepositoryGateway.existsById(id)) {
-            throw new AppException("The answer with the id " + id + " does not exist", HttpStatus.NOT_FOUND);
+            throw new AppException(String.format("The answer with the id %d does not exist", id), HttpStatus.NOT_FOUND);
         }
         answerRepositoryGateway.deleteById(id);
     }

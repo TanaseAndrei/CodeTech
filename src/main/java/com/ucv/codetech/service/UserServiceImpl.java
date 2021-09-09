@@ -33,14 +33,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser appUser = appUserRepositoryGateway.findByUsername(username)
-                .orElseThrow(() -> new AppException("The user with the name " + username + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The user with the name %s does not exist", username), HttpStatus.NOT_FOUND));
         return new org.springframework.security.core.userdetails.User(appUser.getUsername(), appUser.getPassword(), getAppUserAuthority(appUser.getRole()));
     }
 
     @Override
-    public AppUser getAppUser(String name) {
-        return appUserRepositoryGateway.findByUsername(name)
-                .orElseThrow(() -> new AppException("The user with the name " + name + " does not exist", HttpStatus.NOT_FOUND));
+    public AppUser getAppUser(String username) {
+        return appUserRepositoryGateway.findByUsername(username)
+                .orElseThrow(() -> new AppException(String.format("The user with the name %s does not exist", username), HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -49,8 +49,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Instructor getInstructor(String name) {
-        return instructorRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The instructor with the name " + name + " does not exit", HttpStatus.NOT_FOUND));
+    public Instructor getInstructor(String username) {
+        return instructorRepositoryGateway.findByUsername(username).orElseThrow(() ->
+                new AppException(String.format("The instructor with the username %s does not exit", username), HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -59,13 +60,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Student getStudent(String name) {
-        return studentRepositoryGateway.findByUsername(name).orElseThrow(() -> new AppException("The student with the name " + name + " does not exist", HttpStatus.NOT_FOUND));
+    public Student getStudent(String username) {
+        return studentRepositoryGateway.findByUsername(username).orElseThrow(() ->
+                new AppException(String.format("The student with the name %s does not exist", username), HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public boolean userExistsByName(String name) {
-        return appUserRepositoryGateway.existsByUsername(name);
+    public boolean userExistsByUsername(String username) {
+        return appUserRepositoryGateway.existsByUsername(username);
     }
 
     @Override

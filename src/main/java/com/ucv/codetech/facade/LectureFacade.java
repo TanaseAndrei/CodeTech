@@ -37,11 +37,12 @@ public class LectureFacade {
 
     @Transactional
     public void uploadFiles(Long id, MultipartFile[] multipartFiles) {
+        log.info("Uploading {} files to lecture {}", multipartFiles.length, id);
         Lecture lecture = lectureService.findById(id);
         String folder = lectureService.getAssociatedCourseFolder(id);
         lecture.setLectureFileNames(sendFilesToFolder(multipartFiles, folder));
         lectureService.saveOrUpdate(lecture);
-        log.info("Uploading files to lecture {}", id);
+        log.info("Uploaded {} files to lecture {}", multipartFiles.length, id);
     }
 
     @Transactional

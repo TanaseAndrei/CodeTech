@@ -19,7 +19,7 @@ public class CommentService {
 
     public Comment findById(Long id) {
         return commentRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The comment with the id " + id + " does not exit", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The comment with the id %d does not exist", id), HttpStatus.NOT_FOUND));
     }
 
     public void edit(Long id, String description) {
@@ -30,7 +30,7 @@ public class CommentService {
 
     public void deleteById(Long id) {
         if(!commentRepositoryGateway.existsById(id)) {
-            throw new AppException("The comment with the id " + id + " does not exist", HttpStatus.NOT_FOUND);
+            throw new AppException(String.format("The comment with the id %d does not exist", id), HttpStatus.NOT_FOUND);
         }
         commentRepositoryGateway.deleteComment(id);
     }

@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class LectureService {
 
+    private static final String LECTURE_WITH_ID_DOES_NOT_EXIST = "The lecture with id %d does not exist";
+
     private final LectureRepositoryGateway lectureRepositoryGateway;
 
     public Lecture saveOrUpdate(Lecture lecture) {
@@ -25,33 +27,28 @@ public class LectureService {
 
     public Lecture findById(Long id) {
         return lectureRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The lecture does not exist!", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(LECTURE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
     }
 
-    public String getAssociatedCourseFolder(Long lectureId) {
-        return lectureRepositoryGateway.getAssociatedCourseFolder(lectureId)
-                .orElseThrow(() -> new AppException("The lecture does not have an associated folder or the course does not exist!",
+    public String getAssociatedCourseFolder(Long id) {
+        return lectureRepositoryGateway.getAssociatedCourseFolder(id)
+                .orElseThrow(() -> new AppException(String.format("The lecture with id %d does not have an associated folder", id),
                         HttpStatus.NOT_FOUND));
     }
 
     public List<String> getLectureFiles(Long id) {
         Lecture lecture = lectureRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The lecture does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(LECTURE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
         return lecture.getLectureFileNames();
     }
 
     public String getLectureVideo(Long id) {
         Lecture lecture = lectureRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The lecture does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format(LECTURE_WITH_ID_DOES_NOT_EXIST, id), HttpStatus.NOT_FOUND));
         return lecture.getLectureVideoName();
     }
 
     public boolean lectureExistsInCourse(String lectureName, Long id) {
         return lectureRepositoryGateway.lectureExistsInCourse(lectureName, id);
-    }
-
-    public boolean fileExistsInLecture(String fileName, Long id) {
-        Lecture lecture = findById(id);
-        return lecture.containsLectureFile(fileName);
     }
 }

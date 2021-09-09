@@ -27,7 +27,7 @@ public interface AnswerApi {
     })
     void delete(@Schema(description = "The id of the answer", example = "1") Long id);
 
-    @ApiOperation(value = "Delete an answer", httpMethod = "DELETE", produces = MediaType.APPLICATION_JSON_VALUE, response = Boolean.class)
+    @ApiOperation(value = "Delete an answer", httpMethod = "GET", produces = MediaType.APPLICATION_JSON_VALUE, response = Boolean.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully got an answer"),
             @ApiResponse(code = 404, message = "The answer does not exist"),

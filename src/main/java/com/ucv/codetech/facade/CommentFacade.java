@@ -16,13 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentFacade {
 
     private final CommentService commentService;
-    private final CommentConverter commentConverter;
 
     @Transactional
     public void update(Long id, UpdateCommentDto updateComment) {
         log.info("Updating the comment with the id {}", id);
         commentService.edit(id, updateComment.getDescription());
-        log.info("Updated comment with id {}", id);
+        log.info("Updated comment with the id {}", id);
     }
 
     @Transactional

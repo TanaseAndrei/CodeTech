@@ -5,7 +5,6 @@ import com.ucv.codetech.controller.exception.AppException;
 import com.ucv.codetech.controller.model.input.AppUserDto;
 import com.ucv.codetech.controller.model.input.RoleDto;
 import com.ucv.codetech.facade.converter.AppUserConverter;
-import com.ucv.codetech.facade.converter.CertificationConverter;
 import com.ucv.codetech.model.AppUser;
 import com.ucv.codetech.model.Instructor;
 import com.ucv.codetech.model.Role;
@@ -40,7 +39,6 @@ public class UserFacade {
     }
 
     public AppUser getAppUser(String username) {
-        log.info("Getting application user with name {}", username);
         return userService.getAppUser(username);
     }
 
@@ -79,7 +77,7 @@ public class UserFacade {
     }
 
     private void validateUserName(String username) {
-        if (userService.userExistsByName(username)) {
+        if (userService.userExistsByUsername(username)) {
             log.warn("Application user with name {} already exists", username);
             throw new AppException("The user with the name " + username + " already exists", HttpStatus.BAD_REQUEST);
         }

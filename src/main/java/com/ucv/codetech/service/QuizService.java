@@ -21,12 +21,12 @@ public class QuizService {
 
     public Quiz findById(Long id) {
         return quizRepositoryGateway.findById(id)
-                .orElseThrow(() -> new AppException("The quiz with the id " + id + " does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(String.format("The quiz with the id %d does not exist", id), HttpStatus.NOT_FOUND));
     }
 
     public void deleteQuiz(Long id) {
         if(!quizRepositoryGateway.existsQuiz(id)) {
-            throw new AppException("The quiz with the id " + id + " does not exist", HttpStatus.NOT_FOUND);
+            throw new AppException(String.format("The quiz with the id %d does not exist", id), HttpStatus.NOT_FOUND);
         }
         quizRepositoryGateway.deleteById(id);
     }

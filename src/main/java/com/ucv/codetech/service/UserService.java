@@ -5,17 +5,17 @@ import com.ucv.codetech.model.Instructor;
 import com.ucv.codetech.model.Student;
 
 public interface UserService {
-    AppUser getAppUser(String name);
+    AppUser getAppUser(String username);
 
     Instructor saveInstructor(Instructor instructor);
 
-    Instructor getInstructor(String name);
+    Instructor getInstructor(String username);
 
     Student saveStudent(Student student);
 
-    Student getStudent(String name);
+    Student getStudent(String username);
 
-    boolean userExistsByName(String name);
+    boolean userExistsByUsername(String username);
 
     boolean userExistsByEmail(String email);
 }

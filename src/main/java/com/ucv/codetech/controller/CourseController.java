@@ -99,7 +99,7 @@ public class CourseController implements CourseApi {
     }
 
     @PreAuthorize("hasRole('STUDENT')")
-    @PatchMapping(path = "/{id}/enroll")
+    @PostMapping(path = "/{id}/students")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void enrollToCourse(@PathVariable("id") Long id) {
         String currentLoggedUser = authenticationFacade.getAuthentication().getName();
@@ -111,12 +111,7 @@ public class CourseController implements CourseApi {
     public PreviewFullCourseDto getCourse(@PathVariable("id") Long id) {
         PreviewFullCourseDto previewFullCourseDto = courseFacade.getById(id);
         addHateoasFullCourseCoverImage(previewFullCourseDto);
-        addHateoasFullCourseEnrollStudent(previewFullCourseDto);
         return previewFullCourseDto;
-    }
-
-    private void addHateoasFullCourseEnrollStudent(PreviewFullCourseDto previewFullCourseDto) {
-//        previewFullCourseDto.add(linkTo(methodOn(CourseController.class).enrollToCourse(previewFullCourseDto.getCourseId())).withRel("enroll")));
     }
 
     @PreAuthorize("hasRole('STUDENT')")
@@ -129,13 +124,6 @@ public class CourseController implements CourseApi {
             addHateoasDisplayCourse(previewCourseDto);
         }
         return previewCourseDtos;
-    }
-
-    @PreAuthorize("hasRole('INSTRUCTOR')")
-    @DeleteMapping(path = "/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteCourse(@PathVariable("id") Long id) {
-        courseFacade.deleteCourse(id);
     }
 
     private void addHateoasCourseSelfRel(PreviewCourseDto previewCourseDto) {

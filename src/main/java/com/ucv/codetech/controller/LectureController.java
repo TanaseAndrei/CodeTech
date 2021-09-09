@@ -31,7 +31,7 @@ public class LectureController implements LectureApi {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @DeleteMapping(path = "/{id}/file/{fileName}")
+    @DeleteMapping(path = "/{id}/files/{fileName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLectureFile(@PathVariable("id") Long lectureId, @PathVariable("fileName") String fileName) {
         lectureFacade.deleteFile(lectureId, fileName);

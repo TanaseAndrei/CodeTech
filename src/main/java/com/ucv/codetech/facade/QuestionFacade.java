@@ -21,6 +21,7 @@ public class QuestionFacade {
 
     @Transactional
     public Long addAnswer(Long id, AnswerDto answerDto) {
+        log.info("Adding new answer to question {}", id);
         Question question = questionService.findById(id);
         Answer answer = quizConverter.answerDtoToEntity(answerDto);
         question.addAnswer(answer);
@@ -31,6 +32,7 @@ public class QuestionFacade {
 
     @Transactional
     public void update(Long id, UpdateQuestionDto updateQuestionDto) {
+        log.info("Updating the question {}", id);
         Question question = questionService.findById(id);
         question.setQuestionContent(updateQuestionDto.getQuestion());
         question.setMultipleAnswers(updateQuestionDto.isMultipleAnswers());
@@ -40,6 +42,7 @@ public class QuestionFacade {
 
     @Transactional
     public void delete(Long id) {
+        log.info("Deleting the question {}", id);
         questionService.delete(id);
         log.info("Deleted the question {}", id);
     }

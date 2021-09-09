@@ -88,7 +88,7 @@ public interface CourseApi {
     })
     void disableCourse(@Schema(description = "The id of the course", example = "1") Long id);
 
-    @ApiOperation(value = "Enroll to a course", httpMethod = "PATCH")
+    @ApiOperation(value = "Enroll to a course", httpMethod = "POST")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully enrolled a course"),
             @ApiResponse(code = 404, message = "The course does not exist"),
@@ -112,11 +112,4 @@ public interface CourseApi {
             @ApiResponse(code = 403, message = "The student must be logged in")
     })
     List<PreviewCourseDto> getAllCourses();
-
-    @ApiOperation(value = "Retrieve all the available courses", httpMethod = "DELETE")
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Successfully deleted a course"),
-            @ApiResponse(code = 403, message = "The instructor must be logged in")
-    })
-    void deleteCourse(@Schema(description = "The id of the course", example = "1") Long id);
 }

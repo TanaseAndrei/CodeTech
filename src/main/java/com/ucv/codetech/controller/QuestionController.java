@@ -20,7 +20,7 @@ public class QuestionController implements QuestionApi {
     private final QuestionFacade questionFacade;
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    @PostMapping(path = "/{id}/add-answer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{id}/answers", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Long addAnswer(@PathVariable("id") Long id, @Valid @RequestBody AnswerDto answerDto) {
         return questionFacade.addAnswer(id, answerDto);
