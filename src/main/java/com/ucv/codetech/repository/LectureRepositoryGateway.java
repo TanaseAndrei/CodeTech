@@ -4,7 +4,6 @@ import com.ucv.codetech.model.Lecture;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
