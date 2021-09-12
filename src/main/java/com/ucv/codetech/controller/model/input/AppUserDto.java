@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Setter
 @Getter
@@ -19,6 +20,9 @@ public class AppUserDto {
     private String username;
 
     @NotEmpty(message = "Password should not be empty")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = " The password must contain at least one digit, at least a lower case and an upper case," +
+                    " at least a special character, no whitespaces, everything at least of 8 character")
     @ApiModelProperty(required = true, value = "The password of the user", example = "ko!e12@oo32cX!")
     private String password;
 
